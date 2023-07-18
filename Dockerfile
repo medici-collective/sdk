@@ -1,5 +1,5 @@
 FROM rust:1.70-slim-buster
-RUN ls -a
+RUN apt-get update -y && apt-get install git -y
 RUN git clone -b testnet3 \
     https://github.com/medici-collective/sdk.git \
     --depth 1
