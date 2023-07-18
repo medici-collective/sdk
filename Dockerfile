@@ -13,7 +13,7 @@ EXPOSE 3033/tcp
 EXPOSE 4133/tcp
 RUN pwd
 RUN cargo install --path . --locked
-# RUN cd rust/develop
+RUN cd rust/develop
 RUN pwd
 RUN cargo run --bin aleo-develop
 CMD aleo-start
