@@ -8,7 +8,7 @@
 </p>
 
 The Aleo SDK is a developer framework to make it simple to create a new account, craft a transaction,
-and broadcast it to the network.
+and broadcast it to the network. 
 
 ## Table of Contents
 
