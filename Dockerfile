@@ -16,4 +16,4 @@ RUN cargo install --path . --locked
 RUN ls
 WORKDIR rust/develop
 RUN pwd
-CMD cargo run --bin aleo-develop
+CMD cargo run --bin aleo-develop && aleo-develop start
