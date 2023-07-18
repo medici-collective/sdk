@@ -4,6 +4,7 @@ RUN git clone -b testnet3 \
     https://github.com/medici-collective/sdk.git \
     --depth 1
 WORKDIR sdk
+RUN pwd
 RUN ./build_ubuntu.sh
 EXPOSE 3033/tcp
 EXPOSE 4133/tcp
