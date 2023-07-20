@@ -163,9 +163,15 @@ impl<N: Network> ProgramManager<N> {
         // Create an ephemeral SnarkVM to store the programs
         let store = ConsensusStore::<N, ConsensusMemory<N>>::open(None)?;
         let vm = VM::<N, ConsensusMemory<N>>::from(store)?;
+
+        // we don't want to add the program as it already exists! (credits.aleo)
+        if (program_id.to_string() == "credits.aleo") {
+            // add in logic here to split or join records
+            return vm.execute(private_key, (program_id, function_name), inputs, Some((fee_record, fee)), Some(query), rng)
+        }
+
         let _ = &vm.process().write().add_program(program);
 
-        // Create an execution transaction
         vm.execute(private_key, (program_id, function_name), inputs, Some((fee_record, fee)), Some(query), rng)
     }
 

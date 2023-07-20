@@ -110,7 +110,7 @@ impl<N: Network> Rest<N> {
         // Get the fee record if it is not provided in the request
         let fee_record = if request.fee_record.is_none() {
             return Err(reject::custom(RestError::Request(
-                "No record provided, please provide a record.".to_string(),
+                "No record provided, please provide a record for the fee.".to_string(),
             )));
         } else {
             request.fee_record.unwrap()
@@ -142,9 +142,7 @@ impl<N: Network> Rest<N> {
 
         // Find a fee record if a fee is specified and a fee record is not provided
         let fee_record = if request.fee_record.is_none() {
-            return Err(reject::custom(RestError::Request(
-                "No record provided, please provide a record.".to_string(),
-            )));
+            spawn_blocking!(record_finder.find_one_record(&private_key, request.fee))?
         } else {
             request.fee_record.take().unwrap()
         };
