@@ -174,7 +174,7 @@ impl<N: Network> ProgramManager<N> {
         let store = ConsensusStore::<N, ConsensusMemory<N>>::open(None)?;
         let vm = VM::<N, ConsensusMemory<N>>::from(store)?;
 
-        // we don't want to add the program as it already exists! (credits.aleo)
+        // we don't want to add credtis.aleo as it already exists (see below)! we can go ahead and execute on credits.aleo
         if (program_id.to_string() == "credits.aleo") {
             // add in logic here to split or join records
             return vm.execute(private_key, (program_id, function_name), inputs, Some((fee_record, fee)), Some(query), rng)
@@ -182,12 +182,7 @@ impl<N: Network> ProgramManager<N> {
 
         let _ = &vm.process().write().add_program(program);
 
-        vm.execute(private_key, (program_id, function_name), inputs, Some((fee_record, fee)), Some(query), rng)
- 
-        // Initialize the VM
-        let vm = Self::initialize_vm(api_client, program, true)?;
-
-        // Create an execution transaction
+        // Create an execution transaction for programs other than credits.aleo
         vm.execute(private_key, (program_id, function_name), inputs, Some((fee_record, priority_fee)), Some(query), rng)
 
     }
