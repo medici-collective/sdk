@@ -170,6 +170,8 @@ impl<N: Network> ProgramManager<N> {
             "Program {program_id:?} does not contain function {function_name:?}, aborting execution"
         );
 
+        // Initialize the VM
+        let vm = Self::initialize_vm(api_client, program, true)?;
         // Create an ephemeral SnarkVM to store the programs
         let store = ConsensusStore::<N, ConsensusMemory<N>>::open(None)?;
         let vm = VM::<N, ConsensusMemory<N>>::from(store)?;
