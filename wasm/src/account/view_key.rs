@@ -43,12 +43,32 @@ impl ViewKey {
         Address::from_view_key(self)
     }
 
-    pub fn decrypt(&self, ciphertext: &str) -> Result<String, String> {
-        let ciphertext = RecordCiphertext::from_str(ciphertext).map_err(|error| error.to_string())?;
+    // Decrypt a record from ciphertext, ex: "record12asdlkfjaskldfjlsadjflsadfaslkdfjalsdf"
+    pub fn decryptRecord(&self, recordCiphertext: &str) -> Result<String, String> {
+        let ciphertext = RecordCiphertext::from_str(recordCiphertext).map_err(|error| error.to_string())?;
         match ciphertext.decrypt(self) {
             Ok(plaintext) => Ok(plaintext.to_string()),
             Err(error) => Err(error),
         }
+    }
+
+    // Decrypt ciphertext (non-record), usually program inputs and outputs, ex: "cipher1as1l2jj32392390fh2eif02h02f20f0h"
+    pub fn decryptCiphertext(&self, ciphertext: &str, tpk: &str, programName: &str, functionName: &str, index: u32) -> Result<String, String> { 
+        let tpk = Group::<Testnet3>::from_str(tpk).unwrap();
+        let tvk = (tpk * *vk).to_x_coordinate();
+        let function_id = <Testnet3 as Network>::hash_bhp1024(
+            &(
+                U16::<Testnet3>::new(3),
+                &Identifier::<Testnet3>::from_str(programName).unwrap(),
+                &Identifier::<Testnet3>::from_str("aleo").unwrap(),
+                &Identifier::<Testnet3>::from_str(functionName).unwrap(),
+            )
+                .to_bits_le(),
+        )
+        .unwrap();
+        let ivk = <Testnet3 as Network>::hash_psd4(&[function_id, tvk, Field::from_u16(index)]).unwrap();
+        let ciphertext = Ciphertext::<Testnet3>::from_str(ciphertext).unwrap();
+         println!("{:?}", ciphertext.decrypt_symmetric(ivk).unwrap());
     }
 }
 
