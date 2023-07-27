@@ -15,7 +15,9 @@
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
 use super::{Address, PrivateKey};
-use crate::{record::RecordCiphertext, types::ViewKeyNative};
+use crate::{record::RecordCiphertext, types::ViewKeyNative, types::ViewKey as RustViewKey};
+use aleo_rust::{Ciphertext, Field, Identifier, Network, Testnet3, Group, U16, ToBits};
+// use snarkvm_wasm::{ToBits}; 
 
 use core::{convert::TryFrom, fmt, ops::Deref, str::FromStr};
 use wasm_bindgen::prelude::*;
@@ -44,8 +46,8 @@ impl ViewKey {
     }
 
     // Decrypt a record from ciphertext, ex: "record12asdlkfjaskldfjlsadjflsadfaslkdfjalsdf"
-    pub fn decryptRecord(&self, recordCiphertext: &str) -> Result<String, String> {
-        let ciphertext = RecordCiphertext::from_str(recordCiphertext).map_err(|error| error.to_string())?;
+    pub fn decrypt_record(&self, record_ciphertext: &str) -> Result<String, String> {
+        let ciphertext = RecordCiphertext::from_str(record_ciphertext).map_err(|error| error.to_string())?;
         match ciphertext.decrypt(self) {
             Ok(plaintext) => Ok(plaintext.to_string()),
             Err(error) => Err(error),
@@ -53,22 +55,24 @@ impl ViewKey {
     }
 
     // Decrypt ciphertext (non-record), usually program inputs and outputs, ex: "cipher1as1l2jj32392390fh2eif02h02f20f0h"
-    pub fn decryptCiphertext(&self, ciphertext: &str, tpk: &str, programName: &str, functionName: &str, index: u32) -> Result<String, String> { 
+    pub fn decrypt_ciphertext(&self, ciphertext: &str, tpk: &str, program_name: &str, function_name: &str, index: u16) -> Result<String, String> { 
+        let vk: RustViewKey<Testnet3> = RustViewKey::<Testnet3>::from_str(&self.to_string()).map_err(|error| error.to_string())?; 
         let tpk = Group::<Testnet3>::from_str(tpk).unwrap();
         let tvk = (tpk * *vk).to_x_coordinate();
-        let function_id = <Testnet3 as Network>::hash_bhp1024(
-            &(
-                U16::<Testnet3>::new(3),
-                &Identifier::<Testnet3>::from_str(programName).unwrap(),
-                &Identifier::<Testnet3>::from_str("aleo").unwrap(),
-                &Identifier::<Testnet3>::from_str(functionName).unwrap(),
-            )
-                .to_bits_le(),
-        )
-        .unwrap();
+        let bits = &(
+            U16::<Testnet3>::new(3),
+            &Identifier::<Testnet3>::from_str(program_name).unwrap(),
+            &Identifier::<Testnet3>::from_str("aleo").unwrap(),
+            &Identifier::<Testnet3>::from_str(function_name).unwrap(),
+        ).to_bits_le();
+
+        let function_id = <Testnet3 as Network>::hash_bhp1024(bits).unwrap();
         let ivk = <Testnet3 as Network>::hash_psd4(&[function_id, tvk, Field::from_u16(index)]).unwrap();
         let ciphertext = Ciphertext::<Testnet3>::from_str(ciphertext).unwrap();
-         println!("{:?}", ciphertext.decrypt_symmetric(ivk).unwrap());
+        match ciphertext.decrypt_symmetric(ivk) {
+            Ok(plaintext) => Ok(plaintext.to_string()),
+            Err(error) => Err(error.to_string())
+        }
     }
 }
 
