@@ -17,13 +17,9 @@
 use super::*;
 
 use crate::{
-    execute_program,
-    get_process,
-    log,
+    execute_program, get_process, log,
     types::{CurrentAleo, IdentifierNative, ProcessNative, ProgramNative, TransactionNative},
-    PrivateKey,
-    RecordPlaintext,
-    Transaction,
+    PrivateKey, RecordPlaintext, Transaction,
 };
 
 use js_sys::Array;
@@ -46,6 +42,7 @@ impl ProgramManager {
     /// proving and verifying keys will be deallocated from memory after the transaction is executed
     /// @param split_proving_key (optional) Provide a proving key to use for the split function
     /// @param split_verifying_key (optional) Provide a verifying key to use for the split function
+    /// @returns {Transaction | Error} Transaction object
     #[wasm_bindgen]
     #[allow(clippy::too_many_arguments)]
     pub async fn split(

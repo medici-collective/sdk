@@ -15,9 +15,9 @@
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
 use super::{Address, PrivateKey};
-use crate::{record::RecordCiphertext, types::ViewKeyNative, types::ViewKey as RustViewKey};
-use aleo_rust::{Ciphertext, Field, Identifier, Network, Testnet3, Group, U16, ToBits};
-// use snarkvm_wasm::{ToBits}; 
+use crate::{record::RecordCiphertext, types::ViewKey as RustViewKey, types::ViewKeyNative};
+use aleo_rust::{Ciphertext, Field, Group, Identifier, Network, Testnet3, ToBits, U16};
+// use snarkvm_wasm::{ToBits};
 
 use core::{convert::TryFrom, fmt, ops::Deref, str::FromStr};
 use wasm_bindgen::prelude::*;
@@ -28,19 +28,33 @@ pub struct ViewKey(ViewKeyNative);
 
 #[wasm_bindgen]
 impl ViewKey {
+    /// Create a new view key from a private key
+    ///
+    /// @param {PrivateKey} private_key Private key
+    /// @returns {ViewKey} View key
     pub fn from_private_key(private_key: &PrivateKey) -> Self {
         Self(ViewKeyNative::try_from(**private_key).unwrap())
     }
 
+    /// Create a new view key from a string representation of a view key
+    ///
+    /// @param {string} view_key String representation of a view key
+    /// @returns {ViewKey} View key
     pub fn from_string(view_key: &str) -> Self {
         Self::from_str(view_key).unwrap()
     }
 
+    /// Get a string representation of a view key
+    ///
+    /// @returns {string} String representation of a view key
     #[allow(clippy::inherent_to_string_shadow_display)]
     pub fn to_string(&self) -> String {
         self.0.to_string()
     }
 
+    /// Get the address corresponding to a view key
+    ///
+    /// @returns {Address} Address
     pub fn to_address(&self) -> Address {
         Address::from_view_key(self)
     }
@@ -54,9 +68,29 @@ impl ViewKey {
         }
     }
 
+    /// Decrypt a record ciphertext with a view key
+    ///
+    /// @param {string} ciphertext String representation of a record ciphertext
+    /// @returns {string} String representation of a record plaintext
+    pub fn decrypt(&self, ciphertext: &str) -> Result<String, String> {
+        let ciphertext = RecordCiphertext::from_str(ciphertext).map_err(|error| error.to_string())?;
+        match ciphertext.decrypt(self) {
+            Ok(plaintext) => Ok(plaintext.to_string()),
+            Err(error) => Err(error),
+        }
+    }
+
     // Decrypt ciphertext (non-record), usually program inputs and outputs, ex: "cipher1as1l2jj32392390fh2eif02h02f20f0h"
-    pub fn decrypt_ciphertext(&self, ciphertext: &str, tpk: &str, program_name: &str, function_name: &str, index: u16) -> Result<String, String> { 
-        let vk: RustViewKey<Testnet3> = RustViewKey::<Testnet3>::from_str(&self.to_string()).map_err(|error| error.to_string())?; 
+    pub fn decrypt_ciphertext(
+        &self,
+        ciphertext: &str,
+        tpk: &str,
+        program_name: &str,
+        function_name: &str,
+        index: u16,
+    ) -> Result<String, String> {
+        let vk: RustViewKey<Testnet3> =
+            RustViewKey::<Testnet3>::from_str(&self.to_string()).map_err(|error| error.to_string())?;
         let tpk = Group::<Testnet3>::from_str(tpk).unwrap();
         let tvk = (tpk * *vk).to_x_coordinate();
         let bits = &(
@@ -64,14 +98,15 @@ impl ViewKey {
             &Identifier::<Testnet3>::from_str(program_name).unwrap(),
             &Identifier::<Testnet3>::from_str("aleo").unwrap(),
             &Identifier::<Testnet3>::from_str(function_name).unwrap(),
-        ).to_bits_le();
+        )
+            .to_bits_le();
 
         let function_id = <Testnet3 as Network>::hash_bhp1024(bits).unwrap();
         let ivk = <Testnet3 as Network>::hash_psd4(&[function_id, tvk, Field::from_u16(index)]).unwrap();
         let ciphertext = Ciphertext::<Testnet3>::from_str(ciphertext).unwrap();
         match ciphertext.decrypt_symmetric(ivk) {
             Ok(plaintext) => Ok(plaintext.to_string()),
-            Err(error) => Err(error.to_string())
+            Err(error) => Err(error.to_string()),
         }
     }
 }

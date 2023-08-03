@@ -44,7 +44,11 @@ impl<N: Network> ProgramManager<N> {
             .get_program(program_id)
             .map(
                 |chain_program| {
-                    if chain_program.eq(program) { OnChainProgramState::Same } else { OnChainProgramState::Different }
+                    if chain_program.eq(program) {
+                        OnChainProgramState::Same
+                    } else {
+                        OnChainProgramState::Different
+                    }
                 },
             )
             .unwrap_or(OnChainProgramState::NotDeployed))

@@ -39,7 +39,11 @@ impl<N: Network> RecordFinder<N> {
         private_key: &PrivateKey<N>,
     ) -> Result<(Record<N, Plaintext<N>>, Record<N, Plaintext<N>>)> {
         let records = self.find_record_amounts(vec![amount, fee], private_key)?;
-        if records.len() < 2 { bail!("Insufficient funds") } else { Ok((records[0].clone(), records[1].clone())) }
+        if records.len() < 2 {
+            bail!("Insufficient funds")
+        } else {
+            Ok((records[0].clone(), records[1].clone()))
+        }
     }
 
     /// Resolve a record with a specific value. If successful it will return a record with a gate

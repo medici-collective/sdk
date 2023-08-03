@@ -162,11 +162,9 @@ async fn test_cache_functionality() {
     assert!(program_manager.key_exists("credits.aleo", "split").unwrap());
 
     // Ensure the keypair can't be overwritten
-    assert!(
-        program_manager
-            .cache_keypair_in_wasm_memory("credits.aleo", "split", split_proving_key_clone, split_verifying_key_clone)
-            .is_err()
-    );
+    assert!(program_manager
+        .cache_keypair_in_wasm_memory("credits.aleo", "split", split_proving_key_clone, split_verifying_key_clone)
+        .is_err());
 
     // Ensure the cache clears correctly
     program_manager.clear_key_cache();

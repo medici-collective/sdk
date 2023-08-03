@@ -33,21 +33,10 @@ pub mod utils;
 
 use crate::{
     types::{
-        cost_in_microcredits,
-        deployment_cost,
-        CurrentAleo,
-        IdentifierNative,
-        ProcessNative,
-        ProgramIDNative,
-        ProgramNative,
-        ProvingKeyNative,
-        QueryNative,
-        VerifyingKeyNative,
+        cost_in_microcredits, deployment_cost, CurrentAleo, IdentifierNative, ProcessNative, ProgramIDNative,
+        ProgramNative, ProvingKeyNative, QueryNative, VerifyingKeyNative,
     },
-    KeyPair,
-    ProvingKey,
-    RecordPlaintext,
-    VerifyingKey,
+    KeyPair, ProvingKey, RecordPlaintext, VerifyingKey,
 };
 
 use js_sys::{Object, Reflect};

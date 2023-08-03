@@ -17,14 +17,9 @@
 use super::*;
 
 use crate::{
-    execute_fee,
-    execute_program,
-    get_process,
-    log,
+    execute_fee, execute_program, get_process, log,
     types::{CurrentAleo, IdentifierNative, ProcessNative, ProgramNative, RecordPlaintextNative, TransactionNative},
-    PrivateKey,
-    RecordPlaintext,
-    Transaction,
+    PrivateKey, RecordPlaintext, Transaction,
 };
 
 use js_sys::Array;
@@ -54,6 +49,7 @@ impl ProgramManager {
     /// function
     /// @param fee_proving_key (optional) Provide a proving key to use for the fee execution
     /// @param fee_verifying_key (optional) Provide a verifying key to use for the fee execution
+    /// @returns {Transaction | Error}
     #[wasm_bindgen]
     #[allow(clippy::too_many_arguments)]
     pub async fn transfer(

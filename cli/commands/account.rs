@@ -269,17 +269,17 @@ impl Account {
         // Get file name and account serialization
         let (preamble, filename, account_keys) = if private_key_ciphertext.is_some() {
             ("✅ Account key ciphertext written to", "account-ciphertext.json", AccountModel {
-                private_key_ciphertext,
-                private_key: None,
-                view_key: None,
-                address,
+              private_key_ciphertext,
+              private_key: None,
+              view_key: None,
+              address,
             })
         } else {
             ("✅ Account key plaintexts written to", "account-plaintext.json", AccountModel {
-                private_key_ciphertext,
-                private_key,
-                view_key,
-                address,
+              private_key_ciphertext,
+              private_key,
+              view_key,
+              address,
             })
         };
 
