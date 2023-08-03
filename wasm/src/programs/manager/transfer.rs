@@ -54,6 +54,7 @@ impl ProgramManager {
     /// function
     /// @param fee_proving_key (optional) Provide a proving key to use for the fee execution
     /// @param fee_verifying_key (optional) Provide a verifying key to use for the fee execution
+    /// @returns {Transaction | Error}
     #[wasm_bindgen]
     #[allow(clippy::too_many_arguments)]
     pub async fn transfer(
@@ -82,40 +83,43 @@ impl ProgramManager {
 
         log("Setup the program and inputs");
         let program = ProgramNative::credits().unwrap().to_string();
-        let inputs = Array::new_with_length(3);
 
         let transfer_type = transfer_type.as_str();
         log("Transfer Type is:");
         log(transfer_type);
 
-        let transfer_type = match transfer_type {
+        let (transfer_type, inputs) = match transfer_type {
             "private" => {
                 if amount_record.is_none() {
                     return Err("Amount record must be provided for private transfers".to_string());
                 }
+                let inputs = Array::new_with_length(3);
                 inputs.set(0u32, wasm_bindgen::JsValue::from_str(&amount_record.unwrap().to_string()));
                 inputs.set(1u32, wasm_bindgen::JsValue::from_str(&recipient));
                 inputs.set(2u32, wasm_bindgen::JsValue::from_str(&amount_microcredits.to_string().add("u64")));
-                "transfer_private"
+                ("transfer_private", inputs)
             }
-            "private_to_public" => {
+            "private_to_public" | "privateToPublic" | "transfer_private_to_public" | "transferPrivateToPublic" => {
                 if amount_record.is_none() {
                     return Err("Amount record must be provided for private transfers".to_string());
                 }
+                let inputs = Array::new_with_length(3);
                 inputs.set(0u32, wasm_bindgen::JsValue::from_str(&amount_record.unwrap().to_string()));
                 inputs.set(1u32, wasm_bindgen::JsValue::from_str(&recipient));
                 inputs.set(2u32, wasm_bindgen::JsValue::from_str(&amount_microcredits.to_string().add("u64")));
-                "transfer_private_to_public"
+                ("transfer_private_to_public", inputs)
             }
             "public" => {
+                let inputs = Array::new_with_length(2);
                 inputs.set(0u32, wasm_bindgen::JsValue::from_str(&recipient));
                 inputs.set(1u32, wasm_bindgen::JsValue::from_str(&amount_microcredits.to_string().add("u64")));
-                "transfer_public"
+                ("transfer_public", inputs)
             }
-            "public_to_private" => {
-                inputs.set(1u32, wasm_bindgen::JsValue::from_str(&recipient));
-                inputs.set(2u32, wasm_bindgen::JsValue::from_str(&amount_microcredits.to_string().add("u64")));
-                "transfer_public_to_private"
+            "public_to_private" | "publicToPrivate" | "transfer_public_to_private" | "transferPublicToPrivate" => {
+                let inputs = Array::new_with_length(2);
+                inputs.set(0u32, wasm_bindgen::JsValue::from_str(&recipient));
+                inputs.set(1u32, wasm_bindgen::JsValue::from_str(&amount_microcredits.to_string().add("u64")));
+                ("transfer_public_to_private", inputs)
             }
             _ => return Err("Invalid transfer type".to_string()),
         };

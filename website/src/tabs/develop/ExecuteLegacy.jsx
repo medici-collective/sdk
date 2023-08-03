@@ -6,6 +6,7 @@ import {
     Divider,
     Form,
     Input,
+    message,
     Row,
     Result,
     Spin,
@@ -14,11 +15,9 @@ import {
 } from "antd";
 import { FormGenerator } from "../../components/InputForm";
 import axios from "axios";
-import init, * as aleo from "@aleohq/wasm";
+import { useAleoWASM } from "../../aleo-wasm-hook";
 
-await init();
-
-export const Execute = () => {
+export const ExecuteLegacy = () => {
     const [executionFeeRecord, setExecutionFeeRecord] = useState(null);
     const [executeUrl, setExecuteUrl] = useState("https://vm.aleo.org/api");
     const [functionID, setFunctionID] = useState(null);
@@ -26,6 +25,7 @@ export const Execute = () => {
     const [inputs, setInputs] = useState(null);
     const [feeLoading, setFeeLoading] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [messageApi, contextHolder] = message.useMessage();
     const [privateKey, setPrivateKey] = useState(null);
     const [program, setProgram] = useState(null);
     const [programResponse, setProgramResponse] = useState(null);
@@ -37,6 +37,7 @@ export const Execute = () => {
     const [executeOnline, setExecuteOnline] = useState(false);
     const [programInputs, setProgramInputs] = useState(null);
     const [tip, setTip] = useState("Executing Program...");
+    const aleo = useAleoWASM();
 
     const getProgramInputs = () => {
         const programManifest = [];
@@ -209,6 +210,9 @@ export const Execute = () => {
         setProgramResponse(null);
         setTransactionID(null);
         setExecutionError(null);
+        messageApi.info(
+            "Disclaimer: Fee estimation is experimental and may not represent a correct estimate on any current or future network",
+        );
         setTip("Estimating Execution Fee...");
         let functionInputs = [];
         try {
@@ -561,6 +565,7 @@ export const Execute = () => {
                             >
                                 Execute
                             </Button>
+                            {contextHolder}
                             {executeOnline && (
                                 <Button
                                     type="primary"

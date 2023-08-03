@@ -6,15 +6,13 @@ import {
     Divider,
     Form,
     Input,
+    message,
     Row,
     Result,
     Spin,
     Space,
 } from "antd";
 import axios from "axios";
-import init, * as aleo from "@aleohq/wasm";
-
-await init();
 
 export const Deploy = () => {
     const [deploymentFeeRecord, setDeploymentFeeRecord] = useState(null);
@@ -28,6 +26,7 @@ export const Deploy = () => {
     const [status, setStatus] = useState("");
     const [transactionID, setTransactionID] = useState(null);
     const [worker, setWorker] = useState(null);
+    const [messageApi, contextHolder] = message.useMessage();
     function spawnWorker() {
         let worker = new Worker(
             new URL("../../workers/worker.js", import.meta.url),
@@ -130,7 +129,9 @@ export const Deploy = () => {
         setLoading(false);
         setTransactionID(null);
         setDeploymentError(null);
-
+        messageApi.info(
+            "Disclaimer: Fee estimation is experimental and may not represent a correct estimate on any current or future network",
+        );
         await postMessagePromise(worker, {
             type: "ALEO_ESTIMATE_DEPLOYMENT_FEE",
             program: programString(),
@@ -304,6 +305,7 @@ export const Deploy = () => {
                             >
                                 Deploy
                             </Button>
+                            {contextHolder}
                             <Button
                                 type="primary"
                                 shape="round"
