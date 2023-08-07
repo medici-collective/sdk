@@ -63,7 +63,7 @@ be used to perform Aleo account, record, and program management tasks.
 
 #### Build Instructions
 ```bash
-wasm-pack build --release --target nodejs -- --features "serial" --no-default-features
+wasm-pack build --target nodejs
 ```
 
 ### 2. Single-Threaded browser module
