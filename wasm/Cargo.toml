@@ -21,6 +21,9 @@ edition = "2021"
 crate-type = [ "cdylib", "rlib" ]
 doctest = false
 
+[dependencies]
+console_error_panic_hook = "0.1.7"
+
 [dependencies.aleo-rust]
 features = [ "wasm" ]
 workspace = true
@@ -72,9 +75,6 @@ version = "0.4.37"
 version = "1.0.3"
 optional = true
 
-[dependencies.console_error_panic_hook]
-version = "0.1.7"
-
 [dependencies.serde]
 version = "1.0.181"
 
@@ -82,10 +82,10 @@ version = "1.0.181"
 version = "0.3.37"
 
 [features]
-default = [ "serial", "browser" ]
-serial = [ "aleo-rust/serial" ]
-parallel = [ "wasm-bindgen-rayon", "rayon" ]
-browser = [ ]
+default = ["serial", "browser"]
+serial = ["aleo-rust/serial"]
+parallel = ["wasm-bindgen-rayon", "rayon"]
+browser = []
 
 ## Profiles
 [profile.release]
