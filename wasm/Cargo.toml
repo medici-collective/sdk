@@ -76,7 +76,7 @@ version = "1.0.3"
 optional = true
 
 [dependencies.serde]
-version = "1.0.181"
+version = "1.0.183"
 
 [dev-dependencies.wasm-bindgen-test]
 version = "0.3.37"
