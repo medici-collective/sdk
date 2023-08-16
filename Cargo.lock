@@ -45,6 +45,7 @@ dependencies = [
  "anyhow",
  "clap",
  "colored",
+ "console_error_panic_hook",
  "num-format",
  "parking_lot",
  "rand",

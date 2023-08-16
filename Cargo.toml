@@ -54,13 +54,17 @@ version = "=0.14.6"
 
 [lib]
 path = "cli/lib.rs"
+crate-type = ["cdylib", "rlib"]
 
 [[bin]]
 name = "aleo"
 path = "cli/main.rs"
 
 [features]
-default = [ ]
+default = []
+
+[dependencies]
+console_error_panic_hook = "0.1.7"
 
 [dependencies.aleo-rust]
 features = [ "default" ]

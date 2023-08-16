@@ -17,13 +17,9 @@
 use super::*;
 
 use crate::{
-    execute_program,
-    get_process,
-    log,
+    execute_program, get_process, log,
     types::{CurrentAleo, IdentifierNative, ProcessNative, ProgramNative, TransactionNative},
-    PrivateKey,
-    RecordPlaintext,
-    Transaction,
+    PrivateKey, RecordPlaintext, Transaction,
 };
 
 use js_sys::Array;

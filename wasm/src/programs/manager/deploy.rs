@@ -17,22 +17,12 @@
 use super::*;
 
 use crate::{
-    execute_fee,
-    get_process,
-    log,
+    execute_fee, get_process, log,
     types::{
-        CurrentAleo,
-        CurrentNetwork,
-        ProcessNative,
-        ProgramIDNative,
-        ProgramNative,
-        ProgramOwnerNative,
-        RecordPlaintextNative,
-        TransactionNative,
+        CurrentAleo, CurrentNetwork, ProcessNative, ProgramIDNative, ProgramNative, ProgramOwnerNative,
+        RecordPlaintextNative, TransactionNative,
     },
-    PrivateKey,
-    RecordPlaintext,
-    Transaction,
+    PrivateKey, RecordPlaintext, Transaction,
 };
 
 use js_sys::Object;

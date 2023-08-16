@@ -196,42 +196,25 @@ pub mod snarkvm_types {
     pub use snarkvm_console::{
         account::{Address, PrivateKey, Signature, ViewKey},
         network::Testnet3,
-        prelude::{ToBytes, Uniform},
+        prelude::{to_bits::ToBits, ToBytes, Uniform},
         program::{
-            Ciphertext,
-            EntryType,
-            Identifier,
-            Literal,
-            Locator,
-            Network,
-            OutputID,
-            Plaintext,
-            PlaintextType,
-            ProgramID,
-            ProgramOwner,
-            Record,
-            Response,
-            Value,
-            ValueType,
+            Ciphertext, EntryType, Identifier, Literal, Locator, Network, OutputID, Plaintext, PlaintextType,
+            ProgramID, ProgramOwner, Record, Response, Value, ValueType,
         },
         types::Field,
+        types::Group,
+        types::U16,
     };
     pub use snarkvm_ledger_block::{Block, Deployment, Execution, Transaction};
     pub use snarkvm_ledger_query::Query;
     pub use snarkvm_ledger_store::{
         helpers::memory::{BlockMemory, ConsensusMemory},
-        BlockStore,
-        ConsensusStore,
+        BlockStore, ConsensusStore,
     };
     pub use snarkvm_synthesizer::{
-        cost_in_microcredits,
-        deployment_cost,
-        execution_cost,
+        cost_in_microcredits, deployment_cost, execution_cost,
         snark::{Proof, ProvingKey, VerifyingKey},
-        Process,
-        Program,
-        Trace,
-        VM,
+        Process, Program, Trace, VM,
     };
 }
 #[cfg(feature = "full")]

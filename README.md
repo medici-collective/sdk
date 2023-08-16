@@ -6,7 +6,6 @@
     <a href="https://github.com/AleoHQ/sdk#%EF%B8%8F-contributors"><img src="https://img.shields.io/badge/contributors-23-ee8449"/></a>
 </p>
 
-
 # Zero Knowledge Web App SDK
 
 The [Aleo SDK](https://github.com/AleoHQ/sdk) provides tools for building zero knowledge applications. It consists of

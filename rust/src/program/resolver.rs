@@ -89,11 +89,7 @@ mod tests {
     use super::*;
     use crate::{
         test_utils::{
-            random_program_id,
-            setup_directory,
-            teardown_directory,
-            HELLO_PROGRAM,
-            IMPORT_PROGRAM,
+            random_program_id, setup_directory, teardown_directory, HELLO_PROGRAM, IMPORT_PROGRAM,
             RECIPIENT_PRIVATE_KEY,
         },
         AleoAPIClient,

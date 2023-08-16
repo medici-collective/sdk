@@ -659,16 +659,19 @@ function add_and_double:
         let split = JsValue::from_str("split");
         let fee = JsValue::from_str("fee");
 
-        assert_eq!(program.get_functions().to_vec(), vec![
-            mint,
-            transfer_public,
-            transfer_private,
-            transfer_private_to_public,
-            transfer_public_to_private,
-            join,
-            split,
-            fee
-        ]);
+        assert_eq!(
+            program.get_functions().to_vec(),
+            vec![
+                mint,
+                transfer_public,
+                transfer_private,
+                transfer_private_to_public,
+                transfer_public_to_private,
+                join,
+                split,
+                fee
+            ]
+        );
     }
 
     #[wasm_bindgen_test]
