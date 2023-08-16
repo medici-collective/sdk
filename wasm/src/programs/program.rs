@@ -33,19 +33,51 @@ pub struct Program(ProgramNative);
 #[wasm_bindgen]
 impl Program {
     /// Create a program from a program string
+    ///
+    /// @param {string} program Aleo program source code
+    /// @returns {Program | Error} Program object
     #[wasm_bindgen(js_name = "fromString")]
     pub fn from_string(program: &str) -> Result<Program, String> {
         Ok(Self(ProgramNative::from_str(program).map_err(|err| err.to_string())?))
     }
 
     /// Get a string representation of the program
+    ///
+    /// @returns {string} String containing the program source code
     #[wasm_bindgen(js_name = "toString")]
     #[allow(clippy::inherent_to_string)]
     pub fn to_string(&self) -> String {
         self.0.to_string()
     }
 
+    /// Determine if a function is present in the program
+    ///
+    /// @param {string} functionName Name of the function to check for
+    /// @returns {boolean} True if the program is valid, false otherwise
+    #[wasm_bindgen(js_name = "hasFunction")]
+    pub fn has_function(&self, function_name: &str) -> bool {
+        IdentifierNative::from_str(function_name).map_or(false, |identifier| self.0.contains_function(&identifier))
+    }
+
     /// Get javascript array of functions names in the program
+    ///
+    /// @returns {Array} Array of all function names present in the program
+    ///
+    /// @example
+    /// const expected_functions = [
+    ///   "mint",
+    ///   "transfer_private",
+    ///   "transfer_private_to_public",
+    ///   "transfer_public",
+    ///   "transfer_public_to_private",
+    ///   "join",
+    ///   "split",
+    ///   "fee"
+    /// ]
+    ///
+    /// const credits_program = aleo_wasm.Program.getCreditsProgram();
+    /// const credits_functions = credits_program.getFunctions();
+    /// console.log(credits_functions === expected_functions); // Output should be "true"
     #[wasm_bindgen(js_name = "getFunctions")]
     pub fn get_functions(&self) -> Array {
         let array = Array::new_with_length(self.0.functions().len() as u32);
@@ -58,7 +90,41 @@ impl Program {
     }
 
     /// Get a javascript object representation of the function inputs and types. This can be used
-    /// to generate a webform to capture user inputs for an execution of a function.
+    /// to generate a web form to capture user inputs for an execution of a function.
+    ///
+    /// @param {string} function_name Name of the function to get inputs for
+    /// @returns {Array | Error} Array of function inputs
+    ///
+    /// @example
+    /// const expected_inputs = [
+    ///     {
+    ///       type:"record",
+    ///       visibility:"private",
+    ///       record:"credits",
+    ///       members:[
+    ///         {
+    ///           name:"microcredits",
+    ///           type:"u64",
+    ///           visibility:"private"
+    ///         }
+    ///       ],
+    ///       register:"r0"
+    ///     },
+    ///     {
+    ///       type:"address",
+    ///       visibility:"private",
+    ///       register:"r1"
+    ///     },
+    ///     {
+    ///       type:"u64",
+    ///       visibility:"private",
+    ///       register:"r2"
+    ///     }
+    /// ];
+    ///
+    /// const credits_program = aleo_wasm.Program.getCreditsProgram();
+    /// const transfer_function_inputs = credits_program.getFunctionInputs("transfer_private");
+    /// console.log(transfer_function_inputs === expected_inputs); // Output should be "true"
     #[wasm_bindgen(js_name = "getFunctionInputs")]
     pub fn get_function_inputs(&self, function_name: String) -> Result<Array, String> {
         let function_id = IdentifierNative::from_str(&function_name).map_err(|e| e.to_string())?;
@@ -69,30 +135,44 @@ impl Program {
             .ok_or_else(|| format!("function {} not found in {}", function_name, self.0.id()))?;
         let function_inputs = Array::new_with_length(function.inputs().len() as u32);
         for (index, input) in function.inputs().iter().enumerate() {
+            let register = JsValue::from_str(&input.register().to_string());
             match input.value_type() {
                 ValueType::Constant(plaintext) => {
-                    function_inputs.set(
-                        index as u32,
-                        self.get_plaintext_input(plaintext, Some("constant".to_string()), None)?.into(),
-                    );
+                    function_inputs.set(index as u32, {
+                        let input = self.get_plaintext_input(plaintext, Some("constant".to_string()), None)?;
+                        Reflect::set(&input, &"register".into(), &register).map_err(|_| "Failed to set property")?;
+                        input.into()
+                    });
                 }
                 ValueType::Public(plaintext) => {
-                    function_inputs.set(
-                        index as u32,
-                        self.get_plaintext_input(plaintext, Some("public".to_string()), None)?.into(),
-                    );
+                    function_inputs.set(index as u32, {
+                        let input = self.get_plaintext_input(plaintext, Some("public".to_string()), None)?;
+                        Reflect::set(&input, &"register".into(), &register).map_err(|_| "Failed to set property")?;
+                        input.into()
+                    });
                 }
                 ValueType::Private(plaintext) => {
-                    function_inputs.set(
-                        index as u32,
-                        self.get_plaintext_input(plaintext, Some("private".to_string()), None)?.into(),
-                    );
+                    function_inputs.set(index as u32, {
+                        let input = self.get_plaintext_input(plaintext, Some("private".to_string()), None)?;
+                        Reflect::set(&input, &"register".into(), &register).map_err(|_| "Failed to set property")?;
+                        input.into()
+                    });
                 }
                 ValueType::Record(identifier) => {
-                    function_inputs.set(index as u32, self.get_record_members(identifier.to_string())?.into());
+                    function_inputs.set(index as u32, {
+                        let input = self.get_record_members(identifier.to_string())?;
+                        Reflect::set(&input, &"register".into(), &register).map_err(|_| "Failed to set property")?;
+                        input.into()
+                    });
                 }
                 ValueType::ExternalRecord(locator) => {
-                    function_inputs.set(index as u32, locator.to_string().into());
+                    let input = Object::new();
+                    let value_type = JsValue::from_str("external_record");
+                    Reflect::set(&input, &"type".into(), &value_type).map_err(|_| "Failed to set property")?;
+                    Reflect::set(&input, &"locator".into(), &locator.to_string().into())
+                        .map_err(|_| "Failed to set property")?;
+                    Reflect::set(&input, &"register".into(), &register).map_err(|_| "Failed to set property")?;
+                    function_inputs.set(index as u32, input.into());
                 }
             }
         }
@@ -101,7 +181,7 @@ impl Program {
 
     /// Get a the list of a program's mappings and the names/types of their keys and values.
     ///
-    /// @returns {Array} - An array of objects representing the mappings in the program
+    /// @returns {Array | Error} - An array of objects representing the mappings in the program
     /// @example
     /// const expected_mappings = [
     ///    {
@@ -139,7 +219,8 @@ impl Program {
         Ok(mappings)
     }
 
-    // Get the value of a plaintext input
+    // Get the value of a plaintext input as a javascript object (this function is not part of the
+    // public API)
     fn get_plaintext_input(
         &self,
         plaintext: &PlaintextType<CurrentNetwork>,
@@ -156,10 +237,14 @@ impl Program {
                 Reflect::set(&input, &"type".into(), &value_type).map_err(|_| "Failed to set property")?;
             }
             PlaintextType::Struct(struct_id) => {
-                let name = struct_id.to_string();
+                let struct_name = struct_id.to_string();
+                if let Some(name) = name {
+                    Reflect::set(&input, &"name".into(), &name.into()).map_err(|_| "Failed to set property")?;
+                }
                 Reflect::set(&input, &"type".into(), &"struct".into()).map_err(|_| "Failed to set property")?;
-                Reflect::set(&input, &"name".into(), &name.clone().into()).map_err(|_| "Failed to set property")?;
-                let inputs = self.get_struct_members(name)?;
+                Reflect::set(&input, &"struct_id".into(), &struct_name.as_str().into())
+                    .map_err(|_| "Failed to set property")?;
+                let inputs = self.get_struct_members(struct_name)?;
                 Reflect::set(&input, &"members".into(), &inputs.into()).map_err(|_| "Failed to set property")?;
             }
         }
@@ -171,6 +256,32 @@ impl Program {
     }
 
     /// Get a javascript object representation of a program record and its types
+    ///
+    /// @param {string} record_name Name of the record to get members for
+    /// @returns {Object | Error} Object containing the record name, type, and members
+    ///
+    /// @example
+    ///
+    /// const expected_record = {
+    ///     type: "record",
+    ///     record: "Credits",
+    ///     members: [
+    ///       {
+    ///         name: "owner",
+    ///         type: "address",
+    ///         visibility: "private"
+    ///       },
+    ///       {
+    ///         name: "microcredits",
+    ///         type: "u64",
+    ///         visibility: "private"
+    ///       }
+    ///     ];
+    ///  };
+    ///
+    /// const credits_program = aleo_wasm.Program.getCreditsProgram();
+    /// const credits_record = credits_program.getRecordMembers("Credits");
+    /// console.log(credits_record === expected_record); // Output should be "true"
     #[wasm_bindgen(js_name = "getRecordMembers")]
     pub fn get_record_members(&self, record_name: String) -> Result<Object, String> {
         let record_id = IdentifierNative::from_str(&record_name).map_err(|e| e.to_string())?;
@@ -181,7 +292,7 @@ impl Program {
 
         let input = Object::new();
         Reflect::set(&input, &"type".into(), &"record".into()).map_err(|_| "Failed to set property")?;
-        Reflect::set(&input, &"name".into(), &record_name.into()).map_err(|_| "Failed to set property")?;
+        Reflect::set(&input, &"record".into(), &record_name.into()).map_err(|_| "Failed to set property")?;
 
         let record_members = Array::new_with_length(record.entries().len() as u32);
 
@@ -207,6 +318,51 @@ impl Program {
     }
 
     /// Get a javascript object representation of a program struct and its types
+    ///
+    /// @param {string} struct_name Name of the struct to get members for
+    /// @returns {Array | Error} Array containing the struct members
+    ///
+    /// @example
+    ///
+    /// const STRUCT_PROGRAM = "program token_issue.aleo;
+    ///
+    /// struct token_metadata:
+    ///     network as u32;
+    ///     version as u32;
+    ///
+    /// struct token:
+    ///     token_id as u32;
+    ///     metadata as token_metadata;
+    ///
+    /// function no_op:
+    ///    input r0 as u64;
+    ///    output r0 as u64;"
+    ///
+    /// const expected_struct_members = [
+    ///    {
+    ///      name: "token_id",
+    ///      type: "u32",
+    ///    },
+    ///    {
+    ///      name: "metadata",
+    ///      type: "struct",
+    ///      struct_id: "token_metadata",
+    ///      members: [
+    ///       {
+    ///         name: "network",
+    ///         type: "u32",
+    ///       }
+    ///       {
+    ///         name: "version",
+    ///         type: "u32",
+    ///       }
+    ///     ]
+    ///   }
+    /// ];
+    ///
+    /// const program = aleo_wasm.Program.fromString(STRUCT_PROGRAM);
+    /// const struct_members = program.getStructMembers("token");
+    /// console.log(struct_members === expected_struct_members); // Output should be "true"
     #[wasm_bindgen(js_name = "getStructMembers")]
     pub fn get_struct_members(&self, struct_name: String) -> Result<Array, String> {
         let struct_id = IdentifierNative::from_str(&struct_name).map_err(|e| e.to_string())?;
@@ -226,24 +382,52 @@ impl Program {
     }
 
     /// Get the credits.aleo program
+    ///
+    /// @returns {Program} The credits.aleo program
     #[wasm_bindgen(js_name = "getCreditsProgram")]
     pub fn get_credits_program() -> Program {
         Program::from(ProgramNative::credits().unwrap())
     }
 
     /// Get the id of the program
+    ///
+    /// @returns {string} The id of the program
     #[wasm_bindgen]
     pub fn id(&self) -> String {
         self.0.id().to_string()
     }
 
     /// Determine equality with another program
+    ///
+    /// @param {Program} other The other program to compare
+    /// @returns {boolean} True if the programs are equal, false otherwise
     #[wasm_bindgen(js_name = "isEqual")]
     pub fn is_equal(&self, other: &Program) -> bool {
         self == other
     }
 
     /// Get program_imports
+    ///
+    /// @returns {Array} The program imports
+    ///
+    /// @example
+    ///
+    /// const DOUBLE_TEST = "import multiply_test.aleo;
+    ///
+    /// program double_test.aleo;
+    ///
+    /// function double_it:
+    ///     input r0 as u32.private;
+    ///     call multiply_test.aleo/multiply 2u32 r0 into r1;
+    ///     output r1 as u32.private;";
+    ///
+    /// const expected_imports = [
+    ///    "multiply_test.aleo"
+    /// ];
+    ///
+    /// const program = aleo_wasm.Program.fromString(DOUBLE_TEST_PROGRAM);
+    /// const imports = program.getImports();
+    /// console.log(imports === expected_imports); // Output should be "true"
     #[wasm_bindgen(js_name = "getImports")]
     pub fn get_imports(&self) -> Array {
         let imports = Array::new_with_length(self.0.imports().len() as u32);
@@ -491,12 +675,12 @@ function add_and_double:
     fn test_get_inputs() {
         let credits = Program::from(ProgramNative::credits().unwrap());
         let inputs = credits.get_function_inputs("transfer_private".to_string()).unwrap();
-        let expected = r#"Array { obj: Object { obj: JsValue([Object({"type":"record","name":"credits","members":[{"name":"microcredits","type":"u64","visibility":"private"}]}), Object({"type":"address","visibility":"private"}), Object({"type":"u64","visibility":"private"})]) } }"#.to_string();
+        let expected = r#"Array { obj: Object { obj: JsValue([Object({"type":"record","record":"credits","members":[{"name":"microcredits","type":"u64","visibility":"private"}],"register":"r0"}), Object({"type":"address","visibility":"private","register":"r1"}), Object({"type":"u64","visibility":"private","register":"r2"})]) } }"#.to_string();
         assert_eq!(format!("{:?}", inputs), expected);
 
         let token_issue = Program::from_string(TOKEN_ISSUE).unwrap();
         let inputs = token_issue.get_function_inputs("bump_token_version".to_string()).unwrap();
-        let expected = r#"Array { obj: Object { obj: JsValue([Object({"type":"address","visibility":"private"}), Object({"type":"record","name":"Token","members":[{"name":"microcredits","type":"u64","visibility":"private"},{"name":"amount","type":"u64","visibility":"private"},{"type":"struct","name":"token_metadata","members":[{"name":"token_id","type":"u32"},{"name":"version","type":"u32"}],"visibility":"private"}]}), Object({"type":"struct","name":"token_metadata","members":[{"name":"token_id","type":"u32"},{"name":"version","type":"u32"}],"visibility":"private"})]) } }"#;
+        let expected = r#"Array { obj: Object { obj: JsValue([Object({"type":"address","visibility":"private","register":"r0"}), Object({"type":"record","record":"Token","members":[{"name":"microcredits","type":"u64","visibility":"private"},{"name":"amount","type":"u64","visibility":"private"},{"name":"token_data","type":"struct","struct_id":"token_metadata","members":[{"name":"token_id","type":"u32"},{"name":"version","type":"u32"}],"visibility":"private"}],"register":"r1"}), Object({"type":"struct","struct_id":"token_metadata","members":[{"name":"token_id","type":"u32"},{"name":"version","type":"u32"}],"visibility":"private","register":"r2"})]) } }"#;
         assert_eq!(format!("{:?}", inputs), expected);
     }
 
@@ -504,12 +688,12 @@ function add_and_double:
     fn test_get_record() {
         let credits = Program::from(ProgramNative::credits().unwrap());
         let members = credits.get_record_members("credits".to_string()).unwrap();
-        let expected = r#"Object { obj: JsValue(Object({"type":"record","name":"credits","members":[{"name":"microcredits","type":"u64","visibility":"private"}]})) }"#.to_string();
+        let expected = r#"Object { obj: JsValue(Object({"type":"record","record":"credits","members":[{"name":"microcredits","type":"u64","visibility":"private"}]})) }"#.to_string();
         assert_eq!(format!("{:?}", members), expected);
 
         let token_issue = Program::from_string(TOKEN_ISSUE).unwrap();
         let members = token_issue.get_record_members("Token".to_string()).unwrap();
-        let expected = r#"Object { obj: JsValue(Object({"type":"record","name":"Token","members":[{"name":"microcredits","type":"u64","visibility":"private"},{"name":"amount","type":"u64","visibility":"private"},{"type":"struct","name":"token_metadata","members":[{"name":"token_id","type":"u32"},{"name":"version","type":"u32"}],"visibility":"private"}]})) }"#;
+        let expected = r#"Object { obj: JsValue(Object({"type":"record","record":"Token","members":[{"name":"microcredits","type":"u64","visibility":"private"},{"name":"amount","type":"u64","visibility":"private"},{"name":"token_data","type":"struct","struct_id":"token_metadata","members":[{"name":"token_id","type":"u32"},{"name":"version","type":"u32"}],"visibility":"private"}]})) }"#;
         assert_eq!(format!("{:?}", members), expected);
     }
 

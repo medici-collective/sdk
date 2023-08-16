@@ -1,4 +1,4 @@
-import { AleoNetworkClient, DevelopmentClient } from '../src';
+import { AleoNetworkClient, DevServerClient } from '../src';
 import {
     fundedAddressString,
     fundedPrivateKeyString,
@@ -13,14 +13,14 @@ function wait(ms: number): Promise<void> {
 }
 
 describe('DevelopmentServer', () => {
-    let devClient: DevelopmentClient;
+    let devClient: DevServerClient;
     let localApiClient: AleoNetworkClient;
-    let privateDevClient: DevelopmentClient;
+    let privateDevClient: DevServerClient;
 
     beforeEach(() => {
-        devClient = new DevelopmentClient("http://0.0.0.0:4040");
+        devClient = new DevServerClient("http://0.0.0.0:4040");
         localApiClient = new AleoNetworkClient("http://0.0.0.0:3030");
-        privateDevClient = new DevelopmentClient("http://0.0.0.0:5050");
+        privateDevClient = new DevServerClient("http://0.0.0.0:5050");
     });
 
     describe('Deploy & Execute', () => {
@@ -29,7 +29,7 @@ describe('DevelopmentServer', () => {
             for (let i = 0; i < 4; i++) {
                 try {
                     log("Attempting to make a value transfer");
-                    transaction_id = await devClient.transfer(1000, 1, fundedAddressString, "private", fundedPrivateKeyString);
+                    transaction_id = await devClient.transfer(3, 1, fundedAddressString, "private", fundedPrivateKeyString);
                     break;
                 } catch (e) {
                     log("Transaction failed, retrying in 5 seconds");
@@ -39,7 +39,7 @@ describe('DevelopmentServer', () => {
 
             // If the transaction failed above, try one more time
             if (transaction_id === "") {
-                transaction_id = await devClient.transfer(1000, 1, fundedAddressString, fundedPrivateKeyString);
+                transaction_id = await devClient.transfer(3, 1, fundedAddressString, "private", fundedPrivateKeyString);
             }
             expect(transaction_id).toBeTruthy();
         }, 120000);

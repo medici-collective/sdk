@@ -46,7 +46,8 @@ impl ProgramManager {
     /// proving and verifying keys will be deallocated from memory after the transaction is executed
     /// @param split_proving_key (optional) Provide a proving key to use for the split function
     /// @param split_verifying_key (optional) Provide a verifying key to use for the split function
-    #[wasm_bindgen]
+    /// @returns {Transaction | Error} Transaction object
+    #[wasm_bindgen(js_name = buildSplitTransaction)]
     #[allow(clippy::too_many_arguments)]
     pub async fn split(
         &mut self,

@@ -15,11 +15,9 @@ import {
 } from "antd";
 import { FormGenerator } from "../../components/InputForm";
 import axios from "axios";
-import init, * as aleo from "@aleohq/wasm";
+import { useAleoWASM } from "../../aleo-wasm-hook";
 
-await init();
-
-export const Execute = () => {
+export const ExecuteLegacy = () => {
     const [executionFeeRecord, setExecutionFeeRecord] = useState(null);
     const [executeUrl, setExecuteUrl] = useState("https://vm.aleo.org/api");
     const [functionID, setFunctionID] = useState(null);
@@ -39,6 +37,7 @@ export const Execute = () => {
     const [executeOnline, setExecuteOnline] = useState(false);
     const [programInputs, setProgramInputs] = useState(null);
     const [tip, setTip] = useState("Executing Program...");
+    const aleo = useAleoWASM();
 
     const getProgramInputs = () => {
         const programManifest = [];
@@ -80,25 +79,13 @@ export const Execute = () => {
                 setProgramResponse(ev.data.outputs);
                 setTip("Executing Program...");
             } else if (ev.data.type == "EXECUTION_TRANSACTION_COMPLETED") {
-                let [transaction, url] = ev.data.executeTransaction;
-                axios
-                    .post(
-                        url + "/testnet3/transaction/broadcast",
-                        transaction,
-                        {
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                        },
-                    )
-                    .then((response) => {
-                        setFeeLoading(false);
-                        setLoading(false);
-                        setProgramResponse(null);
-                        setExecutionError(null);
-                        setTip("Executing Program...");
-                        setTransactionID(response.data);
-                    });
+                const transactionId = ev.data.executeTransaction;
+                setFeeLoading(false);
+                setLoading(false);
+                setProgramResponse(null);
+                setExecutionError(null);
+                setTip("Executing Program...");
+                setTransactionID(transactionId);
             } else if (ev.data.type == "EXECUTION_FEE_ESTIMATION_COMPLETED") {
                 let fee = ev.data.executionFee;
                 setFeeLoading(false);
@@ -211,7 +198,9 @@ export const Execute = () => {
         setProgramResponse(null);
         setTransactionID(null);
         setExecutionError(null);
-        messageApi.info("Disclaimer: Fee estimation is experimental and may not represent a correct estimate on any current or future network");
+        messageApi.info(
+            "Disclaimer: Fee estimation is experimental and may not represent a correct estimate on any current or future network",
+        );
         setTip("Estimating Execution Fee...");
         let functionInputs = [];
         try {
@@ -229,7 +218,6 @@ export const Execute = () => {
         if (executeOnline) {
             await postMessagePromise(worker, {
                 type: "ALEO_ESTIMATE_EXECUTION_FEE",
-                privateKey: privateKeyString(),
                 remoteProgram: programString(),
                 aleoFunction: functionIDString(),
                 inputs: functionInputs,
