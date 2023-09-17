@@ -34,9 +34,27 @@ impl Signature {
     /// @param {PrivateKey} private_key The private key to sign the message with
     /// @param {Uint8Array} message Byte representation of the message to sign
     /// @returns {Signature} Signature of the message
-    pub fn sign(private_key: &PrivateKey, message: &[u8]) -> Self {
-        Self(SignatureNative::sign_bytes(private_key, message, &mut StdRng::from_entropy()).unwrap())
+    // pub fn sign(private_key: &PrivateKey, message: &[u8]) -> Self {
+    //     Self(SignatureNative::sign_bytes(private_key, message, &mut StdRng::from_entropy()).unwrap())
+    // }
+    pub fn sign(private_key: &PrivateKey, message: &[u8], rng: &mut StdRng) -> Self {
+        Self(SignatureNative::sign_bytes(private_key, message, rng))
     }
+
+    /// Ignore the mess below -- me testing things
+    // let message_in_bits = message.to_bits_le();
+    // println!("message in bits is {:?}", message_in_bits);
+    // let message_in_field = message_in_bits.chunks(Field::<N>::size_in_data_bits()).map(Field::from_bits_le).collect::<Result<Vec<_>>>()?;
+    // println!("message in field is {:?}", message_in_field);
+    
+    
+    /// Turn a message into bits
+    /// 
+    /// @param {Uint8Array} message Byte representation of the message to sign
+    /// @returns {Vec<bool>} Vec of bool of the message
+    // pub fn gen_bits_message(message: &[u8]) -> Vec<bool> {
+    //     (message.to_bits_le()).to_string()
+    // }
 
     /// Verify a signature of a message with an address
     ///

@@ -40,6 +40,10 @@ export const SignMessage = () => {
     if (aleo !== null) {
         const signatureString = () => (signingKey !== null ? signingKey : "");
         const messageString = () => (message !== null ? message : "");
+        const encodedMessageString = textEncoder.encode(message);
+        console.log(encodedMessageString.constructor.name);
+        const encodedMessageStringArray = Uint8Array.from(encodedMessageString);
+        console.log(encodedMessageStringArray.constructor.name);
 
         return (
             <Card
@@ -64,6 +68,28 @@ export const SignMessage = () => {
                             size="large"
                             placeholder="Message"
                             value={messageString()}
+                            allowClear={true}
+                            style={{ borderRadius: "20px" }}
+                            onChange={onMessageChange}
+                        />
+                    </Form.Item>
+                    <Form.Item label="MessageAsGenBySigFile" colon={false}>
+                        <Input
+                            name="Message"
+                            size="large"
+                            placeholder="Message"
+                            value={(textEncoder.encode(message))}
+                            allowClear={true}
+                            style={{ borderRadius: "20px" }}
+                            onChange={onMessageChange}
+                        />
+                    </Form.Item>
+                    <Form.Item label="MessageAsUint8Arr" colon={false}>
+                        <Input
+                            name="Message"
+                            size="large"
+                            placeholder="Message"
+                            value={encodedMessageStringArray}
                             allowClear={true}
                             style={{ borderRadius: "20px" }}
                             onChange={onMessageChange}

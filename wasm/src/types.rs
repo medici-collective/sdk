@@ -34,6 +34,7 @@ pub use snarkvm_console::{
     },
     types::Field,
 };
+pub use snarkvm_utilities::{ToBits,FromBits};
 pub use snarkvm_ledger_block::{Execution, Transaction};
 pub use snarkvm_ledger_query::Query;
 pub use snarkvm_ledger_store::helpers::memory::BlockMemory;

@@ -25,6 +25,7 @@ doctest = false
 version = "0.14.6"
 
 [dependencies.snarkvm-console]
+# path = "../../snarkVM/console"
 version = "0.14.6"
 features = [ "wasm" ]
 
@@ -41,6 +42,9 @@ version = "0.14.6"
 [dependencies.snarkvm-synthesizer]
 version = "0.14.6"
 features = [ "async" ]
+
+[dependencies.snarkvm-utilities]
+version = "0.14.6"
 
 [dependencies.snarkvm-wasm]
 version = "0.14.6"
