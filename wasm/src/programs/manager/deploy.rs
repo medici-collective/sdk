@@ -17,22 +17,12 @@
 use super::*;
 
 use crate::{
-    execute_fee,
-    get_process,
-    log,
+    execute_fee, get_process, log,
     types::{
-        CurrentAleo,
-        CurrentNetwork,
-        ProcessNative,
-        ProgramIDNative,
-        ProgramNative,
-        ProgramOwnerNative,
-        RecordPlaintextNative,
-        TransactionNative,
+        CurrentAleo, CurrentNetwork, ProcessNative, ProgramIDNative, ProgramNative, ProgramOwnerNative,
+        RecordPlaintextNative, TransactionNative,
     },
-    PrivateKey,
-    RecordPlaintext,
-    Transaction,
+    PrivateKey, RecordPlaintext, Transaction,
 };
 
 use js_sys::Object;
@@ -59,7 +49,7 @@ impl ProgramManager {
     /// @param fee_proving_key (optional) Provide a proving key to use for the fee execution
     /// @param fee_verifying_key (optional) Provide a verifying key to use for the fee execution
     /// @returns {Transaction | Error}
-    #[wasm_bindgen]
+    #[wasm_bindgen(js_name = buildDeploymentTransaction)]
     #[allow(clippy::too_many_arguments)]
     pub async fn deploy(
         &mut self,

@@ -1,7 +1,7 @@
 FROM rust:1.70-slim-buster
 RUN apt-get update -y && apt-get install git -y
 RUN ls
-RUN git clone -b testnet3 \
+RUN git clone -b puzzle \
     https://github.com/medici-collective/sdk.git \
     --depth 1
 WORKDIR sdk
@@ -16,4 +16,4 @@ RUN cargo install --path . --locked
 RUN ls
 WORKDIR rust/develop
 RUN pwd
-CMD cargo run --bin aleo-develop start
+CMD cargo run --bin aleo-develop start -d

@@ -175,19 +175,11 @@ mod tests {
     use super::*;
     use crate::{
         test_utils::{
-            random_program,
-            random_program_id,
-            setup_directory,
-            transfer_to_test_account,
-            CREDITS_IMPORT_TEST_PROGRAM,
-            HELLO_PROGRAM,
-            MULTIPLY_IMPORT_PROGRAM,
-            MULTIPLY_PROGRAM,
-            RECORD_2000000001_MICROCREDITS,
+            random_program, random_program_id, setup_directory, transfer_to_test_account, CREDITS_IMPORT_TEST_PROGRAM,
+            HELLO_PROGRAM, MULTIPLY_IMPORT_PROGRAM, MULTIPLY_PROGRAM, RECORD_2000000001_MICROCREDITS,
             RECORD_5_MICROCREDITS,
         },
-        AleoAPIClient,
-        RecordFinder,
+        AleoAPIClient, RecordFinder,
     };
     use snarkvm_console::network::Testnet3;
 
@@ -334,10 +326,11 @@ mod tests {
         // Ensure that deployment fails if import cannot be found on chain
         let missing_import_program_string =
             format!("import {};\n", random_program_id(16)).add(&randomized_program_string);
-        let temp_dir_2 = setup_directory("aleo_unit_test_imports", &missing_import_program_string, vec![
-            ("hello.aleo", HELLO_PROGRAM),
-            (&randomized_program_id, &missing_import_program_string),
-        ])
+        let temp_dir_2 = setup_directory(
+            "aleo_unit_test_imports",
+            &missing_import_program_string,
+            vec![("hello.aleo", HELLO_PROGRAM), (&randomized_program_id, &missing_import_program_string)],
+        )
         .unwrap();
         let mut program_manager =
             ProgramManager::<Testnet3>::new(Some(recipient_private_key), None, Some(api_client), Some(temp_dir_2))

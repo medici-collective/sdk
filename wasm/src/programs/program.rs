@@ -50,6 +50,15 @@ impl Program {
         self.0.to_string()
     }
 
+    /// Determine if a function is present in the program
+    ///
+    /// @param {string} functionName Name of the function to check for
+    /// @returns {boolean} True if the program is valid, false otherwise
+    #[wasm_bindgen(js_name = "hasFunction")]
+    pub fn has_function(&self, function_name: &str) -> bool {
+        IdentifierNative::from_str(function_name).map_or(false, |identifier| self.0.contains_function(&identifier))
+    }
+
     /// Get javascript array of functions names in the program
     ///
     /// @returns {Array} Array of all function names present in the program
@@ -650,16 +659,19 @@ function add_and_double:
         let split = JsValue::from_str("split");
         let fee = JsValue::from_str("fee");
 
-        assert_eq!(program.get_functions().to_vec(), vec![
-            mint,
-            transfer_public,
-            transfer_private,
-            transfer_private_to_public,
-            transfer_public_to_private,
-            join,
-            split,
-            fee
-        ]);
+        assert_eq!(
+            program.get_functions().to_vec(),
+            vec![
+                mint,
+                transfer_public,
+                transfer_private,
+                transfer_private_to_public,
+                transfer_public_to_private,
+                join,
+                split,
+                fee
+            ]
+        );
     }
 
     #[wasm_bindgen_test]

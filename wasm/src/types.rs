@@ -15,30 +15,9 @@
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
 pub use aleo_rust::{
-    cost_in_microcredits,
-    deployment_cost,
-    Address,
-    AleoV0,
-    BlockMemory,
-    Ciphertext,
-    Encryptor,
-    Identifier,
-    Plaintext,
-    PrivateKey,
-    Process,
-    Program,
-    ProgramID,
-    ProgramOwner,
-    ProvingKey,
-    Query,
-    Record,
-    Response,
-    Signature,
-    Testnet3,
-    Transaction,
-    VerifyingKey,
-    ViewKey,
-    VM,
+    cost_in_microcredits, deployment_cost, Address, AleoV0, BlockMemory, Ciphertext, Encryptor, Identifier, Plaintext,
+    PrivateKey, Process, Program, ProgramID, ProgramOwner, ProvingKey, Query, Record, Response, Signature, Testnet3,
+    Transaction, VerifyingKey, ViewKey, VM,
 };
 
 pub use snarkvm_wasm::{network::Environment, FromBytes, PrimeField, ToBytes};

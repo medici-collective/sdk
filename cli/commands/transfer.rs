@@ -16,17 +16,8 @@
 
 use crate::{helpers::TransferTypeArg, CurrentNetwork};
 use aleo_rust::{
-    Address,
-    AleoAPIClient,
-    Ciphertext,
-    Credits,
-    Encryptor,
-    Plaintext,
-    PrivateKey,
-    ProgramManager,
-    Record,
-    RecordFinder,
-    TransferType,
+    Address, AleoAPIClient, Ciphertext, Credits, Encryptor, Plaintext, PrivateKey, ProgramManager, Record,
+    RecordFinder, TransferType,
 };
 
 use anyhow::{anyhow, ensure, Result};

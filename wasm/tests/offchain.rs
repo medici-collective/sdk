@@ -143,7 +143,7 @@ async fn test_cache_functionality() {
 
     // Ensure program can be executed using the cache after caching an externally provided keypair
     let result = program_manager
-        .execute_local(
+        .execute_function_offline(
             PrivateKey::from_string("APrivateKey1zkp3dQx4WASWYQVWKkq14v3RoQDfY2kbLssUj7iifi1VUQ6").unwrap(),
             Program::get_credits_program().to_string(),
             "split".to_string(),
@@ -162,11 +162,9 @@ async fn test_cache_functionality() {
     assert!(program_manager.key_exists("credits.aleo", "split").unwrap());
 
     // Ensure the keypair can't be overwritten
-    assert!(
-        program_manager
-            .cache_keypair_in_wasm_memory("credits.aleo", "split", split_proving_key_clone, split_verifying_key_clone)
-            .is_err()
-    );
+    assert!(program_manager
+        .cache_keypair_in_wasm_memory("credits.aleo", "split", split_proving_key_clone, split_verifying_key_clone)
+        .is_err());
 
     // Ensure the cache clears correctly
     program_manager.clear_key_cache();
@@ -194,7 +192,7 @@ async fn test_key_synthesis() {
     inputs.set(1u32, JsValue::from_str("1000000u64"));
 
     let result = program_manager
-        .execute_local(
+        .execute_function_offline(
             PrivateKey::from_string("APrivateKey1zkp3dQx4WASWYQVWKkq14v3RoQDfY2kbLssUj7iifi1VUQ6").unwrap(),
             credits.to_string(),
             "split".to_string(),
@@ -324,7 +322,7 @@ async fn test_program_execution_with_cache_and_external_keys() {
     inputs.set(0, wasm_bindgen::JsValue::from_str("5u32"));
     inputs.set(1, wasm_bindgen::JsValue::from_str("5u32"));
     let result = program_manager
-        .execute_local(
+        .execute_function_offline(
             private_key.clone(),
             HELLO_PROGRAM.to_string(),
             "main".to_string(),
@@ -348,7 +346,7 @@ async fn test_program_execution_with_cache_and_external_keys() {
     inputs.set(0, wasm_bindgen::JsValue::from_str("15u32"));
     inputs.set(1, wasm_bindgen::JsValue::from_str("5u32"));
     let result = program_manager
-        .execute_local(
+        .execute_function_offline(
             private_key.clone(),
             HELLO_PROGRAM.to_string(),
             "main".to_string(),
@@ -380,7 +378,7 @@ async fn test_program_execution_with_cache_and_external_keys() {
     let mut program_manager = ProgramManager::new();
 
     let result = program_manager
-        .execute_local(
+        .execute_function_offline(
             private_key.clone(),
             HELLO_PROGRAM.to_string(),
             "main".to_string(),
@@ -426,7 +424,7 @@ async fn test_program_execution_with_cache_and_external_keys() {
     inputs.set(0, wasm_bindgen::JsValue::from_str("20u32"));
     inputs.set(1, wasm_bindgen::JsValue::from_str("20u32"));
     let result = program_manager
-        .execute_local(
+        .execute_function_offline(
             private_key,
             HELLO_PROGRAM_EDIT.to_string(),
             "hello".to_string(),
@@ -504,7 +502,7 @@ async fn test_import_resolution() {
     inputs.set(1, JsValue::from_str("10u32"));
 
     let result = program_manager
-        .execute_local(
+        .execute_function_offline(
             private_key,
             NESTED_IMPORT_PROGRAM.to_string(),
             "add_and_double".to_string(),
