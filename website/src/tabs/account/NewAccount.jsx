@@ -6,7 +6,7 @@ import { useAleoWASM } from "../../aleo-wasm-hook";
 export const NewAccount = () => {
     const [account, setAccount] = useState(null);
     const [loading, setLoading] = useState(false);
-    const aleo = useAleoWASM();
+    const [aleo] = useAleoWASM();
 
     const generateAccount = async () => {
         setLoading(true);
@@ -32,14 +32,12 @@ export const NewAccount = () => {
         return (
             <Card
                 title="Create a New Account"
-                style={{ width: "100%", borderRadius: "20px" }}
-                bordered={false}
+                style={{ width: "100%" }}
             >
                 <Row justify="center">
                     <Col>
                         <Button
                             type="primary"
-                            shape="round"
                             size="large"
                             onClick={generateAccount}
                             loading={!!loading}
@@ -48,7 +46,7 @@ export const NewAccount = () => {
                         </Button>
                     </Col>
                     <Col offset="1">
-                        <Button shape="round" size="large" onClick={clear}>
+                        <Button  size="large" onClick={clear}>
                             Clear
                         </Button>
                     </Col>

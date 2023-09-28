@@ -1,5 +1,5 @@
+<img alt="Aleo SDK" width="1412" src="./.resources/banner.png">
 <p align="center">
-    <img alt="snarkVM" width="1412" src="https://raw.githubusercontent.com/iamalwaysuncomfortable/imagestorage/main/AleoSdk.png">
     <a href="https://developer.aleo.org"> <img alt="Website" src="https://img.shields.io/badge/Developer_Docs-online-blue"></a>
     <a href="https://circleci.com/gh/AleoHQ/aleo"><img src="https://circleci.com/gh/AleoHQ/sdk.svg?style=svg"></a>
     <a href="https://discord.gg/5v2ynrw2ds"><img src="https://img.shields.io/discord/700454073459015690?logo=discord"/></a>
@@ -29,7 +29,7 @@ The official Aleo SDK providing Javascript/Typescript tools for creating zero kn
 
 ### ⚡ Build your own app
 
-Start here with the [Aleo SDK Readme](https://github.com/AleoHQ/sdk/tree/testnet3/sdk#readme) get started building your 
+Start here with the [Aleo SDK Readme](https://github.com/AleoHQ/sdk/tree/testnet3/sdk#readme) to get started building your 
 first zero knowledge web app.
 
 #### Source: [`sdk/sdk`](https://github.com/AleoHQ/sdk/tree/testnet3/sdk)
@@ -120,6 +120,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Hamzakh777"><img src="https://avatars.githubusercontent.com/u/40059557?v=4?s=100" width="100px;" alt="Hamza Khchichine"/><br /><sub><b>Hamza Khchichine</b></sub></a><br /><a href="https://github.com/AleoHQ/sdk/commits?author=Hamzakh777" title="Code">💻</a></td>
     </tr>
     <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/KendrickDrews"><img src="https://avatars.githubusercontent.com/u/15710081?v=4s=100" width="100px;" alt="Kendrick"/><br /><sub><b>Kendrick</b></sub></a><br /><a href="https://github.com/AleoHQ/sdk/commits?author=KendrickDrews" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/features/security"><img src="https://avatars.githubusercontent.com/u/27347476?v=4?s=100" width="100px;" alt="Dependabot"/><br /><sub><b>Dependabot</b></sub></a><br /><a href="https://github.com/AleoHQ/sdk/commits?author=dependabot" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://allcontributors.org/"><img src="https://avatars.githubusercontent.com/u/46410174?v=4?s=100" width="100px;" alt="All Contributors"/><br /><sub><b>All Contributors</b></sub></a><br /><a href="https://github.com/AleoHQ/sdk/commits?author=all-contributors" title="Documentation">📖</a></td>
     </tr>

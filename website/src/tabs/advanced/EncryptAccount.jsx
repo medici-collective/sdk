@@ -8,7 +8,7 @@ export const EncryptAccount = () => {
     const [encryptedAccount, setEncryptedAccount] = useState(null);
     const [loading, setLoading] = useState(false);
     const [password, setPassword] = useState(null);
-    const aleo = useAleoWASM();
+    const [aleo] = useAleoWASM();
 
     const generateAccount = async () => {
         setLoading(true);
@@ -57,14 +57,12 @@ export const EncryptAccount = () => {
         return (
             <Card
                 title="Create a New Account"
-                style={{ width: "100%", borderRadius: "20px" }}
-                bordered={false}
+                style={{ width: "100%"}}
             >
                 <Row justify="center">
                     <Col>
                         <Button
                             type="primary"
-                            shape="round"
                             size="large"
                             onClick={generateAccount}
                             loading={!!loading}
@@ -73,7 +71,7 @@ export const EncryptAccount = () => {
                         </Button>
                     </Col>
                     <Col offset="1">
-                        <Button shape="round" size="large" onClick={clear}>
+                        <Button  size="large" onClick={clear}>
                             Clear
                         </Button>
                     </Col>
@@ -125,7 +123,6 @@ export const EncryptAccount = () => {
                             <Col>
                                 <Button
                                     type="primary"
-                                    shape="round"
                                     size="large"
                                     onClick={encryptAccount}
                                 >

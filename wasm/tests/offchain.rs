@@ -16,7 +16,6 @@
 
 use aleo_wasm::{PrivateKey, Program, ProgramManager, ProvingKey, RecordPlaintext, VerifyingKey};
 use js_sys::{Array, Object, Reflect};
-use std::str::FromStr;
 use wasm_bindgen::JsValue;
 use wasm_bindgen_test::*;
 wasm_bindgen_test_configure!(run_in_browser);
@@ -148,11 +147,13 @@ async fn test_cache_functionality() {
             Program::get_credits_program().to_string(),
             "split".to_string(),
             inputs,
+            false,
             true,
             None,
             None,
             None,
         )
+        .await
         .unwrap();
 
     let record = RecordPlaintext::from_string(&result.get_outputs().get(0u32).as_string().unwrap()).unwrap();
@@ -197,11 +198,13 @@ async fn test_key_synthesis() {
             credits.to_string(),
             "split".to_string(),
             inputs,
+            false,
             true,
             None,
             None,
             None,
         )
+        .await
         .unwrap();
 
     // Ensure the output is correct
@@ -327,11 +330,13 @@ async fn test_program_execution_with_cache_and_external_keys() {
             HELLO_PROGRAM.to_string(),
             "main".to_string(),
             inputs,
+            false,
             true,
             None,
             None,
             None,
         )
+        .await
         .unwrap();
     let outputs = result.get_outputs().to_vec();
     console_log!("outputs: {:?}", outputs);
@@ -351,11 +356,13 @@ async fn test_program_execution_with_cache_and_external_keys() {
             HELLO_PROGRAM.to_string(),
             "main".to_string(),
             inputs,
+            false,
             true,
             None,
             None,
             None,
         )
+        .await
         .unwrap();
 
     // Ensure the output using cached keys is correct
@@ -384,10 +391,12 @@ async fn test_program_execution_with_cache_and_external_keys() {
             "main".to_string(),
             inputs.clone(),
             false,
+            false,
             None,
             Some(retrieved_proving_key.clone()),
             Some(retrieved_verifying_key.clone()),
         )
+        .await
         .unwrap();
 
     // Ensure the finalize fee is zero for a program without a finalize scope
@@ -430,10 +439,12 @@ async fn test_program_execution_with_cache_and_external_keys() {
             "hello".to_string(),
             inputs,
             false,
+            false,
             None,
             None,
             None,
         )
+        .await
         .unwrap();
 
     let outputs = result.get_outputs().to_vec();
@@ -507,11 +518,13 @@ async fn test_import_resolution() {
             NESTED_IMPORT_PROGRAM.to_string(),
             "add_and_double".to_string(),
             inputs,
+            false,
             true,
             Some(imports),
             None,
             None,
         )
+        .await
         .unwrap();
 
     let outputs = result.get_outputs().to_vec();

@@ -22,7 +22,7 @@ const layout = { labelCol: { span: 4 }, wrapperCol: { span: 18 } };
 
 export const Execute = () => {
     const [form] = Form.useForm();
-    const aleoWASM = useAleoWASM();
+    const [aleoWASM] = useAleoWASM();
 
     const demoSelect = async (value) => {
         if (value === "hello") {
@@ -121,7 +121,7 @@ export const Execute = () => {
                 setModalResult({
                     title: "Execution Successsful!",
                     status: "success",
-                    subTitle: `Outputs: ${ev.data.outputs}`,
+                    subTitle: `Outputs: ${ev.data.outputs.outputs}`,
                 });
             } else if (ev.data.type == "EXECUTION_TRANSACTION_COMPLETED") {
                 const transactionId = ev.data.executeTransaction;

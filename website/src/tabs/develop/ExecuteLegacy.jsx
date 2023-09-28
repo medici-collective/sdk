@@ -37,7 +37,7 @@ export const ExecuteLegacy = () => {
     const [executeOnline, setExecuteOnline] = useState(false);
     const [programInputs, setProgramInputs] = useState(null);
     const [tip, setTip] = useState("Executing Program...");
-    const aleo = useAleoWASM();
+    const [aleo] = useAleoWASM();
 
     const getProgramInputs = () => {
         const programManifest = [];
@@ -76,7 +76,7 @@ export const ExecuteLegacy = () => {
                 setLoading(false);
                 setTransactionID(null);
                 setExecutionError(null);
-                setProgramResponse(ev.data.outputs);
+                setProgramResponse(ev.data.outputs.outputs);
                 setTip("Executing Program...");
             } else if (ev.data.type == "EXECUTION_TRANSACTION_COMPLETED") {
                 const transactionId = ev.data.executeTransaction;
@@ -386,12 +386,11 @@ export const ExecuteLegacy = () => {
     return (
         <Card
             title="Execute Program"
-            style={{ width: "100%", borderRadius: "20px" }}
-            bordered={false}
+            style={{ width: "100%" }}
             extra={
                 <Button
                     type="primary"
-                    shape="round"
+                    
                     size="middle"
                     onClick={demo}
                 >
@@ -413,7 +412,6 @@ export const ExecuteLegacy = () => {
                         onSearch={onSearch}
                         onChange={onChange}
                         value={programIDString()}
-                        style={{ borderRadius: "20px" }}
                     />
                 </Form.Item>
             </Form>
@@ -546,7 +544,7 @@ export const ExecuteLegacy = () => {
                         <Space>
                             <Button
                                 type="primary"
-                                shape="round"
+                                
                                 size="middle"
                                 onClick={execute}
                             >
@@ -556,7 +554,7 @@ export const ExecuteLegacy = () => {
                             {executeOnline && (
                                 <Button
                                     type="primary"
-                                    shape="round"
+                                    
                                     size="middle"
                                     onClick={estimate}
                                 >

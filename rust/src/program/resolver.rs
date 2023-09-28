@@ -94,7 +94,7 @@ mod tests {
         },
         AleoAPIClient,
     };
-    use snarkvm_console::{account::PrivateKey, network::Testnet3};
+    use snarkvm_console::{account::PrivateKey, network::Te`net3};
 
     use std::{ops::Add, panic::catch_unwind, str::FromStr};
 

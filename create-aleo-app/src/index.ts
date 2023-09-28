@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import minimist from "minimist";
 import prompts from "prompts";
-import { blue, cyan, red, reset, yellow } from "kolorist";
+import {lightGreen, cyan, red, reset, yellow, blue} from "kolorist";
 
 const argv = minimist<{
   t?: string;
@@ -26,52 +26,35 @@ type FrameworkVariant = {
 };
 
 const FRAMEWORKS: Framework[] = [
-  // {
-  //   name: 'vanilla',
-  //   display: 'Vanilla',
-  //   color: yellow,
-  //   variants: [
-  //     {
-  //       name: 'vanilla-ts',
-  //       display: 'TypeScript',
-  //       color: blue,
-  //     },
-  //     {
-  //       name: 'vanilla',
-  //       display: 'JavaScript',
-  //       color: yellow,
-  //     },
-  //   ],
-  // },
+  {
+    name: 'vanilla',
+    display: 'Vanilla',
+    color: yellow,
+    variants: [
+      {
+        name: 'vanilla',
+        display: 'JavaScript',
+        color: yellow,
+      },
+    ],
+  },
   {
     name: "react",
     display: "React",
     color: cyan,
     variants: [
-      // {
-      //   name: 'react-ts',
-      //   display: 'TypeScript',
-      //   color: blue,
-      // },
       {
         name: "react",
         display: "JavaScript",
-        color: yellow,
+        color: blue,
+      },
+      {
+        name: "react-leo",
+        display: "JavaScript + Leo",
+        color: lightGreen,
       },
     ],
-  },
-  // {
-  //   name: 'node',
-  //   display: 'Node.js',
-  //   color: lightBlue,
-  //   variants: [
-  //     {
-  //       name: 'node',
-  //       display: 'Node.js',
-  //       color: lightBlue,
-  //     },
-  //   ],
-  // },
+  }
 ];
 
 const TEMPLATES = FRAMEWORKS.map(

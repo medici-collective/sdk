@@ -1,6 +1,6 @@
 [package]
 name = "aleo-wasm"
-version = "0.5.5"
+version = "0.5.9"
 authors = [ "The Aleo Team <hello@aleo.org>" ]
 description = "WebAssembly based toolkit for developing zero knowledge applications with Aleo"
 homepage = "https://aleo.org"
@@ -21,12 +21,30 @@ edition = "2021"
 crate-type = [ "cdylib", "rlib" ]
 doctest = false
 
-[dependencies]
-console_error_panic_hook = "0.1.7"
+[dependencies.snarkvm-circuit-network]
+version = "0.14.6"
 
-[dependencies.aleo-rust]
+[dependencies.snarkvm-console]
+version = "0.14.6"
 features = [ "wasm" ]
-workspace = true
+
+[dependencies.snarkvm-ledger-block]
+version = "0.14.6"
+
+[dependencies.snarkvm-ledger-query]
+version = "0.14.6"
+features = [ "async" ]
+
+[dependencies.snarkvm-ledger-store]
+version = "0.14.6"
+
+[dependencies.snarkvm-synthesizer]
+version = "0.14.6"
+features = [ "async" ]
+
+[dependencies.snarkvm-wasm]
+version = "0.14.6"
+features = [ "console", "fields", "utilities" ]
 
 [dependencies.anyhow]
 version = "1.0"
@@ -47,6 +65,9 @@ version = "0.4.3"
 [dependencies.js-sys]
 version = "0.3"
 
+[dependencies.once_cell]
+version = "1.18.0"
+
 [dependencies.rand]
 version = "0.8"
 
@@ -60,9 +81,8 @@ version = "0.11.18"
 [dependencies.serde_json]
 version = "1.0"
 
-[dependencies.snarkvm-wasm]
-workspace = true
-features = [ "console", "fields", "utilities" ]
+[build-dependencies.walkdir]
+version = "2"
 
 [dependencies.wasm-bindgen]
 version = "0.2"
@@ -75,6 +95,9 @@ version = "0.4.37"
 version = "1.0.3"
 optional = true
 
+[dependencies.console_error_panic_hook]
+version = "0.1.7"
+
 [dependencies.serde]
 version = "1.0.183"
 
@@ -82,10 +105,10 @@ version = "1.0.183"
 version = "0.3.37"
 
 [features]
-default = ["serial", "browser"]
-serial = ["aleo-rust/serial"]
-parallel = ["wasm-bindgen-rayon", "rayon"]
-browser = []
+default = [ "serial", "browser" ]
+serial = [ "snarkvm-console/serial", "snarkvm-synthesizer/serial", "snarkvm-ledger-query/serial", "snarkvm-ledger-block/serial", "snarkvm-ledger-store/serial" ]
+parallel = [ "wasm-bindgen-rayon", "rayon" ]
+browser = [ ]
 
 ## Profiles
 [profile.release]
