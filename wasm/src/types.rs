@@ -16,12 +16,13 @@
 
 pub use snarkvm_circuit_network::{Aleo, AleoV0};
 pub use snarkvm_console::{
-    account::{Address, PrivateKey, Signature, ViewKey},
+    account::{Address, ComputeKey, PrivateKey, Signature, ViewKey},
     network::{Network, Testnet3},
     program::{
         Ciphertext,
         Entry,
         EntryType,
+        Field,
         Identifier,
         Literal,
         Plaintext,
@@ -30,6 +31,8 @@ pub use snarkvm_console::{
         ProgramOwner,
         Record,
         Response,
+        ToFields,
+        Value,
         ValueType,
     },
     types::Field,
