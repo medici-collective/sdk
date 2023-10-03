@@ -17,6 +17,9 @@
 pub mod address;
 pub use address::*;
 
+pub mod field;
+pub use field::*;
+
 pub mod encryptor;
 pub use encryptor::*;
 

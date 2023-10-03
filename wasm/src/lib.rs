@@ -174,7 +174,7 @@ use crate::types::RecordPlaintextNative;
 pub use wasm_bindgen_rayon::init_thread_pool;
 
 #[wasm_bindgen]
-pub fn init_panic_hook() { 
+pub fn init_panic_hook() {
     panic::set_hook(Box::new(console_error_panic_hook::hook));
 }
 

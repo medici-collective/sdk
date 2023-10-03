@@ -15,12 +15,12 @@
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
 use crate::{
-    account::{Address, ComputeKey, PrivateKey},
+    account::{Address, PrivateKey},
     types::{CurrentNetwork, SignatureNative, ToFields, Value}
 };
 
 use core::{fmt, ops::Deref, str::FromStr};
-use rand::{rngs::StdRng, SeedableRng, CryptoRng};
+use rand::{rngs::StdRng, SeedableRng};
 use wasm_bindgen::prelude::*;
 
 /// Cryptographic signature of a message signed by an Aleo account
@@ -38,7 +38,7 @@ impl Signature {
         Self(SignatureNative::sign_bytes(private_key, message, &mut StdRng::from_entropy()).unwrap())
     }
 
-    pub fn sign_value(private_key: &PrivateKey, message: &[u8]) -> Self {
+    pub fn sign_message(private_key: &PrivateKey, message: &[u8]) -> Self {
         // parse message as string here instead of &[u8]
         // let rng = &mut TestRng::default();
         // need to grab rng
@@ -129,87 +129,6 @@ impl Deref for Signature {
     fn deref(&self) -> &Self::Target {
         &self.0
     }
-}
-
-pub fn generate_message<R: Rng + CryptoRng>(
-    private_key: &PrivateKey,
-    message: str) -> Result<Vec<Field<N>>> {
-    // Ensure the number of field elements does not exceed the maximum allowed size.
-    // Sample a random nonce from the scalar field.
-    let nonce = Scalar::rand(rng);
-    // Compute `g_r` as `nonce * G`.
-    let g_r = N::g_scalar_multiply(&nonce);
-
-    // Derive the compute key from the private key.
-    let compute_key = ComputeKey::try_from(private_key)?;
-    // Retrieve pk_sig.
-    let pk_sig = compute_key.pk_sig();
-    // Retrieve pr_sig.
-    let pr_sig = compute_key.pr_sig();
-
-    // Derive the address from the compute key.
-    let address = Address::try_from(compute_key)?;
-
-    // Construct the hash input as (r * G, pk_sig, pr_sig, address, message).
-    let mut preimage = Vec::with_capacity(4 + message.len());
-    preimage.extend([g_r, pk_sig, pr_sig, *address].map(|point| point.to_x_coordinate()));
-
-    // Insert dictionary and hash map logic here
-    let mut my_dict: HashMap<String, Field<N>> = HashMap::new();
-
-    for (index, field) in preimage.clone().into_iter().enumerate() {
-        // let lit = Literal::Field(field);
-        let val = field; // assuming the conversion takes a reference
-        let key = format!("field_{}", index + 1);  // generate key in the format "field_i"
-        my_dict.insert(key, val);
-    }
-
-
-    let string_representation: String = my_dict.iter()
-    .map(|(k, v)| (k, k.trim_start_matches("field_").parse::<usize>().unwrap_or(0), v)) // extract numeric part
-    .sorted_by(|(_, a_num, _), (_, b_num, _)| a_num.cmp(b_num)) // sort by the numeric part
-    .map(|(key, _, value)| format!("  {}: {:?}", key, value)) // Use Debug trait for formatting
-    .collect::<Vec<String>>()
-    .join(",\n");
-
-    let result = format!("{{\n{}\n}}", string_representation);
-    // Result is a string and the Leo opcode for verify takes the message and turns it to field
-    // It does this by figuring out the value is a plaintext
-    // It then uses plaintext.to_field() which does the following
-    /// let mut bits_le = self.to_bits_le();
-    /// Adds one final bit to the data, to serve as a terminus indicator.
-    /// During decryption, this final bit ensures we've reached the end.
-    /// bits_le.push(true);
-    ///
-    /// let fields = bits_le
-    /// .chunks(Field::<N>::size_in_data_bits())
-    /// .map(Field::<N>::from_bits_le)
-    /// .collect::<Result<Vec<_>>>()?;
-    /// Then it has some logic to ensure the field elements don't exceed max size
-
-    // need to convert string to bits
-    let val_of_dict: Vec<bool> = String::to_bits_le(&result);
-    // let val_unwrapped = val_of_dict.unwrap(); <-- don't need this anymore bc tryfrom is result; this isn't
-    // need to convert bits to vec of fields
-    // borrowed logic to chunk vec of bits_le to vec of field from above
-    let fields = val_of_dict
-        .chunks(Field::<N>::size_in_data_bits())
-        .map(Field::<N>::from_bits_le)
-        .collect::<Result<Vec<_>>>()?;
-
-    // Keeping as res so don't have to change as much before
-    let mut res: Vec<Field<N>>  = fields;
-    let first_four_message = preimage[0..4].to_vec();
-    &res.splice(0..0, first_four_message);
-
-    // TODO: @matt & @abhin -- looks like we never use the message -- need to fix
-    // preimage.extend(message);
-    // println!("PREIMAGE BEFORE HASH TO SCALAR: {:?}", preimage);
-
-    // Compute the verifier challenge.
-    let challenge = N::hash_to_scalar_psd8(&res)?;
-
-
 }
 
 #[cfg(test)]
