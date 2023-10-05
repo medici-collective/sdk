@@ -31,6 +31,9 @@ version = "0.14.6"
 version = "0.14.6"
 features = [ "wasm" ]
 
+[dependencies.snarkvm-console-program]
+version = "0.14.6"
+
 [dependencies.snarkvm-ledger-block]
 version = "0.14.6"
 

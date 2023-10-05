@@ -111,6 +111,7 @@ dependencies = [
  "serde_json",
  "snarkvm-circuit-network",
  "snarkvm-console",
+ "snarkvm-console-program",
  "snarkvm-ledger-block",
  "snarkvm-ledger-query",
  "snarkvm-ledger-store",
