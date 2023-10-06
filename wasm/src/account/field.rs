@@ -19,6 +19,7 @@ use crate::{
     types::{CurrentNetwork, ComputeKey, FieldNative, Field, FromBits, Network, Scalar, SizeInDataBits, ToBytes, ToFields, Value}
 };
 
+use anyhow::Error;
 use rand::{rngs::StdRng, SeedableRng};
 use wasm_bindgen::prelude::*;
 use std::collections::HashMap;
@@ -37,7 +38,12 @@ impl JsField {
 
     pub fn generate_message (
         private_key: &PrivateKey,
-        message: &[u8]) -> Vec<u8> {
+        message: &[u8]
+    ) -> String {
+
+        // {record} -> encode(record) -> generate_message
+        // question what are we  are we sending in?
+        // all we need is message verify to be the same as message sign
         // Ensure the number of field elements does not exceed the maximum allowed size.
         // Sample a random nonce from the scalar field.
 
@@ -54,11 +60,12 @@ impl JsField {
 
         let compute_key = ComputeKey::try_from((pk_sig, pr_sig)).unwrap();
 
+        // let msg_fields: Result<Vec<Field<CurrentNetwork>>, Error> = message.to_bits_le().chunks(Field::<CurrentNetwork>::size_in_data_bits()).map(Field::from_bits_le).collect::<Result<Vec<_>, Error>>();
         // Derive the compute key from the private key.
         // Retrieve pk_sig.
-        let pk_sig = compute_key.pk_sig();
+        let compute_pk_sig = compute_key.pk_sig();
         // Retrieve pr_sig.
-        let pr_sig = compute_key.pr_sig();
+        let compute_pr_sig = compute_key.pr_sig();
 
         // Derive the address from the compute key.
         // todo: make sure this address is the same as the one right below.
@@ -67,11 +74,13 @@ impl JsField {
 
         // Construct the hash input as (r * G, pk_sig, pr_sig, address, message).
         let mut preimage = Vec::with_capacity(4 + message.len());
-        preimage.extend([g_r, pk_sig, pr_sig, *address].map(|point| point.to_x_coordinate()));
+        preimage.extend([g_r, compute_pk_sig, compute_pr_sig, *address].map(|point| point.to_x_coordinate()));
+        // preimage.extend(msg_fields)
 
         // Insert dictionary and hash map logic here
         let mut my_dict: HashMap<String, Field<CurrentNetwork>> = HashMap::new();
 
+        // create hashmap of {field_1: 12413532341field, .....}
         for (index, field) in preimage.clone().into_iter().enumerate() {
             // let lit = Literal::Field(field);
             let val = field; // assuming the conversion takes a reference
@@ -79,7 +88,7 @@ impl JsField {
             my_dict.insert(key, val);
         }
 
-
+        // convert to string....
         let string_representation: String = my_dict.iter()
         .map(|(k, v)| (k, k.trim_start_matches("field_").parse::<usize>().unwrap_or(0), v)) // extract numeric part
         .sorted_by(|(_, a_num, _), (_, b_num, _)| a_num.cmp(b_num)) // sort by the numeric part
@@ -115,8 +124,7 @@ impl JsField {
             Ok(f) => f,
             Err(_) => {
                 println!("error"); // Handle the error in some way
-                // In this example, we're returning an empty vector to indicate an error
-                return Vec::new();
+                return "Error".to_string();
             }
         };
         // Keeping as res so don't have to change as much before
@@ -124,19 +132,38 @@ impl JsField {
         let first_four_message = preimage[0..4].to_vec();
         &res.splice(0..0, first_four_message);
 
-        let mut message_bytes = Vec::new();
+        println!("{:?}", res);
 
-        for field in res {
-            match field.to_bytes_le() {
-                Ok(bytes) => message_bytes.extend_from_slice(&bytes),
-                Err(e) => {
-                }
-            }
-        }
+        // let mut message_bytes = Vec::new();
 
-        // test sign here and see if it works...
-        Signature::sign_message(private_key, &message_bytes);
+        // for field in &res {
+        //     match field.to_bytes_le() {
+        //         Ok(bytes) => message_bytes.extend_from_slice(&bytes),
+        //         Err(e) => {
+        //         }
+        //     }
+        // }
 
-        message_bytes
+        // // convert to le bytes
+
+        // let sig = Signature::sign_message(private_key, &message_bytes);
+
+        // println!("{}", sig);
+
+        let fields_str = res.iter()
+            .enumerate()
+            .map(|(i, field)| format!("field_{}: {}", i + 1, field.to_string()))
+            .collect::<Vec<_>>()
+            .join(",\n  ");
+
+        result
+
+        // println!("{:?}", res);
+
+        // // test sign here and see if it works...
+
+        // println!("{}", sig);
+
+        // message_bytes
     }
 }
