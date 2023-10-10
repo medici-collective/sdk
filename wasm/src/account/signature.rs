@@ -16,10 +16,9 @@
 
 use crate::{
     account::{Address, PrivateKey},
-    types::{CurrentNetwork, ComputeKey, Field, FromBits, Literal, Network, Scalar, SignatureNative, SizeInDataBits, Testnet3, ToField, ToFields, U8, Value}
+    types::{CurrentNetwork, ComputeKey, Field, FromBits, FromBytes, Literal, Network, Scalar, SignatureNative, SizeInDataBits, Testnet3, ToField, ToFields, U8, Value}
 };
 use anyhow::Error;
-use snarkvm_console_program::FromBytes;
 use snarkvm_wasm::{Uniform, ToBits};
 use std::collections::HashMap;
 use itertools::Itertools;
@@ -44,18 +43,85 @@ impl Signature {
     }
 
 
-    // need to adapt here to take in nonce
-    pub fn sign_message(private_key: &PrivateKey, message: &[u8]) -> Self {
+    pub fn sign_message(private_key: &PrivateKey, message: &[u8], seed: &[u8]) -> String {
 
         // if message.len() > N::MAX_DATA_SIZE_IN_FIELDS as usize {
         //     bail!("Cannot sign the message: the message exceeds maximum allowed size")
         // }
 
+        // -> sending this message to leo program
+        // this Value(message).to_fields() needs to be the same as in verify...
+
+        let seed_array = <[u8; 32]>::try_from(seed).expect("Invalid seed length");
+
+        let mut rng = StdRng::from_seed(seed_array);
+
+        let slice: &[u8] = &message; // your data here
+        let result_string = match std::str::from_utf8(slice) {
+            Ok(v) => v.to_string(),
+            Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
+        };
+
+        let value: Value<CurrentNetwork> = Value::from_str(&result_string).unwrap();
+
+        let mut message = value.to_fields().unwrap();
+
+        let nonce = Scalar::rand(&mut rng);
+
+        let g_r = Network::g_scalar_multiply(&nonce);
+
+        let pk_sig = Network::g_scalar_multiply(&private_key.sk_sig());
+
+        let pr_sig = Network::g_scalar_multiply(&private_key.r_sig());
+
+        let compute_key = ComputeKey::try_from((pk_sig, pr_sig)).unwrap();
+
+        let address = compute_key.to_address();
+
+
+        // need to splice in g_r, pk_sig, pr_sig, address ... and sign against that
+        let prepend_items: Vec<_> = [g_r, pk_sig, pr_sig, *address]
+        .iter() // Convert the array to an iterator
+        .map(|&point| point.to_x_coordinate())
+        .collect();
+
+        message.splice(0..0, prepend_items);
+
+
+        // let msg_bits: &[bool] = &message.to_bits_le();
+
+        // let message_fields: Vec<Field<CurrentNetwork>> =
+        //     msg_bits.chunks(Field::<CurrentNetwork>::size_in_data_bits()).map(Field::from_bits_le).collect::<Result<Vec<_>, Error>>().unwrap();
+
+        // let mut my_dict: HashMap<String, Value<CurrentNetwork>> = HashMap::new();
+
+        // for (index, field) in message_fields.clone().into_iter().enumerate() {
+        //     let lit = Literal::Field(field);
+        //     let val = Value::from(&lit); // assuming the conversion takes a reference
+        //     let key = format!("field_{}", index + 1);  // generate key in the format "field_i"
+        //     my_dict.insert(key, val);
+        // }
+
+        // // Output the signature.
+        // let string_representation: String = my_dict.iter()
+        // .map(|(k, v)| (k, k.trim_start_matches("field_").parse::<usize>().unwrap_or(0), v)) // extract numeric part
+        // .sorted_by(|(_, a_num, _), (_, b_num, _)| a_num.cmp(b_num)) // sort by the numeric part
+        // .map(|(key, _, value)| format!("  {}: {:?}", key, value)) // Use Debug trait for formatting
+        // .collect::<Vec<String>>()
+        // .join(",\n");
+
+        // let result = format!("{{\n{}\n}}", string_representation);
+
+        // return result;
+
+
 
         // get from little endian bytes
-        let value = Value::<CurrentNetwork>::from_bytes_le(message).unwrap();
+        // let value = Value::<CurrentNetwork>::from_bytes_le(message).unwrap();
 
-        let message_fields = value.to_fields().unwrap();
+        // let message_fields = value.to_fields().unwrap();
+
+
 
 
         // convert bytes to field elements
@@ -67,17 +133,14 @@ impl Signature {
 
         // println!("{:?}", msg_field);
 
-        // Sample a random nonce from the scalar field.
-        let nonce = Scalar::rand(&mut StdRng::from_entropy());
+        // let mut preimage = Vec::with_capacity(4 + message_fields.len());
+        // preimage.extend([g_r, pk_sig, pr_sig, *address].map(|point| point.to_x_coordinate()));
+        // preimage.extend(message_fields);
 
-        let pk_sig = Network::g_scalar_multiply(&private_key.sk_sig());
-
-        let pr_sig = Network::g_scalar_multiply(&private_key.r_sig());
-
-        let compute_key = ComputeKey::try_from((pk_sig, pr_sig)).unwrap();
+        // todo: i need to yeet in the first four here I think ?
 
           // Compute the verifier challenge.
-        let challenge = Network::hash_to_scalar_psd8(&message_fields).unwrap();
+        let challenge = Network::hash_to_scalar_psd8(&message).unwrap();
 
         // Compute the prover response.
         let response = nonce - (challenge * private_key.sk_sig());
@@ -86,8 +149,27 @@ impl Signature {
 
         let sig = SignatureNative::from((challenge, response, compute_key));
 
+        let mut my_dict: HashMap<String, Value<CurrentNetwork>> = HashMap::new();
+
+        for (index, field) in message.clone().into_iter().enumerate() {
+            let lit = Literal::Field(field);
+            let val = Value::from(&lit); // assuming the conversion takes a reference
+            let key = format!("field_{}", index + 1);  // generate key in the format "field_i"
+            my_dict.insert(key, val);
+        }
+
+
         // Output the signature.
-        Self(sig)
+        let string_representation: String = my_dict.iter()
+        .map(|(k, v)| (k, k.trim_start_matches("field_").parse::<usize>().unwrap_or(0), v)) // extract numeric part
+        .sorted_by(|(_, a_num, _), (_, b_num, _)| a_num.cmp(b_num)) // sort by the numeric part
+        .map(|(key, _, value)| format!("  {}: {:?}", key, value)) // Use Debug trait for formatting
+        .collect::<Vec<String>>()
+        .join(",\n");
+
+        let result = format!("{{\n{}\n}} + {}", string_representation, sig);
+
+        result
         // Compute `g_r` as `nonce * G`.
         // let g_r = Network::g_scalar_multiply(&nonce);
 

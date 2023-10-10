@@ -23,6 +23,8 @@ pub use snarkvm_console::{
         Entry,
         EntryType,
         FromBits,
+        FromBytes,
+        Group,
         Identifier,
         Literal,
         Plaintext,
@@ -51,7 +53,7 @@ pub use snarkvm_synthesizer::{
     Program,
     VM,
 };
-pub use snarkvm_wasm::{network::{Environment, ToField}, FromBytes, PrimeField, ToBytes, Uniform};
+pub use snarkvm_wasm::{network::{Environment, ToField}, PrimeField, ToBytes, Uniform};
 
 // Account types
 pub type AddressNative = Address<CurrentNetwork>;
