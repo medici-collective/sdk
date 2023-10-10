@@ -15,8 +15,8 @@
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
 use crate::{
-    account::{Address, PrivateKey, Signature},
-    types::{CurrentNetwork, ComputeKey, FieldNative, Field, FromBits, FromBytes, Group, Literal, Network, Scalar, SizeInDataBits, ToBytes, ToField, ToFields, U8, Value}
+    account::{PrivateKey},
+    types::{CurrentNetwork, ComputeKey, FieldNative, Field, FromBits, Literal, Network, Scalar, SizeInDataBits, Value}
 };
 
 use anyhow::Error;
@@ -29,8 +29,6 @@ use itertools::Itertools;
 
 #[wasm_bindgen]
 pub struct JsField(FieldNative);
-
-
 
 
 #[wasm_bindgen]
