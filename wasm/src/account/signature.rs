@@ -16,7 +16,7 @@
 
 use crate::{
     account::{Address, PrivateKey},
-    types::{CurrentNetwork, ComputeKey, Field, FromBits, FromBytes, Literal, Network, Scalar, SignatureNative, SizeInDataBits, Testnet3, ToField, ToFields, U8, Value}
+    types::{CurrentNetwork, ComputeKey, Literal, Network, Scalar, SignatureNative, ToFields, Value}
 };
 use anyhow::Error;
 use snarkvm_wasm::{Uniform, ToBits};
@@ -43,14 +43,11 @@ impl Signature {
     }
 
 
-    pub fn sign_message(private_key: &PrivateKey, message: &[u8], seed: &[u8]) -> String {
+    pub fn sign_message(private_key: &PrivateKey, message: &[u8], seed: &[u8]) -> Self {
 
         // if message.len() > N::MAX_DATA_SIZE_IN_FIELDS as usize {
         //     bail!("Cannot sign the message: the message exceeds maximum allowed size")
         // }
-
-        // -> sending this message to leo program
-        // this Value(message).to_fields() needs to be the same as in verify...
 
         let seed_array = <[u8; 32]>::try_from(seed).expect("Invalid seed length");
 
@@ -87,59 +84,7 @@ impl Signature {
 
         message.splice(0..0, prepend_items);
 
-
-        // let msg_bits: &[bool] = &message.to_bits_le();
-
-        // let message_fields: Vec<Field<CurrentNetwork>> =
-        //     msg_bits.chunks(Field::<CurrentNetwork>::size_in_data_bits()).map(Field::from_bits_le).collect::<Result<Vec<_>, Error>>().unwrap();
-
-        // let mut my_dict: HashMap<String, Value<CurrentNetwork>> = HashMap::new();
-
-        // for (index, field) in message_fields.clone().into_iter().enumerate() {
-        //     let lit = Literal::Field(field);
-        //     let val = Value::from(&lit); // assuming the conversion takes a reference
-        //     let key = format!("field_{}", index + 1);  // generate key in the format "field_i"
-        //     my_dict.insert(key, val);
-        // }
-
-        // // Output the signature.
-        // let string_representation: String = my_dict.iter()
-        // .map(|(k, v)| (k, k.trim_start_matches("field_").parse::<usize>().unwrap_or(0), v)) // extract numeric part
-        // .sorted_by(|(_, a_num, _), (_, b_num, _)| a_num.cmp(b_num)) // sort by the numeric part
-        // .map(|(key, _, value)| format!("  {}: {:?}", key, value)) // Use Debug trait for formatting
-        // .collect::<Vec<String>>()
-        // .join(",\n");
-
-        // let result = format!("{{\n{}\n}}", string_representation);
-
-        // return result;
-
-
-
-        // get from little endian bytes
-        // let value = Value::<CurrentNetwork>::from_bytes_le(message).unwrap();
-
-        // let message_fields = value.to_fields().unwrap();
-
-
-
-
-        // convert bytes to field elements
-        // let bytes_to_field_elements = |bytes:&[u8]|
-        // { bytes.iter().map(|byte| U8::new(*byte).to_field()).collect::<Result<Vec<_>, Error>>() }.unwrap();
-
-
-        // let msg_field: Vec<snarkvm_console::types::Field<Testnet3>> = bytes_to_field_elements(message);
-
-        // println!("{:?}", msg_field);
-
-        // let mut preimage = Vec::with_capacity(4 + message_fields.len());
-        // preimage.extend([g_r, pk_sig, pr_sig, *address].map(|point| point.to_x_coordinate()));
-        // preimage.extend(message_fields);
-
-        // todo: i need to yeet in the first four here I think ?
-
-          // Compute the verifier challenge.
+        // Compute the verifier challenge.
         let challenge = Network::hash_to_scalar_psd8(&message).unwrap();
 
         // Compute the prover response.
@@ -149,52 +94,14 @@ impl Signature {
 
         let sig = SignatureNative::from((challenge, response, compute_key));
 
-        let mut my_dict: HashMap<String, Value<CurrentNetwork>> = HashMap::new();
 
-        for (index, field) in message.clone().into_iter().enumerate() {
-            let lit = Literal::Field(field);
-            let val = Value::from(&lit); // assuming the conversion takes a reference
-            let key = format!("field_{}", index + 1);  // generate key in the format "field_i"
-            my_dict.insert(key, val);
-        }
+        // note: keeping result, dict, etc below here for debugging message that one is signing against.
+        // to see message one is signing against, change return to string and return result
+        // let result = format!("{{\n{}\n}} + {}", string_representation, sig);
 
-
-        // Output the signature.
-        let string_representation: String = my_dict.iter()
-        .map(|(k, v)| (k, k.trim_start_matches("field_").parse::<usize>().unwrap_or(0), v)) // extract numeric part
-        .sorted_by(|(_, a_num, _), (_, b_num, _)| a_num.cmp(b_num)) // sort by the numeric part
-        .map(|(key, _, value)| format!("  {}: {:?}", key, value)) // Use Debug trait for formatting
-        .collect::<Vec<String>>()
-        .join(",\n");
-
-        let result = format!("{{\n{}\n}} + {}", string_representation, sig);
-
-        result
-        // Compute `g_r` as `nonce * G`.
-        // let g_r = Network::g_scalar_multiply(&nonce);
-
-        // let pk_sig = Network::g_scalar_multiply(&private_key.sk_sig());
-
-        // let pr_sig = Network::g_scalar_multiply(&private_key.r_sig());
-
-        // let compute_key = ComputeKey::try_from((pk_sig, pr_sig)).unwrap();
-
-        // let address = compute_key.to_address();
-
-        // // Derive the address from the compute key.
-        // // leaving here to validate the address is the same here...
-        // // let address = Address::try_from(compute_key)?;
-
-        // // Construct the hash input as (r * G, pk_sig, pr_sig, address, message).
-        // let mut preimage = Vec::with_capacity(4 + msg_field.len());
-        // preimage.extend([g_r, pk_sig, pr_sig, *address].map(|point| point.to_x_coordinate()));
-        // preimage.extend(&msg_field);
-
-        // println!("PREIMAGE BEFORE HASH TO SCALAR: {:?}", preimage);
-        // // need to implement bytes to field function
         // let mut my_dict: HashMap<String, Value<CurrentNetwork>> = HashMap::new();
 
-        // for (index, field) in msg_field.clone().into_iter().enumerate() {
+        // for (index, field) in message.clone().into_iter().enumerate() {
         //     let lit = Literal::Field(field);
         //     let val = Value::from(&lit); // assuming the conversion takes a reference
         //     let key = format!("field_{}", index + 1);  // generate key in the format "field_i"
@@ -202,6 +109,7 @@ impl Signature {
         // }
 
 
+        // Output the signature.
         // let string_representation: String = my_dict.iter()
         // .map(|(k, v)| (k, k.trim_start_matches("field_").parse::<usize>().unwrap_or(0), v)) // extract numeric part
         // .sorted_by(|(_, a_num, _), (_, b_num, _)| a_num.cmp(b_num)) // sort by the numeric part
@@ -209,48 +117,7 @@ impl Signature {
         // .collect::<Vec<String>>()
         // .join(",\n");
 
-        // let result = format!("{{\n{}\n}}", string_representation);
-        // // Result is a string and the Leo opcode for verify takes the message and turns it to field
-        // // It does this by figuring out the value is a plaintext
-        // // It then uses plaintext.to_field() which does the following
-        // /// let mut bits_le = self.to_bits_le();
-        // /// Adds one final bit to the data, to serve as a terminus indicator.
-        // /// During decryption, this final bit ensures we've reached the end.
-        // /// bits_le.push(true);
-        // ///
-        // /// let fields = bits_le
-        // /// .chunks(Field::<N>::size_in_data_bits())
-        // /// .map(Field::<N>::from_bits_le)
-        // /// .collect::<Result<Vec<_>>>()?;
-        // /// Then it has some logic to ensure the field elements don't exceed max size
-
-        // // need to convert string to bits
-        // let val_of_dict: Vec<bool> = String::to_bits_le(&result);
-        // // let val_unwrapped = val_of_dict.unwrap(); <-- don't need this anymore bc tryfrom is result; this isn't
-        // // need to convert bits to vec of fields
-        // // borrowed logic to chunk vec of bits_le to vec of field from above
-        // let fields = val_of_dict
-        //  .chunks(Field::<CurrentNetwork>::size_in_data_bits())
-        //  .map(Field::<CurrentNetwork>::from_bits_le)
-        //  .collect::<Result<Vec<_>, Error>>();
-
-        // // Keeping as res so don't have to change as much before
-        // let mut res: Vec<Field<CurrentNetwork>>  = fields.unwrap();
-        // let first_four_message = preimage[0..4].to_vec();
-        // &res.splice(0..0, first_four_message);
-
-        // // Compute the verifier challenge.
-        // let challenge = Network::hash_to_scalar_psd8(&res).unwrap();
-
-        // // Compute the prover response.
-        // let response = nonce - (challenge * private_key.sk_sig());
-
-        // // Ok(Self { challenge, response, compute_key })
-
-        // let sig = SignatureNative::from((challenge, response, compute_key));
-
-        // // Output the signature.
-        // Self(sig)
+        Self(sig)
     }
     // Verify the signature.
     // let address = Address::try_from(&private_key).unwrap();
