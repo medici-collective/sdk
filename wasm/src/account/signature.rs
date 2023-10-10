@@ -16,12 +16,11 @@
 
 use crate::{
     account::{Address, PrivateKey},
-    types::{CurrentNetwork, ComputeKey, Literal, Network, Scalar, SignatureNative, ToFields, Value}
+    types::{CurrentNetwork, ComputeKey, Network, Scalar, SignatureNative, ToFields, Value}
 };
-use anyhow::Error;
-use snarkvm_wasm::{Uniform, ToBits};
-use std::collections::HashMap;
-use itertools::Itertools;
+use snarkvm_wasm::{Uniform};
+// use std::collections::HashMap;
+// use itertools::Itertools;
 
 use core::{fmt, ops::Deref, str::FromStr};
 use rand::{rngs::StdRng, SeedableRng};
