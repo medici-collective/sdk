@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
-import { Button, Card, Col, Dropdown, Form, Input, Row, Result, Space, Spin } from "antd";
+import {Button, Card, Col, Dropdown, Form, Input, Row, Result, Space, Spin, Switch} from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import axios from "axios";
 
 export const Transfer = () => {
     const [transferFeeRecord, setTransferFeeRecord] = useState(null);
     const [amountRecord, setAmountRecord] = useState(null);
-    const [transferUrl, setTransferUrl] = useState("https://vm.aleo.org/api");
+    const [transferUrl, setTransferUrl] = useState("https://api.explorer.aleo.org/v1");
     const [transferAmount, setTransferAmount] = useState("1.0");
     const [transferFee, setTransferFee] = useState("1.0");
+    const [privateFee, setPrivateFee] = useState(true);
     const [recipient, setRecipient] = useState(null);
     const [loading, setLoading] = useState(false);
     const [privateKey, setPrivateKey] = useState(null);
@@ -88,6 +89,7 @@ export const Transfer = () => {
             recipient: recipientString(),
             amountRecord: amountRecord,
             fee: feeAmount,
+            privateFee: privateFee,
             feeRecord: feeRecordString(),
             url: peerUrl(),
         });
@@ -278,9 +280,18 @@ export const Transfer = () => {
                     />
                 </Form.Item>
                 <Form.Item
+                    label="Private Fee"
+                    name="private_fee"
+                    valuePropName="checked"
+                    initialValue={true}
+                >
+                    <Switch onChange={setPrivateFee} />
+                </Form.Item>
+                <Form.Item
                     label="Fee Record"
                     colon={false}
                     validateStatus={status}
+                    hidden={!privateFee}
                 >
                     <Input.TextArea
                         name="Fee Record"

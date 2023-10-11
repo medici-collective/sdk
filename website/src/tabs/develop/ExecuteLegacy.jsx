@@ -19,11 +19,12 @@ import { useAleoWASM } from "../../aleo-wasm-hook";
 
 export const ExecuteLegacy = () => {
     const [executionFeeRecord, setExecutionFeeRecord] = useState(null);
-    const [executeUrl, setExecuteUrl] = useState("https://vm.aleo.org/api");
+    const [executeUrl, setExecuteUrl] = useState("https://api.explorer.aleo.org/v1");
     const [functionID, setFunctionID] = useState(null);
     const [executionFee, setExecutionFee] = useState("1");
     const [inputs, setInputs] = useState(null);
     const [feeLoading, setFeeLoading] = useState(false);
+    const [privateFee, setPrivateFee] = useState(true);
     const [loading, setLoading] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
     const [privateKey, setPrivateKey] = useState(null);
@@ -525,9 +526,20 @@ export const ExecuteLegacy = () => {
                 )}
                 {executeOnline === true && (
                     <Form.Item
+                        label="Private Fee"
+                        name="private_fee"
+                        valuePropName="checked"
+                        initialValue={true}
+                    >
+                        <Switch onChange={setPrivateFee} />
+                    </Form.Item>
+                )}
+                {executeOnline === true && (
+                    <Form.Item
                         label="Fee Record"
                         colon={false}
                         validateStatus={status}
+                        hidden={!privateFee}
                     >
                         <Input.TextArea
                             name="Fee Record"

@@ -64,6 +64,7 @@ impl ProgramManager {
     ) -> Result<ExecutionResponse, String> {
         log(&format!("Executing local function: {function}"));
         let inputs = inputs.to_vec();
+        let rng = &mut StdRng::from_entropy();
 
         let mut new_process;
         let process: &mut ProcessNative = get_process!(self, cache, new_process);
@@ -73,7 +74,7 @@ impl ProgramManager {
         ProgramManager::resolve_imports(process, &program_native, imports)?;
 
         let (response, mut trace) =
-            execute_program!(process, inputs, program, function, private_key, proving_key, verifying_key);
+            execute_program!(process, inputs, program, function, private_key, proving_key, verifying_key, rng);
 
         if prove_execution {
             log("Preparing inclusion proofs for execution");
@@ -83,9 +84,7 @@ impl ProgramManager {
             log("Proving execution");
             let program = ProgramNative::from_str(&program).map_err(|err| err.to_string())?;
             let locator = program.id().to_string().add("/").add(&function);
-            let execution = trace
-                .prove_execution::<CurrentAleo, _>(&locator, &mut StdRng::from_entropy())
-                .map_err(|e| e.to_string())?;
+            let execution = trace.prove_execution::<CurrentAleo, _>(&locator, rng).map_err(|e| e.to_string())?;
             Ok(ExecutionResponse::from((response, execution)))
         } else {
             Ok(ExecutionResponse::from(response))
@@ -123,7 +122,7 @@ impl ProgramManager {
         function: String,
         inputs: Array,
         fee_credits: f64,
-        fee_record: RecordPlaintext,
+        fee_record: Option<RecordPlaintext>,
         url: String,
         cache: bool,
         imports: Option<Object>,
@@ -133,7 +132,10 @@ impl ProgramManager {
         fee_verifying_key: Option<VerifyingKey>,
     ) -> Result<Transaction, String> {
         log(&format!("Executing function: {function} on-chain"));
-        let fee_microcredits = Self::validate_amount(fee_credits, &fee_record, true)?;
+        let fee_microcredits = match &fee_record {
+            Some(fee_record) => Self::validate_amount(fee_credits, fee_record, true)?,
+            None => (fee_credits * 1_000_000.0) as u64,
+        };
 
         let mut new_process;
         let process = get_process!(self, cache, new_process);
@@ -141,10 +143,11 @@ impl ProgramManager {
         log("Check program imports are valid and add them to the process");
         let program_native = ProgramNative::from_str(&program).map_err(|e| e.to_string())?;
         ProgramManager::resolve_imports(process, &program_native, imports)?;
+        let rng = &mut StdRng::from_entropy();
 
         log("Executing program");
         let (_, mut trace) =
-            execute_program!(process, inputs, program, function, private_key, proving_key, verifying_key);
+            execute_program!(process, inputs, program, function, private_key, proving_key, verifying_key, rng);
 
         log("Preparing inclusion proofs for execution");
         let query = QueryNative::from(&url);
@@ -161,13 +164,14 @@ impl ProgramManager {
         log("Executing fee");
         let fee = execute_fee!(
             process,
-            private_key,
+            &private_key,
             fee_record,
             fee_microcredits,
             url,
             fee_proving_key,
             fee_verifying_key,
-            execution_id
+            execution_id,
+            rng
         );
 
         // Verify the execution
@@ -222,19 +226,18 @@ impl ProgramManager {
         log("Check program imports are valid and add them to the process");
         let program_native = ProgramNative::from_str(&program).map_err(|e| e.to_string())?;
         ProgramManager::resolve_imports(process, &program_native, imports)?;
+        let rng = &mut StdRng::from_entropy();
 
         log("Generating execution trace");
         let (_, mut trace) =
-            execute_program!(process, inputs, program, function, private_key, proving_key, verifying_key);
+            execute_program!(process, inputs, program, function, private_key, proving_key, verifying_key, rng);
 
         // Execute the program
         let program = ProgramNative::from_str(&program).map_err(|err| err.to_string())?;
         let locator = program.id().to_string().add("/").add(&function);
         let query = QueryNative::from(&url);
         trace.prepare_async(query).await.map_err(|err| err.to_string())?;
-        let execution = trace
-            .prove_execution::<CurrentAleo, _>(&locator, &mut StdRng::from_entropy())
-            .map_err(|e| e.to_string())?;
+        let execution = trace.prove_execution::<CurrentAleo, _>(&locator, rng).map_err(|e| e.to_string())?;
 
         // Get the storage cost in bytes for the program execution
         log("Estimating cost");
@@ -250,8 +253,8 @@ impl ProgramManager {
             let program = process.get_program(program_id).map_err(|e| e.to_string())?;
 
             // Calculate the finalize cost for the function identified in the transition
-            let cost = match &program.get_function(function_name).map_err(|e| e.to_string())?.finalize() {
-                Some((_, finalize)) => cost_in_microcredits(finalize).map_err(|e| e.to_string())?,
+            let cost = match &program.get_function(function_name).map_err(|e| e.to_string())?.finalize_logic() {
+                Some(finalize) => cost_in_microcredits(finalize).map_err(|e| e.to_string())?,
                 None => continue,
             };
 
@@ -279,8 +282,8 @@ impl ProgramManager {
         );
         let program = ProgramNative::from_str(&program).map_err(|err| err.to_string())?;
         let function_id = IdentifierNative::from_str(&function).map_err(|err| err.to_string())?;
-        match program.get_function(&function_id).map_err(|err| err.to_string())?.finalize() {
-            Some((_, finalize)) => cost_in_microcredits(finalize).map_err(|e| e.to_string()),
+        match program.get_function(&function_id).map_err(|err| err.to_string())?.finalize_logic() {
+            Some(finalize) => cost_in_microcredits(finalize).map_err(|e| e.to_string()),
             None => Ok(0u64),
         }
     }

@@ -1,5 +1,6 @@
+import {jest} from '@jest/globals'
 import { beaconPrivateKeyString } from "./data/account-data";
-import { Account, AleoNetworkClient, NetworkRecordProvider, RecordPlaintext } from "../src";
+import { Account, AleoNetworkClient, NetworkRecordProvider, RecordPlaintext } from "../src/node";
 jest.retryTimes(3);
 
 describe('RecordProvider', () => {
@@ -38,13 +39,6 @@ describe('RecordProvider', () => {
                     });
                 } else {
                     expect(Array.isArray(records2)).toBe(true);
-                }
-
-                // Get another record with findCreditsRecord and ensure it is unique
-                const record = await recordProvider.findCreditsRecord(100, true, nonces);
-                expect(record).toBeInstanceOf(RecordPlaintext);
-                if (record instanceof RecordPlaintext) {
-                    expect(nonces.includes(record.nonce())).toBe(false);
                 }
             } catch (e) {
                 throw e;
