@@ -31,9 +31,6 @@ version = "0.15.0"
 version = "0.15.0"
 features = [ "wasm" ]
 
-[dependencies.snarkvm-console-program]
-version = "0.14.6"
-
 [dependencies.snarkvm-ledger-block]
 version = "0.15.0"
 
@@ -124,9 +121,9 @@ features = [
 version = "0.3.37"
 
 [features]
-default = [ "serial", "browser" ]
-serial = [ "snarkvm-console/serial", "snarkvm-synthesizer/serial", "snarkvm-ledger-query/serial", "snarkvm-ledger-block/serial", "snarkvm-ledger-store/serial" ]
-browser = [ ]
+default = ["serial", "browser"]
+serial = ["snarkvm-console/serial", "snarkvm-synthesizer/serial", "snarkvm-ledger-query/serial", "snarkvm-ledger-block/serial", "snarkvm-ledger-store/serial"]
+browser = []
 
 ## Profiles
 [profile.release]

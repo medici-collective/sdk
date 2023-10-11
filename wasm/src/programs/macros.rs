@@ -127,7 +127,7 @@ macro_rules! execute_fee {
         let fee_authorization = match $fee_record {
             Some(fee_record) => {
                 let fee_record_native = RecordPlaintextNative::from_str(&fee_record.to_string()).unwrap();
-                $process.authorize_fee_private(
+                $process.authorize_fee_private::<CurrentAleo, _>(
                     $private_key,
                     fee_record_native,
                     $fee_microcredits,
@@ -136,7 +136,7 @@ macro_rules! execute_fee {
                 ).map_err(|e| e.to_string())?
             }
             None => {
-                $process.authorize_fee_public($private_key, $fee_microcredits, $execution_id, $rng).map_err(|e| e.to_string())?
+                $process.authorize_fee_public::<CurrentAleo, _>($private_key, $fee_microcredits, $execution_id, $rng).map_err(|e| e.to_string())?
             }
         };
 

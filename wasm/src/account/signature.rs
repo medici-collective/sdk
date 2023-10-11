@@ -18,7 +18,7 @@ use crate::{
     account::{Address, PrivateKey},
     types::{CurrentNetwork, ComputeKey, Network, Scalar, SignatureNative, ToFields, Value}
 };
-use snarkvm_wasm::{Uniform};
+use snarkvm_wasm::utilities::{Uniform};
 // use std::collections::HashMap;
 // use itertools::Itertools;
 

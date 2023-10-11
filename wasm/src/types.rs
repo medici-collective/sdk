@@ -57,7 +57,7 @@ pub use snarkvm_synthesizer::{
 pub use snarkvm_wasm::{
     console::network::{Environment, ToField},
     fields::PrimeField,
-    utilities::{FromBytes, ToBytes, Uniform},
+    utilities::{ToBits, ToBytes, Uniform},
 };
 
 // Account types

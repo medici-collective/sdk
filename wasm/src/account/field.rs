@@ -23,7 +23,7 @@ use anyhow::Error;
 use rand::{rngs::StdRng, SeedableRng};
 use wasm_bindgen::prelude::*;
 use std::collections::HashMap;
-use snarkvm_wasm::{Uniform, ToBits};
+use snarkvm_wasm::utilities::{Uniform, ToBits};
 use itertools::Itertools;
 
 
@@ -86,7 +86,7 @@ impl JsField {
         let string_representation: String = my_dict.iter()
         .map(|(k, v)| (k, k.trim_start_matches("field_").parse::<usize>().unwrap_or(0), v)) // extract numeric part
         .sorted_by(|(_, a_num, _), (_, b_num, _)| a_num.cmp(b_num)) // sort by the numeric part
-        .map(|(key, _, value)| format!("  {}: {:?}", key, value)) // Use Debug trait for formatting
+        .map(|(key, _, value)| format!("{}: {:?}", key, value)) // Use Debug trait for formatting
         .collect::<Vec<String>>()
         .join(",\n");
 
@@ -141,7 +141,7 @@ impl JsField {
         let string_representation: String = my_dict.iter()
         .map(|(k, v)| (k, k.trim_start_matches("field_").parse::<usize>().unwrap_or(0), v)) // extract numeric part
         .sorted_by(|(_, a_num, _), (_, b_num, _)| a_num.cmp(b_num)) // sort by the numeric part
-        .map(|(key, _, value)| format!("  {}: {:?}", key, value)) // Use Debug trait for formatting
+        .map(|(key, _, value)| format!("{}: {:?}", key, value)) // Use Debug trait for formatting
         .collect::<Vec<String>>()
         .join(",\n");
 
