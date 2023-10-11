@@ -44,23 +44,25 @@ impl Signature {
 
     pub fn sign_message(private_key: &PrivateKey, message: &[u8], seed: &[u8]) -> Self {
 
-        // if message.len() > N::MAX_DATA_SIZE_IN_FIELDS as usize {
-        //     bail!("Cannot sign the message: the message exceeds maximum allowed size")
-        // }
-
+        // seed used for generating rng
         let seed_array = <[u8; 32]>::try_from(seed).expect("Invalid seed length");
 
         let mut rng = StdRng::from_seed(seed_array);
 
-        let slice: &[u8] = &message; // your data here
-        let result_string = match std::str::from_utf8(slice) {
+        let message_slice: &[u8] = &message;
+
+        let message_str = match std::str::from_utf8(message_slice) {
             Ok(v) => v.to_string(),
             Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
         };
 
-        let value: Value<CurrentNetwork> = Value::from_str(&result_string).unwrap();
+        let message_value: Value<CurrentNetwork> = Value::from_str(&message_str).unwrap();
 
-        let mut message = value.to_fields().unwrap();
+        let mut message_to_fields = message_value.to_fields().unwrap();
+
+        if message_to_fields.len() > CurrentNetwork::MAX_DATA_SIZE_IN_FIELDS as usize {
+            panic!("Cannot sign the message: the message exceeds maximum allowed size");
+        };
 
         let nonce = Scalar::rand(&mut rng);
 
@@ -74,17 +76,16 @@ impl Signature {
 
         let address = compute_key.to_address();
 
-
         // need to splice in g_r, pk_sig, pr_sig, address ... and sign against that
         let prepend_items: Vec<_> = [g_r, pk_sig, pr_sig, *address]
         .iter() // Convert the array to an iterator
         .map(|&point| point.to_x_coordinate())
         .collect();
 
-        message.splice(0..0, prepend_items);
+        message_to_fields.splice(0..0, prepend_items);
 
         // Compute the verifier challenge.
-        let challenge = Network::hash_to_scalar_psd8(&message).unwrap();
+        let challenge = Network::hash_to_scalar_psd8(&message_to_fields).unwrap();
 
         // Compute the prover response.
         let response = nonce - (challenge * private_key.sk_sig());
@@ -96,6 +97,7 @@ impl Signature {
 
         // note: keeping result, dict, etc below here for debugging message that one is signing against.
         // to see message one is signing against, change return to string and return result
+
         // let result = format!("{{\n{}\n}} + {}", string_representation, sig);
 
         // let mut my_dict: HashMap<String, Value<CurrentNetwork>> = HashMap::new();

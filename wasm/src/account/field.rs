@@ -16,7 +16,7 @@
 
 use crate::{
     account::{PrivateKey},
-    types::{CurrentNetwork, ComputeKey, FieldNative, Field, FromBits, Literal, Network, Scalar, SizeInDataBits, Value}
+    types::{CurrentNetwork, ComputeKey, FieldNative, Field, FromBits, Literal, Network, Scalar, SizeInDataBits, ToFields, Value}
 };
 
 use anyhow::Error;
@@ -56,6 +56,8 @@ impl JsField {
         let message_fields: Vec<Field<CurrentNetwork>> =
             msg_bits.chunks(Field::<CurrentNetwork>::size_in_data_bits()).map(Field::from_bits_le).collect::<Result<Vec<_>, Error>>().unwrap();
 
+        let vec_msg_first_field = vec![message_fields[0]];
+
         let nonce = Scalar::rand(&mut rng);
 
         let g_r = Network::g_scalar_multiply(&nonce);
@@ -70,7 +72,7 @@ impl JsField {
 
         let mut msg = Vec::with_capacity(4 + message_fields.len());
         msg.extend([g_r, pk_sig, pr_sig, *address].map(|point| point.to_x_coordinate()));
-        msg.extend(message_fields);
+        msg.extend(vec_msg_first_field);
 
         let mut my_dict: HashMap<String, Value<CurrentNetwork>> = HashMap::new();
 
@@ -91,6 +93,85 @@ impl JsField {
         let result = format!("{{\n{}\n}}", string_representation);
 
         return result;
+
+    }
+
+
+    pub fn generate_message_clients (
+        private_key: &PrivateKey,
+        message: &[u8],
+        seed: &[u8]
+    ) -> String {
+
+        let seed_array = <[u8; 32]>::try_from(seed).expect("Invalid seed length");
+        let mut rng = StdRng::from_seed(seed_array);
+
+        let msg_bits: &[bool] = &message.to_bits_le();
+
+        let message_fields: Vec<Field<CurrentNetwork>> =
+            msg_bits.chunks(Field::<CurrentNetwork>::size_in_data_bits()).map(Field::from_bits_le).collect::<Result<Vec<_>, Error>>().unwrap();
+
+        let vec_msg_first_field = vec![message_fields[0]];
+
+        let nonce = Scalar::rand(&mut rng);
+
+        let g_r = Network::g_scalar_multiply(&nonce);
+
+        let pk_sig = Network::g_scalar_multiply(&private_key.sk_sig());
+
+        let pr_sig = Network::g_scalar_multiply(&private_key.r_sig());
+
+        let compute_key = ComputeKey::try_from((pk_sig, pr_sig)).unwrap();
+
+        let address = compute_key.to_address();
+
+        let mut msg = Vec::with_capacity(4 + message_fields.len());
+        msg.extend([g_r, pk_sig, pr_sig, *address].map(|point| point.to_x_coordinate()));
+        msg.extend(vec_msg_first_field);
+
+        let mut my_dict: HashMap<String, Value<CurrentNetwork>> = HashMap::new();
+
+        for (index, field) in msg.clone().into_iter().enumerate() {
+            let lit = Literal::Field(field);
+            let val = Value::from(&lit); // assuming the conversion takes a reference
+            let key = format!("field_{}", index + 1);  // generate key in the format "field_i"
+            my_dict.insert(key, val);
+        }
+
+        let string_representation: String = my_dict.iter()
+        .map(|(k, v)| (k, k.trim_start_matches("field_").parse::<usize>().unwrap_or(0), v)) // extract numeric part
+        .sorted_by(|(_, a_num, _), (_, b_num, _)| a_num.cmp(b_num)) // sort by the numeric part
+        .map(|(key, _, value)| format!("  {}: {:?}", key, value)) // Use Debug trait for formatting
+        .collect::<Vec<String>>()
+        .join(",\n");
+
+        let result = format!("{{\n{}\n}}", string_representation);
+
+        let val_of_dict: Value<CurrentNetwork> = Value::try_from(&result).unwrap();
+
+        let val_unwrapped = val_of_dict;
+
+        let msg_to_fields = val_unwrapped.to_fields().unwrap();
+
+        let mut dict_of_fields: HashMap<String, Value<CurrentNetwork>> = HashMap::new();
+
+        for (index, field) in msg_to_fields.clone().into_iter().enumerate() {
+            let lit = Literal::Field(field);
+            let val = Value::from(&lit); // assuming the conversion takes a reference
+            let key = format!("field_{}", index + 1);  // generate key in the format "field_i"
+            dict_of_fields.insert(key, val);
+        }
+
+        let fields_string_representation: String = dict_of_fields.iter()
+        .map(|(k, v)| (k, k.trim_start_matches("field_").parse::<usize>().unwrap_or(0), v)) // extract numeric part
+        .sorted_by(|(_, a_num, _), (_, b_num, _)| a_num.cmp(b_num)) // sort by the numeric part
+        .map(|(key, _, value)| format!("  {}: {:?}", key, value)) // Use Debug trait for formatting
+        .collect::<Vec<String>>()
+        .join(",\n");
+
+        let msg_to_fields_str = format!("{{\n{}\n}}", fields_string_representation);
+
+        return msg_to_fields_str;
 
     }
 }
