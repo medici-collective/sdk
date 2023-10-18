@@ -28,6 +28,10 @@ version = "0.15.4"
 version = "0.15.4"
 features = [ "wasm" ]
 
+[dependencies.snarkvm-utilities]
+version = "0.15.4"
+features = [ "wasm" ]
+
 [dependencies.snarkvm-ledger-block]
 version = "0.15.4"
 features = [ "wasm" ]
