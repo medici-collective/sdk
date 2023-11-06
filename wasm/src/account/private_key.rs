@@ -69,6 +69,15 @@ impl PrivateKey {
         self.0.to_string()
     }
 
+    /// Get a string representation of the seed. This function should be used very carefully
+    /// as it exposes the private key seed
+    ///
+    /// @returns {string} String representation of a private key seed
+    #[allow(clippy::inherent_to_string_shadow_display)]
+    pub fn to_seed(&self) -> String {
+        self.0.seed().to_string()
+    }
+
     /// Get the view key corresponding to the private key
     ///
     /// @returns {ViewKey}
