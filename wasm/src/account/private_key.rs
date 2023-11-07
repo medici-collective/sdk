@@ -78,31 +78,6 @@ impl PrivateKey {
         self.0.seed().to_string()
     }
 
-    /// Get a string representation from the seed. This function should be used very carefully
-    /// as it exposes the private key seed
-    ///
-    /// @returns {string} String representation of a private key seed
-    #[allow(clippy::inherent_to_string_shadow_display)]
-    pub fn from_seed(seed: &[u8]) -> String {
-        // Convert seed to bits
-        let seed_bits: Vec<bool> = seed.to_bits_le();
-
-        // Ensure the bit length is suitable for Field<CurrentNetwork>
-        if seed_bits.len() > Field::<CurrentNetwork>::size_in_data_bits() {
-            panic!("Seed is too large to fit into a single Field<CurrentNetwork>!");
-        }
-
-        // Cast into a fixed-size byte array. Note: This is a **hard** requirement for security.
-        let seed: [u8; 32] = seed.try_into().unwrap();
-        // Recover the field element deterministically.
-        let field = <CurrentNetwork as Environment>::Field::from_bytes_le_mod_order(&seed);
-        // Convert bits directly to Field<CurrentNetwork>
-        // let seed_field = Field::<CurrentNetwork>::from_bits_le(&seed_bits).unwrap();
-
-        // Create private key from the field
-        Self(PrivateKeyNative::try_from(FromBytes::read_le(&*field.to_bytes_le().unwrap()).unwrap()).unwrap()).seed().to_string()
-    }
-
     /// Get the view key corresponding to the private key
     ///
     /// @returns {ViewKey}
