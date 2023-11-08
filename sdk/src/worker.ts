@@ -1,9 +1,8 @@
-import { initializeWasm, initThreadPool, ProgramManager, PrivateKey, verifyFunctionExecution } from "./index";
+import {initThreadPool, ProgramManager, PrivateKey, verifyFunctionExecution, FunctionKeyPair} from "./index";
 import { AleoKeyProvider, AleoKeyProviderParams} from "./function-key-provider";
 import { expose } from "comlink";
 
-await initializeWasm();
-await initThreadPool(10);
+await initThreadPool();
 
 const defaultHost = "https://vm.aleo.org/api";
 const keyProvider = new AleoKeyProvider();
@@ -32,7 +31,7 @@ async function executeOffline(
     aleoFunction: string,
     inputs: string[],
     privateKey: string,
-    proveExecution: boolean = false
+    proveExecution = false
 ) {
     console.log("Web worker: Executing function locally...");
     let startTime = performance.now();
@@ -59,14 +58,13 @@ async function executeOffline(
         }
         // Get the proving and verifying keys for the function
         if (lastLocalProgram !== localProgram) {
-            const keys = programManager.executionEngine.synthesizeKeypair(
+            const keys = <FunctionKeyPair>await programManager.synthesizeKeys(
                 localProgram,
-                aleoFunction
+                aleoFunction,
+                inputs,
+                PrivateKey.from_string(privateKey)
             );
-            programManager.keyProvider.cacheKeys(cacheKey, [
-                keys.provingKey(),
-                keys.verifyingKey(),
-            ]);
+            programManager.keyProvider.cacheKeys(cacheKey, keys);
             lastLocalProgram = localProgram;
         }
 
@@ -95,10 +93,10 @@ async function executeOffline(
             } ms`
         );
         const outputs = response.getOutputs();
-        let execution = response.getExecution();
+        const execution = response.getExecution();
         let executionString = "";
 
-        let keys = keyProvider.getKeys(cacheKey);
+        const keys = keyProvider.getKeys(cacheKey);
 
         if (keys instanceof Error) {
             throw "Could not get verifying key";
