@@ -31,21 +31,10 @@ pub use transfer::*;
 
 use crate::{
     types::{
-        cost_in_microcredits,
-        deployment_cost,
-        IdentifierNative,
-        ProcessNative,
-        ProgramIDNative,
-        ProgramNative,
-        ProvingKeyNative,
-        QueryNative,
-        VerifyingKeyNative,
+        cost_in_microcredits, deployment_cost, CurrentAleo, IdentifierNative, ProcessNative, ProgramIDNative,
+        ProgramNative, ProvingKeyNative, QueryNative, VerifyingKeyNative,
     },
-    KeyPair,
-    PrivateKey,
-    ProvingKey,
-    RecordPlaintext,
-    VerifyingKey,
+    KeyPair, PrivateKey, ProvingKey, RecordPlaintext, VerifyingKey,
 };
 
 use js_sys::{Object, Reflect};

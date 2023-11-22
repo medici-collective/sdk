@@ -21,10 +21,17 @@ edition = "2021"
 crate-type = [ "cdylib", "rlib" ]
 doctest = false
 
+[dependencies]
+itertools = "0.11.0"
+
 [dependencies.snarkvm-circuit-network]
 version = "0.15.4"
 
 [dependencies.snarkvm-console]
+version = "0.15.4"
+features = [ "wasm" ]
+
+[dependencies.snarkvm-utilities]
 version = "0.15.4"
 features = [ "wasm" ]
 
@@ -119,9 +126,9 @@ features = [
 version = "0.3.37"
 
 [features]
-default = [ "serial", "browser" ]
-serial = [ "snarkvm-console/serial", "snarkvm-synthesizer/serial", "snarkvm-ledger-query/serial", "snarkvm-ledger-block/serial", "snarkvm-ledger-store/serial" ]
-browser = [ ]
+default = ["serial", "browser"]
+serial = ["snarkvm-console/serial", "snarkvm-synthesizer/serial", "snarkvm-ledger-query/serial", "snarkvm-ledger-block/serial", "snarkvm-ledger-store/serial"]
+browser = []
 
 ## Profiles
 [profile.release]

@@ -153,6 +153,8 @@
 //!
 
 pub mod account;
+use std::panic;
+
 pub use account::*;
 
 pub mod programs;
@@ -174,6 +176,11 @@ use thread_pool::ThreadPool;
 use std::str::FromStr;
 
 use crate::types::RecordPlaintextNative;
+
+#[wasm_bindgen]
+pub fn init_panic_hook() {
+    panic::set_hook(Box::new(console_error_panic_hook::hook));
+}
 
 // Facilities for cross-platform logging in both web browsers and nodeJS
 #[wasm_bindgen]

@@ -16,12 +16,15 @@
 
 pub use snarkvm_circuit_network::{Aleo, AleoV0};
 pub use snarkvm_console::{
-    account::{Address, PrivateKey, Signature, ViewKey},
+    account::{Address, ComputeKey, PrivateKey, Signature, ViewKey},
     network::{Network, Testnet3},
     program::{
         Ciphertext,
         Entry,
         EntryType,
+        FromBits,
+        FromBytes,
+        Group,
         Identifier,
         Literal,
         Plaintext,
@@ -30,7 +33,12 @@ pub use snarkvm_console::{
         ProgramOwner,
         Record,
         Response,
+        Scalar,
+        SizeInDataBits,
+        ToFields,
+        Value,
         ValueType,
+        U8,
     },
     types::Field,
 };
@@ -45,10 +53,11 @@ pub use snarkvm_synthesizer::{
     Program,
     VM,
 };
+
 pub use snarkvm_wasm::{
-    console::network::Environment,
+    console::network::{Environment, ToField},
     fields::PrimeField,
-    utilities::{FromBytes, ToBytes, Uniform},
+    utilities::{ToBits, ToBytes, Uniform},
 };
 
 // Account types
