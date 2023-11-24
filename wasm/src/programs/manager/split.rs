@@ -17,7 +17,10 @@
 use super::*;
 
 use crate::{
-    execute_program, get_process, log,
+    execute_program,
+    get_process,
+    log,
+    process_inputs,
     types::{CurrentAleo, IdentifierNative, ProcessNative, ProgramNative, TransactionNative},
     PrivateKey, RecordPlaintext, Transaction,
 };
@@ -35,23 +38,16 @@ impl ProgramManager {
     /// value of the record and two new records will be created with the split amount and the remainder
     /// @param amount_record The record to split
     /// @param url The url of the Aleo network node to send the transaction to
-    /// @param cache Cache the proving and verifying keys in the ProgramManager memory. If this is
-    /// set to `true` the keys synthesized (or passed in as optional parameters via the
-    /// `split_proving_key` and `split_verifying_key` arguments) will be stored in the
-    /// ProgramManager's memory and used for subsequent transactions. If this is set to `false` the
-    /// proving and verifying keys will be deallocated from memory after the transaction is executed
     /// @param split_proving_key (optional) Provide a proving key to use for the split function
     /// @param split_verifying_key (optional) Provide a verifying key to use for the split function
     /// @returns {Transaction | Error} Transaction object
     #[wasm_bindgen(js_name = buildSplitTransaction)]
     #[allow(clippy::too_many_arguments)]
     pub async fn split(
-        &mut self,
-        private_key: PrivateKey,
+        private_key: &PrivateKey,
         split_amount: f64,
         amount_record: RecordPlaintext,
-        url: String,
-        cache: bool,
+        url: &str,
         split_proving_key: Option<ProvingKey>,
         split_verifying_key: Option<VerifyingKey>,
     ) -> Result<Transaction, String> {
@@ -64,21 +60,29 @@ impl ProgramManager {
         inputs.set(0u32, wasm_bindgen::JsValue::from_str(&amount_record.to_string()));
         inputs.set(1u32, wasm_bindgen::JsValue::from_str(&amount_microcredits.to_string().add("u64")));
 
-        let mut new_process;
-        let process = get_process!(self, cache, new_process);
+        let mut process_native = ProcessNative::load_web().map_err(|err| err.to_string())?;
+        let process = &mut process_native;
+        let rng = &mut StdRng::from_entropy();
 
         log("Executing the split function");
-        let (_, mut trace) =
-            execute_program!(process, inputs, program, "split", private_key, split_proving_key, split_verifying_key);
+        let (_, mut trace) = execute_program!(
+            process,
+            process_inputs!(inputs),
+            &program,
+            "split",
+            private_key,
+            split_proving_key,
+            split_verifying_key,
+            rng
+        );
 
         log("Preparing the inclusion proof for the split execution");
-        let query = QueryNative::from(&url);
+        let query = QueryNative::from(url);
         trace.prepare_async(query).await.map_err(|err| err.to_string())?;
 
         log("Proving the split execution");
-        let execution = trace
-            .prove_execution::<CurrentAleo, _>("credits.aleo/split", &mut StdRng::from_entropy())
-            .map_err(|e| e.to_string())?;
+        let execution =
+            trace.prove_execution::<CurrentAleo, _>("credits.aleo/split", rng).map_err(|e| e.to_string())?;
 
         log("Verifying the split execution");
         process.verify_execution(&execution).map_err(|err| err.to_string())?;

@@ -1,7 +1,3 @@
-import init, {
-    initThreadPool,
-    ProgramManager as WasmProgramManager,
-} from '@aleohq/wasm'
 import {
     Account,
     AleoKeyProvider,
@@ -21,7 +17,8 @@ import {
     PRIVATE_TRANSFER_TYPES,
     VALID_TRANSFER_TYPES,
     logAndThrow,
-} from ".";
+    ProgramManagerBase as WasmProgramManager,
+} from "./index";
 
 
 
@@ -34,7 +31,6 @@ class ProgramManager {
     host: string;
     networkClient: AleoNetworkClient;
     recordProvider: RecordProvider | undefined;
-    executionEngine: WasmProgramManager;
 
     /** Create a new instance of the ProgramManager
      *
@@ -57,7 +53,6 @@ class ProgramManager {
             this.keyProvider = keyProvider;
         }
 
-        this.executionEngine = new WasmProgramManager();
         this.recordProvider = recordProvider;
     }
 
@@ -103,6 +98,7 @@ class ProgramManager {
      *
      * @param {string} program Program source code
      * @param {number} fee Fee to pay for the transaction
+     * @param {boolean} privateFee Use a private record to pay the fee. If false this will use the account's public credit balance
      * @param {RecordSearchParams | undefined} recordSearchParams Optional parameters for searching for a record to use
      * pay the deployment fee
      * @param {string | RecordPlaintext | undefined} feeRecord Optional Fee record to use for the transaction
@@ -131,6 +127,7 @@ class ProgramManager {
     async deploy(
         program: string,
         fee: number,
+        privateFee: boolean,
         recordSearchParams?: RecordSearchParams,
         feeRecord?: string | RecordPlaintext,
         privateKey?: PrivateKey,
@@ -164,7 +161,7 @@ class ProgramManager {
 
         // Get the fee record from the account if it is not provided in the parameters
         try {
-            feeRecord = <RecordPlaintext>await this.getCreditsRecord(fee, [], feeRecord, recordSearchParams);
+            feeRecord = privateFee ? <RecordPlaintext>await this.getCreditsRecord(fee, [], feeRecord, recordSearchParams) : undefined;
         } catch (e) {
             throw logAndThrow(`Error finding fee record. Record finder response: '${e}'. Please ensure you're connected to a valid Aleo network and a record with enough balance exists.`);
         }
@@ -172,7 +169,7 @@ class ProgramManager {
         // Get the proving and verifying keys from the key provider
         let feeKeys;
         try {
-            feeKeys = <FunctionKeyPair>await this.keyProvider.feeKeys();
+            feeKeys = privateFee ? <FunctionKeyPair>await this.keyProvider.feePrivateKeys() : <FunctionKeyPair>await this.keyProvider.feePublicKeys();
         } catch (e) {
             throw logAndThrow(`Error finding fee keys. Key finder response: '${e}'. Please ensure your key provider is configured correctly.`);
         }
@@ -187,7 +184,7 @@ class ProgramManager {
         }
 
         // Build a deployment transaction and submit it to the network
-        const tx = await this.executionEngine.buildDeploymentTransaction(deploymentPrivateKey, program, fee, feeRecord, this.host, false, imports, feeProvingKey, feeVerifyingKey);
+        const tx = await WasmProgramManager.buildDeploymentTransaction(deploymentPrivateKey, program, fee, feeRecord, this.host, imports, feeProvingKey, feeVerifyingKey);
         return await this.networkClient.submitTransaction(tx);
     }
 
@@ -197,6 +194,7 @@ class ProgramManager {
      * @param {string} programName Program name containing the function to be executed
      * @param {string} functionName Function name to execute
      * @param {number} fee Fee to pay for the transaction
+     * @param {boolean} privateFee Use a private record to pay the fee. If false this will use the account's public credit balance
      * @param {string[]} inputs Inputs to the function
      * @param {RecordSearchParams} recordSearchParams Optional parameters for searching for a record to pay the fee for
      * the execution transaction
@@ -226,6 +224,7 @@ class ProgramManager {
         programName: string,
         functionName: string,
         fee: number,
+        privateFee: boolean,
         inputs: string[],
         recordSearchParams?: RecordSearchParams,
         keySearchParams?: KeySearchParams,
@@ -254,7 +253,7 @@ class ProgramManager {
 
         // Get the fee record from the account if it is not provided in the parameters
         try {
-            feeRecord = <RecordPlaintext>await this.getCreditsRecord(fee, [], feeRecord, recordSearchParams);
+            feeRecord = privateFee ? <RecordPlaintext>await this.getCreditsRecord(fee, [], feeRecord, recordSearchParams) : undefined;
         } catch (e) {
             throw logAndThrow(`Error finding fee record. Record finder response: '${e}'. Please ensure you're connected to a valid Aleo network and a record with enough balance exists.`);
         }
@@ -262,7 +261,7 @@ class ProgramManager {
         // Get the fee proving and verifying keys from the key provider
         let feeKeys;
         try {
-            feeKeys = <FunctionKeyPair>await this.keyProvider.feeKeys();
+            feeKeys = privateFee ? <FunctionKeyPair>await this.keyProvider.feePrivateKeys() : <FunctionKeyPair>await this.keyProvider.feePublicKeys();
         } catch (e) {
             throw logAndThrow(`Error finding fee keys. Key finder response: '${e}'. Please ensure your key provider is configured correctly.`);
         }
@@ -286,7 +285,7 @@ class ProgramManager {
         }
 
         // Build an execution transaction and submit it to the network
-        const tx = await this.executionEngine.buildExecutionTransaction(executionPrivateKey, program, functionName, inputs, fee, feeRecord, this.host, false, imports, provingKey, verifyingKey, feeProvingKey, feeVerifyingKey);
+        const tx = await WasmProgramManager.buildExecutionTransaction(executionPrivateKey, program, functionName, inputs, fee, feeRecord, this.host, imports, provingKey, verifyingKey, feeProvingKey, feeVerifyingKey);
         return await this.networkClient.submitTransaction(tx);
     }
 
@@ -356,7 +355,7 @@ class ProgramManager {
         console.log("Running program offline")
         console.log("Proving key: ", provingKey);
         console.log("Verifying key: ", verifyingKey);
-        return this.executionEngine.executeFunctionOffline(executionPrivateKey, program, function_name, inputs, proveExecution,false, imports, provingKey, verifyingKey);
+        return WasmProgramManager.executeFunctionOffline(executionPrivateKey, program, function_name, inputs, proveExecution, false, imports, provingKey, verifyingKey);
     }
 
     /**
@@ -365,6 +364,7 @@ class ProgramManager {
      * @param {RecordPlaintext | string} recordOne First credits record to join
      * @param {RecordPlaintext | string} recordTwo Second credits record to join
      * @param {number} fee Fee in credits pay for the join transaction
+     * @param {boolean} privateFee Use a private record to pay the fee. If false this will use the account's public credit balance
      * @param {RecordSearchParams | undefined} recordSearchParams Optional parameters for finding the fee record to use
      * to pay the fee for the join transaction
      * @param {RecordPlaintext | string | undefined} feeRecord Fee record to use for the join transaction
@@ -375,6 +375,7 @@ class ProgramManager {
         recordOne: RecordPlaintext | string,
         recordTwo: RecordPlaintext | string,
         fee: number,
+        privateFee: boolean,
         recordSearchParams?: RecordSearchParams | undefined,
         feeRecord?: RecordPlaintext | string | undefined,
         privateKey?: PrivateKey
@@ -393,7 +394,7 @@ class ProgramManager {
         let feeKeys;
         let joinKeys
         try {
-            feeKeys = <FunctionKeyPair>await this.keyProvider.feeKeys();
+            feeKeys = privateFee ? <FunctionKeyPair>await this.keyProvider.feePrivateKeys() : <FunctionKeyPair>await this.keyProvider.feePublicKeys();
             joinKeys = <FunctionKeyPair>await this.keyProvider.joinKeys();
         } catch (e) {
             throw logAndThrow(`Error finding fee keys. Key finder response: '${e}'. Please ensure your key provider is configured correctly.`);
@@ -403,7 +404,7 @@ class ProgramManager {
 
         // Get the fee record from the account if it is not provided in the parameters
         try {
-            feeRecord = <RecordPlaintext>await this.getCreditsRecord(fee, [], feeRecord, recordSearchParams);
+            feeRecord = privateFee ? <RecordPlaintext>await this.getCreditsRecord(fee, [], feeRecord, recordSearchParams) : undefined;
         } catch (e) {
             throw logAndThrow(`Error finding fee record. Record finder response: '${e}'. Please ensure you're connected to a valid Aleo network and a record with enough balance exists.`);
         }
@@ -417,7 +418,7 @@ class ProgramManager {
         }
 
         // Build an execution transaction and submit it to the network
-        const tx = await this.executionEngine.buildJoinTransaction(executionPrivateKey, recordOne, recordTwo, fee, feeRecord, this.host, false, joinProvingKey, joinVerifyingKey, feeProvingKey, feeVerifyingKey);
+        const tx = await WasmProgramManager.buildJoinTransaction(executionPrivateKey, recordOne, recordTwo, fee, feeRecord, this.host, joinProvingKey, joinVerifyingKey, feeProvingKey, feeVerifyingKey);
         return await this.networkClient.submitTransaction(tx);
     }
 
@@ -470,8 +471,52 @@ class ProgramManager {
         }
 
         // Build an execution transaction and submit it to the network
-        const tx = await this.executionEngine.buildSplitTransaction(executionPrivateKey, splitAmount, amountRecord, this.host, false, splitProvingKey, splitVerifyingKey);
+        const tx = await WasmProgramManager.buildSplitTransaction(executionPrivateKey, splitAmount, amountRecord, this.host, splitProvingKey, splitVerifyingKey);
         return await this.networkClient.submitTransaction(tx);
+    }
+
+    /**
+     * Pre-synthesize proving and verifying keys for a program
+     *
+     * @param program {string} The program source code to synthesize keys for
+     * @param function_id {string} The function id to synthesize keys for
+     * @param inputs {Array<string>}  Sample inputs to the function
+     * @param privateKey {PrivateKey | undefined} Optional private key to use for the key synthesis
+     *
+     * @returns {Promise<FunctionKeyPair | Error>}
+     */
+    async synthesizeKeys(
+        program: string,
+        function_id: string,
+        inputs: Array<string>,
+        privateKey?: PrivateKey,
+    ): Promise<FunctionKeyPair | Error> {
+        // Resolve the program imports if they exist
+        let imports;
+
+        let executionPrivateKey = privateKey;
+        if (typeof executionPrivateKey === "undefined") {
+            if (typeof this.account !== "undefined") {
+                executionPrivateKey = this.account.privateKey();
+            } else {
+                executionPrivateKey = new PrivateKey();
+            }
+        }
+
+        // Attempt to run an offline execution of the program and extract the proving and verifying keys
+        try {
+            imports = await this.networkClient.getProgramImports(program);
+            const keyPair = await WasmProgramManager.synthesizeKeyPair(
+                executionPrivateKey,
+                program,
+                function_id,
+                inputs,
+                imports
+            );
+            return [<VerifyingKey>keyPair.provingKey(), <ProvingKey>keyPair.verifyingKey()];
+        } catch (e) {
+            throw logAndThrow(`Could not synthesize keys - error ${e}. Please ensure the program is valid and the inputs are correct.`);
+        }
     }
 
     /**
@@ -481,6 +526,7 @@ class ProgramManager {
      * @param {string} recipient The recipient of the transfer
      * @param {string} transferType The type of transfer to perform - options: 'private', 'privateToPublic', 'public', 'publicToPrivate'
      * @param {number} fee The fee to pay for the transfer
+     * @param {boolean} privateFee Use a private record to pay the fee. If false this will use the account's public credit balance
      * @param {RecordSearchParams | undefined} recordSearchParams Optional parameters for finding the amount and fee
      * records for the transfer transaction
      * @param {RecordPlaintext | string} amountRecord Optional amount record to use for the transfer
@@ -501,7 +547,8 @@ class ProgramManager {
      * const tx_id = await programManager.transfer(1, "aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px", "private", 0.2)
      * const transaction = await programManager.networkClient.getTransaction(tx_id);
      */
-    async transfer(amount: number, recipient: string, transferType: string, fee: number, recordSearchParams?: RecordSearchParams, amountRecord?: RecordPlaintext | string, feeRecord?: RecordPlaintext | string, privateKey?: PrivateKey): Promise<string | Error> {
+    async transfer(amount: number, recipient: string, transferType: string, fee: number, privateFee: boolean,
+                   recordSearchParams?: RecordSearchParams, amountRecord?: RecordPlaintext | string, feeRecord?: RecordPlaintext | string, privateKey?: PrivateKey): Promise<string | Error> {
         // Validate the transfer type
         transferType = <string>validateTransferType(transferType);
 
@@ -519,7 +566,7 @@ class ProgramManager {
         let feeKeys;
         let transferKeys
         try {
-            feeKeys = <FunctionKeyPair>await this.keyProvider.feeKeys();
+            feeKeys = privateFee ? <FunctionKeyPair>await this.keyProvider.feePrivateKeys() : <FunctionKeyPair>await this.keyProvider.feePublicKeys();
             transferKeys = <FunctionKeyPair>await this.keyProvider.transferKeys(transferType);
         } catch (e) {
             throw logAndThrow(`Error finding fee keys. Key finder response: '${e}'. Please ensure your key provider is configured correctly.`);
@@ -538,14 +585,13 @@ class ProgramManager {
             } else {
                 amountRecord = undefined;
             }
-
-            feeRecord = <RecordPlaintext>await this.getCreditsRecord(fee, nonces, feeRecord, recordSearchParams);
+            feeRecord = privateFee ? <RecordPlaintext>await this.getCreditsRecord(fee, nonces, feeRecord, recordSearchParams) : undefined;
         } catch (e) {
             throw logAndThrow(`Error finding fee record. Record finder response: '${e}'. Please ensure you're connected to a valid Aleo network and a record with enough balance exists.`);
         }
 
         // Build an execution transaction and submit it to the network
-        const tx = await this.executionEngine.buildTransferTransaction(executionPrivateKey, amount, recipient, transferType, amountRecord, fee, feeRecord, this.host, false, transferProvingKey, transferVerifyingKey, feeProvingKey, feeVerifyingKey);
+        const tx = await WasmProgramManager.buildTransferTransaction(executionPrivateKey, amount, recipient, transferType, amountRecord, fee, feeRecord, this.host, transferProvingKey, transferVerifyingKey, feeProvingKey, feeVerifyingKey);
         return await this.networkClient.submitTransaction(tx);
     }
 

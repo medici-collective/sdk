@@ -1,5 +1,6 @@
-import {Account, Block, AleoNetworkClient, Transaction} from "../src";
-import {beaconPrivateKeyString} from "./data/account-data";
+import {jest} from '@jest/globals'
+import {Account, Block, AleoNetworkClient, Transaction} from "../src/node";
+import {beaconAddressString, beaconPrivateKeyString} from "./data/account-data";
 import {log} from "console";
 jest.retryTimes(3);
 
@@ -7,7 +8,7 @@ describe('NodeConnection', () => {
     let connection: AleoNetworkClient;
 
     beforeEach(() => {
-        connection = new AleoNetworkClient("https://vm.aleo.org/api");
+        connection = new AleoNetworkClient("https://api.explorer.aleo.org/v1");
     });
 
     describe('setAccount', () => {
@@ -21,7 +22,7 @@ describe('NodeConnection', () => {
     describe('getBlock', () => {
         it('should return a Block object', async () => {
             const block = await connection.getBlock(1);
-            expect((block as Block).block_hash).toEqual("ab1tz33xvmcwm4q9fc7kplxn43mzdf7nr4232jtp77a6hrq4dhu6cpsuuhvc6");
+            expect((block as Block).block_hash).toEqual("ab1n79nyqnxa76wpz40efqlq53artsw86wrez4tw9kn5xrpuc65xyxquh3wnw");
         }, 60000);
 
         it('should throw an error if the request fails', async () => {
@@ -34,8 +35,8 @@ describe('NodeConnection', () => {
             const blockRange = await connection.getBlockRange(1, 3);
             expect(Array.isArray(blockRange)).toBe(true);
             expect((blockRange as Block[]).length).toBe(2);
-            expect(((blockRange as Block[])[0] as Block).block_hash).toBe("ab1tz33xvmcwm4q9fc7kplxn43mzdf7nr4232jtp77a6hrq4dhu6cpsuuhvc6");
-            expect(((blockRange as Block[])[1] as Block).block_hash).toBe("ab174s4uw9ufs5f05cqznqqy0x42n5vv6jf6fslsh4v6e4xyf7zwugqansd40");
+            expect(((blockRange as Block[])[0] as Block).block_hash).toBe("ab1n79nyqnxa76wpz40efqlq53artsw86wrez4tw9kn5xrpuc65xyxquh3wnw");
+            expect(((blockRange as Block[])[1] as Block).block_hash).toBe("ab1ywy38xs5c73s2q9v3mgyes5cup5wwtg8r2mlad0534zdmltadcrq9dpuw6");
 
         }, 60000);
 
@@ -87,7 +88,7 @@ describe('NodeConnection', () => {
 
     describe('getTransaction', () => {
         it('should return a Transaction object', async () => {
-            const transaction = await connection.getTransaction('at1nfpzfn57p59l8fz8p962y042n3xd7tks7wpphalle3ywzagqwufq0w98eq');
+            const transaction = await connection.getTransaction('at1ps9rynpue84asfhswp305fzytdy3a99w3yrml2zgg84d7p32wuxq4mq9cc');
             expect((transaction as Transaction).type).toBe("execute");
         }, 60000);
 
@@ -110,7 +111,7 @@ describe('NodeConnection', () => {
 
     describe('getTransitionId', () => {
         it('should return a transition id', async () => {
-            const transition = await connection.getTransitionId('215289562929251901873489364071437708748482144332199791410604867535220208424field')
+            const transition = await connection.getTransitionId('5933570015305968530125784572086807293992783852506506765106247734494477879199field')
             expect(typeof transition).toBe('string');
         }, 60000);
 
@@ -134,13 +135,12 @@ describe('NodeConnection', () => {
                 expect(records.length).toBe(0);
             }
         }, 90000);
-
     });
 
     describe('getProgramImports', () => {
         it('should return the correct program import names', async () => {
-            const importNames = await connection.getProgramImportNames("imported_add_mul.aleo");
-            const expectedNames = ["double_test.aleo", "addition_test.aleo"];
+            const importNames = await connection.getProgramImportNames("disperse_multiple_transactions.aleo");
+            const expectedNames = ["credits.aleo"];
             expect(importNames).toEqual(expectedNames);
 
             const creditImports = await connection.getProgramImportNames("credits.aleo");
@@ -148,7 +148,7 @@ describe('NodeConnection', () => {
             expect(creditImports).toEqual(expectedCreditImports);
         }, 60000);
 
-        it('should return all nested imports', async () => {
+        it.skip('should return all nested imports', async () => {
             const imports = await connection.getProgramImports("imported_add_mul.aleo");
             const expectedImports = {
                 'multiply_test.aleo': 'program multiply_test.aleo;\n' +
@@ -175,6 +175,18 @@ describe('NodeConnection', () => {
                     '    output r2 as u32.private;\n'
             };
             expect(imports).toEqual(expectedImports);
+        }, 60000);
+    });
+    describe('Mappings', () => {
+        it('should find program mappings and read mappings', async () => {
+            const mappings = await connection.getProgramMappingNames("credits.aleo");
+            if (!(mappings instanceof Error)) {
+                expect(mappings).toEqual(["committee", "bonded", "unbonding", "account"]);
+            }
+            const mappingValue = await connection.getProgramMappingValue("credits.aleo", "account", "aleo1rlwt9w0fl242h40w454m68vttd6vm4lmetu5r57unm5g354y9yzsyexf0y");
+            if (!(mappingValue instanceof Error)) {
+                expect(mappingValue).toBeTruthy()
+            }
         }, 60000);
     });
 });

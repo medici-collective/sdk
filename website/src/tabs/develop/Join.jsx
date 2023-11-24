@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import { Button, Card, Col, Form, Input, Row, Result, Spin } from "antd";
+import {Button, Card, Col, Form, Input, Row, Result, Spin, Switch} from "antd";
 import axios from "axios";
 
 export const Join = () => {
     const [joinFeeRecord, setJoinFeeRecord] = useState(null);
     const [recordOne, setRecordOne] = useState(null);
     const [recordTwo, setRecordTwo] = useState(null);
-    const [joinUrl, setJoinUrl] = useState("https://vm.aleo.org/api");
+    const [joinUrl, setJoinUrl] = useState("https://api.explorer.aleo.org/v1");
     const [joinFee, setJoinFee] = useState("1.0");
+    const [privateFee, setPrivateFee] = useState(true);
     const [loading, setLoading] = useState(false);
     const [privateKey, setPrivateKey] = useState(null);
     const [joinError, setJoinError] = useState(null);
@@ -66,6 +67,7 @@ export const Join = () => {
             recordOne: recordOneString(),
             recordTwo: recordTwoString(),
             fee: feeAmount,
+            privateFee: privateFee,
             feeRecord: feeRecordString(),
             privateKey: privateKeyString(),
             url: peerUrl(),
@@ -195,9 +197,18 @@ export const Join = () => {
                     />
                 </Form.Item>
                 <Form.Item
+                    label="Private Fee"
+                    name="private_fee"
+                    valuePropName="checked"
+                    initialValue={true}
+                >
+                    <Switch onChange={setPrivateFee} />
+                </Form.Item>
+                <Form.Item
                     label="Fee Record"
                     colon={false}
                     validateStatus={status}
+                    hidden={!privateFee}
                 >
                     <Input.TextArea
                         name="Fee Record"
