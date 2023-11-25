@@ -1,6 +1,6 @@
 {
   "name": "@puzzlehq/wasm",
-  "version": "0.6.2",
+  "version": "0.6.8",
   "description": "Wasm build for the SDK",
   "collaborators": [
     "The Aleo Team <hello@aleo.org>",

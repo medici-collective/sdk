@@ -16,12 +16,9 @@
 
 use crate::{
     account::{Address, PrivateKey},
-    types::{CurrentNetwork, ComputeKey, Network, Scalar, SignatureNative, ToFields, Value}
+    types::native::{CurrentNetwork, ComputeKey, Network, Scalar, SignatureNative, ToFields, Value}
 };
-use snarkvm_wasm::utilities::{Uniform};
-// use std::collections::HashMap;
-// use itertools::Itertools;
-
+use snarkvm_wasm::utilities::Uniform;
 use core::{fmt, ops::Deref, str::FromStr};
 use rand::{rngs::StdRng, SeedableRng};
 use wasm_bindgen::prelude::*;
@@ -43,37 +40,26 @@ impl Signature {
 
 
     pub fn sign_message(private_key: &PrivateKey, message: &[u8], seed: &[u8]) -> Self {
-
         // seed used for generating rng
         let seed_array = <[u8; 32]>::try_from(seed).expect("Invalid seed length");
-
         let mut rng = StdRng::from_seed(seed_array);
 
         let message_slice: &[u8] = &message;
-
         let message_str = match std::str::from_utf8(message_slice) {
             Ok(v) => v.to_string(),
             Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
         };
-
         let message_value: Value<CurrentNetwork> = Value::from_str(&message_str).unwrap();
-
         let mut message_to_fields = message_value.to_fields().unwrap();
-
         if message_to_fields.len() > CurrentNetwork::MAX_DATA_SIZE_IN_FIELDS as usize {
             panic!("Cannot sign the message: the message exceeds maximum allowed size");
         };
 
         let nonce = Scalar::rand(&mut rng);
-
         let g_r = Network::g_scalar_multiply(&nonce);
-
         let pk_sig = Network::g_scalar_multiply(&private_key.sk_sig());
-
         let pr_sig = Network::g_scalar_multiply(&private_key.r_sig());
-
         let compute_key = ComputeKey::try_from((pk_sig, pr_sig)).unwrap();
-
         let address = compute_key.to_address();
 
         // need to splice in g_r, pk_sig, pr_sig, address ... and sign against that
@@ -81,7 +67,6 @@ impl Signature {
         .iter() // Convert the array to an iterator
         .map(|&point| point.to_x_coordinate())
         .collect();
-
         message_to_fields.splice(0..0, prepend_items);
 
         // Compute the verifier challenge.
@@ -90,10 +75,7 @@ impl Signature {
         // Compute the prover response.
         let response = nonce - (challenge * private_key.sk_sig());
 
-        // Ok(Self { challenge, response, compute_key })
-
         let sig = SignatureNative::from((challenge, response, compute_key));
-
 
         // note: keeping result, dict, etc below here for debugging message that one is signing against.
         // to see message one is signing against, change return to string and return result
@@ -109,7 +91,6 @@ impl Signature {
         //     my_dict.insert(key, val);
         // }
 
-
         // Output the signature.
         // let string_representation: String = my_dict.iter()
         // .map(|(k, v)| (k, k.trim_start_matches("field_").parse::<usize>().unwrap_or(0), v)) // extract numeric part
@@ -118,31 +99,17 @@ impl Signature {
         // .collect::<Vec<String>>()
         // .join(",\n");
 
+        // Verify the signature.
+        // let address = Address::try_from(&private_key).unwrap();
+        // assert!(signature.verify(&address, &message));
+
+        // // Print the results.
+        // print!("{signature}");
+        // print!(" {address}");
+        // print!(" \"{value}\"")
+
         Self(sig)
     }
-    // Verify the signature.
-    // let address = Address::try_from(&private_key).unwrap();
-    // assert!(signature.verify(&address, &message));
-
-    // // Print the results.
-    // print!("{signature}");
-    // print!(" {address}");
-    // print!(" \"{value}\"")
-
-    /// Ignore the mess below -- me testing things
-    // let message_in_bits = message.to_bits_le();
-    // println!("message in bits is {:?}", message_in_bits);
-    // let message_in_field = message_in_bits.chunks(Field::<N>::size_in_data_bits()).map(Field::from_bits_le).collect::<Result<Vec<_>>>()?;
-    // println!("message in field is {:?}", message_in_field);
-
-
-    /// Turn a message into bits
-    ///
-    /// @param {Uint8Array} message Byte representation of the message to sign
-    /// @returns {Vec<bool>} Vec of bool of the message
-    // pub fn gen_bits_message(message: &[u8]) -> Vec<bool> {
-    //     (message.to_bits_le()).to_string()
-    // }
 
     /// Verify a signature of a message with an address
     ///

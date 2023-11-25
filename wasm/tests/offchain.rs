@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
-use aleo_wasm::{PrivateKey, Program, ProgramManager, RecordPlaintext};
+use aleo_wasm::{PrivateKey, Program, ProgramManager, ProvingKey, RecordPlaintext, VerifyingKey};
 use js_sys::{Array, Object, Reflect};
 use wasm_bindgen::JsValue;
 use wasm_bindgen_test::*;
@@ -187,7 +187,7 @@ async fn test_key_synthesis() {
     let inputs = Array::new();
     inputs.set(0u32, JsValue::from_str(RECORD));
     inputs.set(1u32, JsValue::from_str("5u64"));
-    let result = ProgramManager::execute_function_offline(
+    let mut result = ProgramManager::execute_function_offline(
         &PrivateKey::from_string("APrivateKey1zkp3dQx4WASWYQVWKkq14v3RoQDfY2kbLssUj7iifi1VUQ6").unwrap(),
         &credits,
         "split",
@@ -197,11 +197,13 @@ async fn test_key_synthesis() {
         None,
         Some(retrieved_proving_key.clone()),
         Some(retreived_verifying_key.clone()),
+        None,
+        None,
     )
     .await
     .unwrap();
 
-    let mut keys = result.get_keys("credits.aleo", "split").unwrap();
+    let mut keys = result.get_keys().unwrap();
     let proving_key = keys.proving_key().unwrap();
     let verifying_key = keys.verifying_key().unwrap();
     assert_eq!(proving_key, retrieved_proving_key);
@@ -225,7 +227,8 @@ async fn test_fee_validation() {
         inputs,
         100.0,
         Some(fee_record.clone()),
-        "https://vm.aleo.org/api",
+        Some("https://api.explorer.aleo.org/v1".to_string()),
+        None,
         None,
         None,
         None,
@@ -241,7 +244,8 @@ async fn test_fee_validation() {
         &Program::get_credits_program().to_string(),
         100.0,
         Some(fee_record.clone()),
-        "https://vm.aleo.org/api",
+        Some("https://api.explorer.aleo.org/v1".to_string()),
+        None,
         None,
         None,
         None,
@@ -258,7 +262,8 @@ async fn test_fee_validation() {
         Some(fee_record.clone()),
         0.9,
         Some(fee_record.clone()),
-        "https://vm.aleo.org/api",
+        Some("https://api.explorer.aleo.org/v1".to_string()),
+        None,
         None,
         None,
         None,
@@ -275,7 +280,8 @@ async fn test_fee_validation() {
         Some(fee_record.clone()),
         100.00,
         Some(fee_record.clone()),
-        "https://vm.aleo.org/api",
+        Some("https://api.explorer.aleo.org/v1".to_string()),
+        None,
         None,
         None,
         None,
@@ -291,7 +297,8 @@ async fn test_fee_validation() {
         fee_record.clone(),
         100.00,
         Some(fee_record.clone()),
-        "https://vm.aleo.org/api",
+        Some("https://api.explorer.aleo.org/v1".to_string()),
+        None,
         None,
         None,
         None,
@@ -326,7 +333,8 @@ async fn test_fee_estimation() {
         FINALIZE,
         "integer_key_mapping_update",
         inputs,
-        "https://vm.aleo.org/api",
+        Some("https://api.explorer.aleo.org/v1".to_string()),
+        None,
         None,
         None,
         None,
@@ -363,6 +371,8 @@ async fn test_import_resolution() {
         false,
         false,
         Some(imports),
+        None,
+        None,
         None,
         None,
     )

@@ -20,6 +20,7 @@ async function localProgramExecution(program, aleoFunction, inputs) {
 
     // Create a key provider in order to re-use the same key for each execution
     const keyProvider = new AleoKeyProvider();
+    keyProvider.useCache(true);
     programManager.setKeyProvider(keyProvider);
 
     // Pre-synthesize the program keys and then cache them in memory using key provider
@@ -32,28 +33,25 @@ async function localProgramExecution(program, aleoFunction, inputs) {
 
     // Execute once using the key provider params defined above. This will use the cached proving keys and make
     // execution significantly faster.
-    let executionResponse = await programManager.executeOffline(
+    let executionResponse = await programManager.run(
         hello_hello_program,
         "hello",
         ["5u32", "5u32"],
-        false,
+        true,
         undefined,
         keyProviderParams,
     );
-    console.log(executionResponse.getOutputs())
+    console.log("hello_hello/hello executed - result:", executionResponse.getOutputs());
 
-    executionResponse = await programManager.executeOffline(
-        hello_hello_program,
-        "hello",
-        ["5u32", "5u32"],
-        false,
-        keyProviderParams,
-    );
-    return executionResponse.getOutputs();
+    // Verify the execution using the verifying key that was generated earlier.
+    if (programManager.verifyExecution(executionResponse)) {
+        console.log("hello_hello/hello execution verified!");
+    } else {
+        throw("Execution failed verification!");
+    }
 }
 
 const start = Date.now();
 console.log("Starting execute!");
-const result = await localProgramExecution();
-console.log(result);
+await localProgramExecution();
 console.log("Execute finished!", Date.now() - start);

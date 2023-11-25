@@ -20,13 +20,19 @@ use core::ops::Add;
 use crate::{
     execute_fee,
     execute_program,
-    get_process,
     log,
     process_inputs,
-    types::{CurrentAleo, IdentifierNative, ProcessNative, ProgramNative, RecordPlaintextNative, TransactionNative},
-    ExecutionResponse, PrivateKey, RecordPlaintext, Transaction,
+    ExecutionResponse, OfflineQuery, PrivateKey, RecordPlaintext, Transaction,
 };
 
+use crate::types::native::{
+    CurrentAleo,
+    IdentifierNative,
+    ProcessNative,
+    ProgramNative,
+    RecordPlaintextNative,
+    TransactionNative,
+};
 use js_sys::{Array, Object};
 use rand::{rngs::StdRng, SeedableRng};
 use std::str::FromStr;
@@ -63,8 +69,11 @@ impl ProgramManager {
         imports: Option<Object>,
         proving_key: Option<ProvingKey>,
         verifying_key: Option<VerifyingKey>,
+        url: Option<String>,
+        offline_query: Option<OfflineQuery>,
     ) -> Result<ExecutionResponse, String> {
         log(&format!("Executing local function: {function}"));
+        let node_url = url.as_deref().unwrap_or(DEFAULT_URL);
         let inputs = inputs.to_vec();
         let rng = &mut StdRng::from_entropy();
 
@@ -86,20 +95,28 @@ impl ProgramManager {
             rng
         );
 
-        let process_native = if cache { Some(process_native) } else { None };
-
-        if prove_execution {
+        let mut execution_response = if prove_execution {
             log("Preparing inclusion proofs for execution");
-            let query = QueryNative::from("https://vm.aleo.org/api");
-            trace.prepare_async(query).await.map_err(|err| err.to_string())?;
+            if let Some(offline_query) = offline_query {
+                trace.prepare_async(offline_query).await.map_err(|err| err.to_string())?;
+            } else {
+                let query = QueryNative::from(node_url);
+                trace.prepare_async(query).await.map_err(|err| err.to_string())?;
+            }
 
             log("Proving execution");
             let locator = program_native.id().to_string().add("/").add(function);
             let execution = trace.prove_execution::<CurrentAleo, _>(&locator, rng).map_err(|e| e.to_string())?;
-            Ok(ExecutionResponse::from((response, execution, process_native)))
+            ExecutionResponse::new(Some(execution), function, response, process, program)?
         } else {
-            Ok(ExecutionResponse::from((response, process_native)))
+            ExecutionResponse::new(None, function, response, process, program)?
+        };
+
+        if cache {
+            execution_response.add_proving_key(process, function, program_native.id())?;
         }
+
+        Ok(execution_response)
     }
 
     /// Execute Aleo function and create an Aleo execution transaction
@@ -132,21 +149,22 @@ impl ProgramManager {
         inputs: Array,
         fee_credits: f64,
         fee_record: Option<RecordPlaintext>,
-        url: &str,
+        url: Option<String>,
         imports: Option<Object>,
         proving_key: Option<ProvingKey>,
         verifying_key: Option<VerifyingKey>,
         fee_proving_key: Option<ProvingKey>,
         fee_verifying_key: Option<VerifyingKey>,
+        offline_query: Option<OfflineQuery>,
     ) -> Result<Transaction, String> {
         log(&format!("Executing function: {function} on-chain"));
         let fee_microcredits = match &fee_record {
             Some(fee_record) => Self::validate_amount(fee_credits, fee_record, true)?,
             None => (fee_credits * 1_000_000.0) as u64,
         };
-
         let mut process_native = ProcessNative::load_web().map_err(|err| err.to_string())?;
         let process = &mut process_native;
+        let node_url = url.as_deref().unwrap_or(DEFAULT_URL);
 
         log("Check program imports are valid and add them to the process");
         let program_native = ProgramNative::from_str(program).map_err(|e| e.to_string())?;
@@ -166,8 +184,12 @@ impl ProgramManager {
         );
 
         log("Preparing inclusion proofs for execution");
-        let query = QueryNative::from(url);
-        trace.prepare_async(query).await.map_err(|err| err.to_string())?;
+        if let Some(offline_query) = offline_query.as_ref() {
+            trace.prepare_async(offline_query.clone()).await.map_err(|err| err.to_string())?;
+        } else {
+            let query = QueryNative::from(node_url);
+            trace.prepare_async(query).await.map_err(|err| err.to_string())?;
+        }
 
         log("Proving execution");
         let program = ProgramNative::from_str(program).map_err(|err| err.to_string())?;
@@ -183,11 +205,12 @@ impl ProgramManager {
             private_key,
             fee_record,
             fee_microcredits,
-            url,
+            node_url,
             fee_proving_key,
             fee_verifying_key,
             execution_id,
-            rng
+            rng,
+            offline_query
         );
 
         // Verify the execution
@@ -222,10 +245,11 @@ impl ProgramManager {
         program: &str,
         function: &str,
         inputs: Array,
-        url: &str,
+        url: Option<String>,
         imports: Option<Object>,
         proving_key: Option<ProvingKey>,
         verifying_key: Option<VerifyingKey>,
+        offline_query: Option<OfflineQuery>,
     ) -> Result<u64, String> {
         log(
             "Disclaimer: Fee estimation is experimental and may not represent a correct estimate on any current or future network",
@@ -253,10 +277,15 @@ impl ProgramManager {
         );
 
         // Execute the program
+        let node_url = url.as_deref().unwrap_or(DEFAULT_URL);
         let program = ProgramNative::from_str(program).map_err(|err| err.to_string())?;
         let locator = program.id().to_string().add("/").add(function);
-        let query = QueryNative::from(url);
-        trace.prepare_async(query).await.map_err(|err| err.to_string())?;
+        if let Some(offline_query) = offline_query {
+            trace.prepare_async(offline_query).await.map_err(|err| err.to_string())?;
+        } else {
+            let query = QueryNative::from(node_url);
+            trace.prepare_async(query).await.map_err(|err| err.to_string())?;
+        }
         let execution = trace.prove_execution::<CurrentAleo, _>(&locator, rng).map_err(|e| e.to_string())?;
 
         // Get the storage cost in bytes for the program execution

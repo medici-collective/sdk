@@ -17,11 +17,18 @@
 use super::*;
 
 use crate::{
-    execute_fee, execute_program, get_process, log, process_inputs
-    types::{CurrentAleo, IdentifierNative, ProcessNative, ProgramNative, RecordPlaintextNative, TransactionNative},
-    PrivateKey, RecordPlaintext, Transaction,
+    execute_fee, execute_program, log, process_inputs,
+    OfflineQuery, PrivateKey, RecordPlaintext, Transaction,
 };
 
+use crate::types::native::{
+    CurrentAleo,
+    IdentifierNative,
+    ProcessNative,
+    ProgramNative,
+    RecordPlaintextNative,
+    TransactionNative,
+};
 use js_sys::Array;
 use rand::{rngs::StdRng, SeedableRng};
 use std::str::FromStr;
@@ -50,11 +57,12 @@ impl ProgramManager {
         record_2: RecordPlaintext,
         fee_credits: f64,
         fee_record: Option<RecordPlaintext>,
-        url: &str,
+        url: Option<String>,
         join_proving_key: Option<ProvingKey>,
         join_verifying_key: Option<VerifyingKey>,
         fee_proving_key: Option<ProvingKey>,
         fee_verifying_key: Option<VerifyingKey>,
+        offline_query: Option<OfflineQuery>,
     ) -> Result<Transaction, String> {
         log("Executing join program");
         let fee_microcredits = match &fee_record {
@@ -64,6 +72,7 @@ impl ProgramManager {
         let rng = &mut StdRng::from_entropy();
 
         log("Setup program and inputs");
+        let node_url = url.as_deref().unwrap_or(DEFAULT_URL);
         let program = ProgramNative::credits().unwrap().to_string();
         let inputs = Array::new_with_length(2);
         inputs.set(0u32, wasm_bindgen::JsValue::from_str(&record_1.to_string()));
@@ -102,8 +111,12 @@ impl ProgramManager {
         );
 
         log("Preparing inclusion proof for the join execution");
-        let query = QueryNative::from(url);
-        trace.prepare_async(query).await.map_err(|err| err.to_string())?;
+        if let Some(offline_query) = offline_query.as_ref() {
+            trace.prepare_async(offline_query.clone()).await.map_err(|err| err.to_string())?;
+        } else {
+            let query = QueryNative::from(node_url);
+            trace.prepare_async(query).await.map_err(|err| err.to_string())?;
+        }
 
         log("Proving the join execution");
         let execution = trace.prove_execution::<CurrentAleo, _>("credits.aleo/join", rng).map_err(|e| e.to_string())?;
@@ -118,11 +131,12 @@ impl ProgramManager {
             private_key,
             fee_record,
             fee_microcredits,
-            url,
+            node_url,
             fee_proving_key,
             fee_verifying_key,
             execution_id,
-            rng
+            rng,
+            offline_query
         );
 
         log("Creating execution transaction for join");

@@ -16,7 +16,7 @@
 
 use crate::{
     account::{Address, Encryptor, PrivateKeyCiphertext, Signature, ViewKey},
-    types::{CurrentNetwork, Environment, Field, FromBytes, FromBits, PrimeField, PrivateKeyNative, SizeInDataBits, ToBytes, ToBits},
+    types::native::{CurrentNetwork, Environment, FromBytes, PrimeField, PrivateKeyNative, ToBytes},
 };
 
 use core::{convert::TryInto, fmt, ops::Deref, str::FromStr};

@@ -30,13 +30,28 @@ pub mod transfer;
 pub use transfer::*;
 
 use crate::{
-    types::{
-        cost_in_microcredits, deployment_cost, CurrentAleo, IdentifierNative, ProcessNative, ProgramIDNative,
-        ProgramNative, ProvingKeyNative, QueryNative, VerifyingKeyNative,
-    },
+    // types::{
+    //     cost_in_microcredits, deployment_cost, CurrentAleo, IdentifierNative, ProcessNative, ProgramIDNative,
+    //     ProgramNative, ProvingKeyNative, QueryNative, VerifyingKeyNative,
+    // },
     KeyPair, PrivateKey, ProvingKey, RecordPlaintext, VerifyingKey,
 };
 
+const DEFAULT_URL: &str = "https://api.explorer.aleo.org/v1";
+
+// use crate::{KeyPair, PrivateKey, ProvingKey, RecordPlaintext, VerifyingKey};
+
+use crate::types::native::{
+    cost_in_microcredits,
+    deployment_cost,
+    IdentifierNative,
+    ProcessNative,
+    ProgramIDNative,
+    ProgramNative,
+    ProvingKeyNative,
+    QueryNative,
+    VerifyingKeyNative,
+};
 use js_sys::{Object, Reflect};
 use std::str::FromStr;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -77,7 +92,6 @@ impl ProgramManager {
         inputs: js_sys::Array,
         imports: Option<Object>,
     ) -> Result<KeyPair, String> {
-        let program_id = ProgramNative::from_str(program).map_err(|e| e.to_string())?.id().to_string();
         ProgramManager::execute_function_offline(
             private_key,
             program,
@@ -88,9 +102,11 @@ impl ProgramManager {
             imports,
             None,
             None,
+            None,
+            None,
         )
         .await?
-        .get_keys(&program_id, function_id)
+        .get_keys()
     }
 
     /// Check if a process contains a keypair for a specific function
