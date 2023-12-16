@@ -38,12 +38,9 @@ use crate::types::native::{
     ProgramNative,
     RecordPlaintextNative,
     TransactionNative,
-    ValueType,
-    ProgramImports,
 };
 use js_sys::{Array, Object};
 use rand::{rngs::StdRng, SeedableRng};
-use serde_json::Value;
 use std::str::FromStr;
 
 #[wasm_bindgen]
@@ -70,7 +67,7 @@ impl ProgramManager {
     #[allow(clippy::too_many_arguments)]
     pub async fn authorize(
         self,
-        program_id: String,
+        program_id: &String,
         function_id: String,
         inputs_str: Array,
         fee_credits: f64,
@@ -99,7 +96,7 @@ impl ProgramManager {
     
     
         // resolve the program imports if they exist
-        let mut imports = ProgramImports::new();
+        let imports: Option<Object> = Some(js_sys::Object::new());
         // let imports = self.
     
     
@@ -125,9 +122,11 @@ impl ProgramManager {
         // create the process authorization
         println!("creating authorization...");
         let inputs_vec = inputs_str.to_vec();
-        let inputs: Vec<ValueType> = inputs_vec.iter()
-            .map(|s| ValueType::from_str(s).unwrap())
-            .collect();
+        let mut inputs = Vec::<String>::new();
+        for input in inputs_vec.to_vec().iter() {
+            let Some(input) = input.as_string();
+            inputs.push(input);
+        }
         let rng = &mut StdRng::from_entropy();
         let authorization = process
           .authorize::<CurrentAleo, _>(
