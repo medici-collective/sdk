@@ -93,17 +93,15 @@ impl ProgramManager {
         };
         let function_name = IdentifierNative::from_str(&function_id)
           .map_err(|_| anyhow!("😵 the function name provided was invalid"))?;
-    
-    
-        // resolve the program imports if they exist
+        
+        // Init imports
         let imports: Option<Object> = Some(js_sys::Object::new());
-        // let imports = self.
-    
     
         // create process and load program and its imports into the process
         println!("adding program inputs to the process...");
         let mut process_native = ProcessNative::load().expect("😵 could not load process");
         let process = &mut process_native;
+        // resolve the program imports if they exist
         ProgramManager::resolve_imports(process, &program, imports)?;
         let program_id = program.id().to_string();
         if program_id != "credits.aleo" {
