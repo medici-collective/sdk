@@ -61,6 +61,79 @@ impl ProgramManager {
     /// are a string representing the program source code \{ "hello.aleo": "hello.aleo source code" \}
     /// @param {ProvingKey | undefined} proving_key (optional) Provide a verifying key to use for the function execution
     /// @param {VerifyingKey | undefined} verifying_key (optional) Provide a verifying key to use for the function execution
+    // pub async fn authorize(
+    //     self,
+    //     program_id: String,
+    //     function_id: String,
+    //     inputs_str: Vec<String>,
+    //     fee_credits: f64,
+    //     fee_record_str: Option<String>,
+    //     private_key: String,
+    //   ) -> Result<String, anyhow::Error> {
+    //     // parse inputs
+    //     let program = self.network_client.get_program_native(&program_id).await?;
+    //     let private_key = PrivateKeyNative::from_str(&private_key)?;
+    //     let fee_record: Option<RecordPlaintextNative>;
+    //     if let Some(fee_record_str) = fee_record_str {
+    //       fee_record = Some(RecordPlaintextNative::from_str(&fee_record_str).expect("😵 fee record could not be parsed"));
+    //     } else {
+    //       // todo - validate user has enough public credits to pay for the execution
+    //       fee_record = None;
+    //     }
+    //     // get the fee in microcredits, validating the fee record (if present) can pay for it
+    //     let fee_microcredits = match &fee_record {
+    //       Some(fee_record) => Self::validate_amount(fee_credits, fee_record, true).expect("😵 could not validate fee record's amount"),
+    //       None => (fee_credits * 1_000_000.0) as u64,
+    //     };
+    //     let function_name = IdentifierNative::from_str(&function_id)
+    //       .map_err(|_| anyhow!("😵 the function name provided was invalid"))?;
+    
+    
+    //     // resolve the program imports if they exist
+    //     let imports = self.network_client.get_program_imports(Either::Left(program.clone())).await.expect("😵 could not get program imports");
+    
+    
+    //     // create process and load program and its imports into the process
+    //     println!("adding program inputs to the process...");
+    //     let mut process_native = ProcessNative::load().expect("😵 could not load process");
+    //     let process = &mut process_native;
+    //     self.add_imports_to_process(process, &program, &imports).await?;
+    //     let program_id = program.id().to_string();
+    //     if program_id != "credits.aleo" {
+    //       if let Ok(stored_program) = process.get_program(program.id()) {
+    //         println!("adding *stored* program to the process");
+    //         if stored_program != &program {
+    //           bail!("😵 the program provided does not match the program stored in the cache, please clear the cache before proceeding");
+    //         }
+    //       } else {
+    //         println!("adding program {} to the process", program.id().to_string());
+    //         process.add_program(&program).map_err(|e| anyhow!(e))?;
+    //       }
+    //     }
+    //     let start = Instant::now();
+    
+    
+    //     // create the process authorization
+    //     println!("creating authorization...");
+    //     let inputs: Vec<ValueNative> = inputs_str.iter()
+    //         .map(|s| ValueNative::from_str(s).unwrap())
+    //         .collect();
+    //     let rng = &mut StdRng::from_entropy();
+    //     let authorization = process
+    //       .authorize::<CurrentAleo, _>(
+    //         &private_key,
+    //         program.id(),
+    //         function_name,
+    //         inputs.iter(),
+    //         rng,
+    //       )
+    //       .map_err(|err| anyhow!(err))?;
+    //     let auth_string = authorization.to_string();
+    //     timelog("authorization", &start);
+    
+    //     Ok(auth_string)
+    //   }
+    
     #[wasm_bindgen(js_name = executeFunctionOffline)]
     #[allow(clippy::too_many_arguments)]
     pub async fn execute_function_offline(
