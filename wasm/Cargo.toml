@@ -21,6 +21,9 @@ edition = "2021"
 crate-type = [ "cdylib", "rlib" ]
 doctest = false
 
+[dependencies]
+tokio-util = "0.7.10"
+
 [dependencies.snarkvm-circuit-network]
 version = "0.16.10"
 
@@ -123,9 +126,9 @@ features = [
 version = "0.3.37"
 
 [features]
-default = [ "serial", "browser" ]
-serial = [ "snarkvm-console/serial", "snarkvm-synthesizer/serial", "snarkvm-ledger-query/serial", "snarkvm-ledger-block/serial", "snarkvm-ledger-store/serial" ]
-browser = [ ]
+default = ["serial", "browser"]
+serial = ["snarkvm-console/serial", "snarkvm-synthesizer/serial", "snarkvm-ledger-query/serial", "snarkvm-ledger-block/serial", "snarkvm-ledger-store/serial"]
+browser = []
 
 ## Profiles
 [profile.release]

@@ -17,6 +17,7 @@
 use super::*;
 use core::ops::Add;
 
+
 use crate::{
     execute_fee,
     execute_program,
@@ -37,11 +38,11 @@ use crate::types::native::{
     RecordPlaintextNative,
     TransactionNative,
     ValueType,
+    ProgramImports,
 };
 use js_sys::{Array, Object};
 use rand::{rngs::StdRng, SeedableRng};
 use serde_json::Value;
-use snarkvm_console::account::PrivateKey;
 use std::str::FromStr;
 
 #[wasm_bindgen]
@@ -75,8 +76,10 @@ impl ProgramManager {
         fee_record_str: Option<String>,
         private_key: String,
       ) -> Result<String, anyhow::Error> {
-        // parse inputs
-        let program = self.network_client.get_program_native(&program_id).await?;
+        // TODO -- figure out how to take in imports
+        // parse inputs 
+        log("Check program imports are valid and add them to the process");
+        let program = ProgramNative::from_str(&program_id).map_err(|e| e.to_string())?;
         let private_key = PrivateKey::from_str(&private_key)?;
         let fee_record: Option<RecordPlaintextNative>;
         if let Some(fee_record_str) = fee_record_str {
@@ -95,14 +98,15 @@ impl ProgramManager {
     
     
         // resolve the program imports if they exist
-        let imports = self.network_client.get_program_imports(Either::Left(program.clone())).await.expect("😵 could not get program imports");
+        let mut imports = ProgramImports::new();
+        // let imports = self.
     
     
         // create process and load program and its imports into the process
         println!("adding program inputs to the process...");
         let mut process_native = ProcessNative::load().expect("😵 could not load process");
         let process = &mut process_native;
-        self.add_imports_to_process(process, &program, &imports).await?;
+        ProgramManager::resolve_imports(process, &program, imports)?;
         let program_id = program.id().to_string();
         if program_id != "credits.aleo" {
           if let Ok(stored_program) = process.get_program(program.id()) {
