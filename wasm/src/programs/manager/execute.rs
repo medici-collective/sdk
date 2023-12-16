@@ -16,6 +16,7 @@
 
 use super::*;
 use core::ops::Add;
+use anyhow::{bail, anyhow};
 
 
 use crate::{
@@ -71,7 +72,7 @@ impl ProgramManager {
         self,
         program_id: String,
         function_id: String,
-        inputs_str: Vec<String>,
+        inputs_str: Array,
         fee_credits: f64,
         fee_record_str: Option<String>,
         private_key: String,
@@ -119,12 +120,12 @@ impl ProgramManager {
             process.add_program(&program).map_err(|e| anyhow!(e))?;
           }
         }
-        let start = Instant::now();
     
     
         // create the process authorization
         println!("creating authorization...");
-        let inputs: Vec<ValueType> = inputs_str.iter()
+        let inputs_vec = inputs_str.to_vec();
+        let inputs: Vec<ValueType> = inputs_vec.iter()
             .map(|s| ValueType::from_str(s).unwrap())
             .collect();
         let rng = &mut StdRng::from_entropy();
@@ -138,7 +139,6 @@ impl ProgramManager {
           )
           .map_err(|err| anyhow!(err))?;
         let auth_string = authorization.to_string();
-        timelog("authorization", &start);
     
         Ok(auth_string)
     }
