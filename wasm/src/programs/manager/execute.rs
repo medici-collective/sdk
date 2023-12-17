@@ -16,7 +16,7 @@
 
 use super::*;
 use core::ops::Add;
-use anyhow::{bail, anyhow};
+use anyhow::anyhow;
 
 
 use crate::{
@@ -67,32 +67,23 @@ impl ProgramManager {
     #[allow(clippy::too_many_arguments)]
     pub async fn authorize(
         self,
-        program_id: &String,
+        program_id: &str,
         function_id: String,
         inputs_str: Array,
         fee_credits: f64,
-        fee_record_str: Option<String>,
-        private_key: String,
-      ) -> Result<String, anyhow::Error> {
+        fee_record: Option<RecordPlaintext>,
+        private_key: &PrivateKey,
+      ) -> Result<String, String> {
         // TODO -- figure out how to take in imports
         // parse inputs 
         log("Check program imports are valid and add them to the process");
         let program = ProgramNative::from_str(&program_id).map_err(|e| e.to_string())?;
-        let private_key = PrivateKey::from_str(&private_key)?;
-        let fee_record: Option<RecordPlaintextNative>;
-        if let Some(fee_record_str) = fee_record_str {
-          fee_record = Some(RecordPlaintextNative::from_str(&fee_record_str).expect("😵 fee record could not be parsed"));
-        } else {
-          // todo - validate user has enough public credits to pay for the execution
-          fee_record = None;
-        }
-        // get the fee in microcredits, validating the fee record (if present) can pay for it
         let fee_microcredits = match &fee_record {
-          Some(fee_record) => Self::validate_amount(fee_credits, fee_record, true).expect("😵 could not validate fee record's amount"),
-          None => (fee_credits * 1_000_000.0) as u64,
+            Some(fee_record) => Self::validate_amount(fee_credits, fee_record, true)?,
+            None => (fee_credits * 1_000_000.0) as u64,
         };
         let function_name = IdentifierNative::from_str(&function_id)
-          .map_err(|_| anyhow!("😵 the function name provided was invalid"))?;
+            .map_err(|err| anyhow!(err).to_string())?;
         
         // Init imports
         let imports: Option<Object> = Some(js_sys::Object::new());
@@ -108,11 +99,11 @@ impl ProgramManager {
           if let Ok(stored_program) = process.get_program(program.id()) {
             println!("adding *stored* program to the process");
             if stored_program != &program {
-              bail!("😵 the program provided does not match the program stored in the cache, please clear the cache before proceeding");
+                return Err("😵 the program provided does not match the program stored in the cache, please clear the cache before proceeding".to_string());
             }
           } else {
             println!("adding program {} to the process", program.id().to_string());
-            process.add_program(&program).map_err(|e| anyhow!(e))?;
+            process.add_program(&program).map_err(|e| e.to_string())?;
           }
         }
     
@@ -122,8 +113,13 @@ impl ProgramManager {
         let inputs_vec = inputs_str.to_vec();
         let mut inputs = Vec::<String>::new();
         for input in inputs_vec.to_vec().iter() {
-            let Some(input) = input.as_string();
-            inputs.push(input);
+            if let Some(input) = input.as_string() {
+                inputs.push(input);
+            } else {
+                // TODO -- Handle the case where input is None
+                // For now -- just continue to the next iteration of the loop
+                continue;
+            }
         }
         let rng = &mut StdRng::from_entropy();
         let authorization = process
@@ -134,7 +130,7 @@ impl ProgramManager {
             inputs.iter(),
             rng,
           )
-          .map_err(|err| anyhow!(err))?;
+          .map_err(|err| anyhow!(err).to_string())?;
         let auth_string = authorization.to_string();
     
         Ok(auth_string)

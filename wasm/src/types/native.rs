@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
-use std::collections::HashMap;
-use tokio_util::either::Either;
 pub use snarkvm_circuit_network::{Aleo, AleoV0};
 pub use snarkvm_console::{
     account::{Address, PrivateKey, Signature, ViewKey},
@@ -86,4 +84,3 @@ pub type QueryNative = Query<CurrentNetwork, CurrentBlockMemory>;
 pub type ResponseNative = Response<CurrentNetwork>;
 pub type TransactionNative = Transaction<CurrentNetwork>;
 pub type VerifyingKeyNative = VerifyingKey<CurrentNetwork>;
-pub type ProgramImports = HashMap<String, Either<ProgramNative, String>>;
