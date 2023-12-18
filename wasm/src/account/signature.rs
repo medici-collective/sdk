@@ -18,9 +18,7 @@ use crate::{
     account::{Address, PrivateKey},
     types::{CurrentNetwork, ComputeKey, Network, Scalar, SignatureNative, ToFields, Value}
 };
-use snarkvm_wasm::utilities::{Uniform};
-// use std::collections::HashMap;
-// use itertools::Itertools;
+use snarkvm_wasm::utilities::Uniform;
 
 use core::{fmt, ops::Deref, str::FromStr};
 use rand::{rngs::StdRng, SeedableRng};

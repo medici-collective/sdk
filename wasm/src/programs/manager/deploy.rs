@@ -17,7 +17,7 @@
 use super::*;
 
 use crate::{
-    execute_fee, get_process, log,
+    execute_fee, log,
     types::{
         CurrentAleo, CurrentNetwork, ProcessNative, ProgramIDNative, ProgramNative, ProgramOwnerNative,
         RecordPlaintextNative, TransactionNative,
