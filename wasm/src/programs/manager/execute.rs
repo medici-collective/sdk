@@ -29,34 +29,28 @@ use crate::{
 use js_sys::{Array, Object};
 use rand::{rngs::StdRng, SeedableRng};
 use std::str::FromStr;
-use anyhow::anyhow;
 
 #[wasm_bindgen]
 impl ProgramManager {
     #[wasm_bindgen(js_name = authExecute)]
     pub async fn authorize(
-        program_id: &str,
+        program: &str,
         function_id: &str,
         inputs_str: Array,
         private_key: &str,
+        imports: Option<Object>,
       ) -> Result<String, String> {
-        log(&format!("authorize {} {} {:?} {}", program_id, function_id, inputs_str, private_key));
         // parse inputs 
-        let program = ProgramNative::from_str(&program_id).map_err(|e| e.to_string())?;
-        log(&format!("program {}", program.id().to_string()));
+        let program = ProgramNative::from_str(&program).map_err(|e| e.to_string())?;
         let function_name = IdentifierNative::from_str(&function_id)
-            .map_err(|err| anyhow!(err).to_string())?;
-        log(&format!("function_name {}", function_name.to_string()));
-
-        // init imports
-        let imports: Option<Object> = Some(js_sys::Object::new());
+            .map_err(|e| e.to_string())?;
 
         // create process and load program and its imports into the process
         log("adding program inputs to the process...");
         let mut process_native = ProcessNative::load().expect("😵 could not load process");
         let process = &mut process_native;
         // resolve the program imports if they exist
-        ProgramManager::resolve_imports(process, &program, imports)?;
+        ProgramManager::resolve_imports(process, &program, imports).map_err(|e| e.to_string())?;
         let program_id = program.id().to_string();
         if program_id != "credits.aleo" {
           if let Ok(stored_program) = process.get_program(program.id()) {
@@ -74,7 +68,6 @@ impl ProgramManager {
 
 
         // create the process authorization
-        log("creating authorization...");
         let inputs_vec = inputs_str.to_vec();
         let mut inputs = Vec::<String>::new();
         for input in inputs_vec.to_vec().iter() {
@@ -87,6 +80,7 @@ impl ProgramManager {
             }
         }
         let rng = &mut StdRng::from_entropy();
+        log("creating authorization...");
         let authorization = process
           .authorize::<CurrentAleo, _>(
             &private_key,
@@ -95,7 +89,10 @@ impl ProgramManager {
             inputs.iter(),
             rng,
           )
-          .map_err(|err| anyhow!(err).to_string())?;
+          .map_err(|e| {
+            log(&format!("error creating authorization {}", e));
+            e.to_string()
+      })?;
 
         Ok(authorization.to_string())
     }

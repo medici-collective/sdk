@@ -1,7 +1,7 @@
 #!/bin/bash
 
 rm -rf pkg/
-# wasm-pack build --release --target nodejs --scope puzzlehq --out-dir pkg/node-wasm -- --features "serial" --no-default-features
+# wasm-pack build --release --target no-modules --scope puzzlehq --out-dir pkg/node-wasm -- --features "serial" --no-default-features
 # cd pkg/node-wasm
 # sed -i '' 's/aleo-wasm/aleo-wasm-nodejs/g' package.json
 # npm publish --access public
