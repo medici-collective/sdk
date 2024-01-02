@@ -18,7 +18,6 @@ use super::*;
 
 use crate::{
     execute_program,
-    get_process,
     log,
     process_inputs,
     types::{CurrentAleo, IdentifierNative, ProcessNative, ProgramNative, TransactionNative},

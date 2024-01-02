@@ -15,7 +15,7 @@
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
 use crate::{
-    account::{PrivateKey},
+    account::PrivateKey,
     types::{CurrentNetwork, ComputeKey, FieldNative, Field, FromBits, Literal, Network, Scalar, SizeInDataBits, ToFields, Value}
 };
 

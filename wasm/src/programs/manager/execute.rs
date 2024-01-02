@@ -20,7 +20,6 @@ use core::ops::Add;
 use crate::{
     execute_fee,
     execute_program,
-    get_process,
     log,
     process_inputs,
     types::{CurrentAleo, IdentifierNative, ProcessNative, ProgramNative, RecordPlaintextNative, TransactionNative},
@@ -33,6 +32,71 @@ use std::str::FromStr;
 
 #[wasm_bindgen]
 impl ProgramManager {
+    #[wasm_bindgen(js_name = authExecute)]
+    pub async fn authorize(
+        program: &str,
+        function_id: &str,
+        inputs_str: Array,
+        private_key: &str,
+        imports: Option<Object>,
+      ) -> Result<String, String> {
+        // parse inputs 
+        let program = ProgramNative::from_str(&program).map_err(|e| e.to_string())?;
+        let function_name = IdentifierNative::from_str(&function_id)
+            .map_err(|e| e.to_string())?;
+
+        // create process and load program and its imports into the process
+        log("adding program inputs to the process...");
+        let mut process_native = ProcessNative::load().expect("😵 could not load process");
+        let process = &mut process_native;
+        // resolve the program imports if they exist
+        ProgramManager::resolve_imports(process, &program, imports).map_err(|e| e.to_string())?;
+        let program_id = program.id().to_string();
+        if program_id != "credits.aleo" {
+          if let Ok(stored_program) = process.get_program(program.id()) {
+            log("adding *stored* program to the process");
+            if stored_program != &program {
+                return Err("😵 the program provided does not match the program stored in the cache, please clear the cache before proceeding".to_string());
+            }
+          } else {
+            log(&format!("adding program {} to the process", program.id().to_string()));
+            process.add_program(&program).map_err(|e| e.to_string())?;
+          }
+        }
+
+        let private_key = PrivateKey::from_str(private_key).map_err(|e| e.to_string())?;
+
+
+        // create the process authorization
+        let inputs_vec = inputs_str.to_vec();
+        let mut inputs = Vec::<String>::new();
+        for input in inputs_vec.to_vec().iter() {
+            if let Some(input) = input.as_string() {
+                inputs.push(input);
+            } else {
+                // TODO -- Handle the case where input is None
+                // For now -- just continue to the next iteration of the loop
+                continue;
+            }
+        }
+        let rng = &mut StdRng::from_entropy();
+        log("creating authorization...");
+        let authorization = process
+          .authorize::<CurrentAleo, _>(
+            &private_key,
+            program.id(),
+            function_name,
+            inputs.iter(),
+            rng,
+          )
+          .map_err(|e| {
+            log(&format!("error creating authorization {}", e));
+            e.to_string()
+      })?;
+
+        Ok(authorization.to_string())
+    }
+
     /// Execute an arbitrary function locally
     ///
     /// @param {PrivateKey} private_key The private key of the sender

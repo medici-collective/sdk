@@ -18,7 +18,13 @@
   "files": [
     "dist",
     "LICENSE.md",
-    "README.md"
+    "README.md",
+    "snippets/",
+    "snippets/",
+    "snippets/",
+    "snippets/",
+    "snippets/",
+    "snippets/"
   ],
   "repository": {
     "type": "git",
