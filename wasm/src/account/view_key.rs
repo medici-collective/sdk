@@ -20,7 +20,7 @@ use snarkvm_console::{
   types::{Group, U16, Field},
   program::{Ciphertext, Identifier}
 };
-use snarkvm_utilities::ToBits;
+use snarkvm_wasm::utilities::ToBits;
 use crate::record::RecordCiphertext;
 use crate::types::native::{ViewKeyNative, Network, TestnetV0};
 use core::{convert::TryFrom, fmt, ops::Deref, str::FromStr};
@@ -84,21 +84,21 @@ impl ViewKey {
       function_name: &str,
       index: u16,
   ) -> Result<String, String> {
-      let vk: RustViewKey<Testnet3> =
-          RustViewKey::<Testnet3>::from_str(&self.to_string()).map_err(|error| error.to_string())?;
-      let tpk = Group::<Testnet3>::from_str(tpk).unwrap();
+      let vk: RustViewKey<TestnetV0> =
+          RustViewKey::<TestnetV0>::from_str(&self.to_string()).map_err(|error| error.to_string())?;
+      let tpk = Group::<TestnetV0>::from_str(tpk).unwrap();
       let tvk = (tpk * *vk).to_x_coordinate();
       let bits = &(
-          U16::<Testnet3>::new(3),
-          &Identifier::<Testnet3>::from_str(program_name).unwrap(),
-          &Identifier::<Testnet3>::from_str("aleo").unwrap(),
-          &Identifier::<Testnet3>::from_str(function_name).unwrap(),
+          U16::<TestnetV0>::new(3),
+          &Identifier::<TestnetV0>::from_str(program_name).unwrap(),
+          &Identifier::<TestnetV0>::from_str("aleo").unwrap(),
+          &Identifier::<TestnetV0>::from_str(function_name).unwrap(),
       )
           .to_bits_le();
 
-      let function_id = <Testnet3 as Network>::hash_bhp1024(bits).unwrap();
-      let ivk = <Testnet3 as Network>::hash_psd4(&[function_id, tvk, Field::from_u16(index)]).unwrap();
-      let ciphertext = Ciphertext::<Testnet3>::from_str(ciphertext).unwrap();
+      let function_id = <TestnetV0 as Network>::hash_bhp1024(bits).unwrap();
+      let ivk = <TestnetV0 as Network>::hash_psd4(&[function_id, tvk, Field::from_u16(index)]).unwrap();
+      let ciphertext = Ciphertext::<TestnetV0>::from_str(ciphertext).unwrap();
       match ciphertext.decrypt_symmetric(ivk) {
           Ok(plaintext) => Ok(plaintext.to_string()),
           Err(error) => Err(error.to_string()),
