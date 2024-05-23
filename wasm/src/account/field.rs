@@ -16,15 +16,15 @@
 
 use crate::{
     account::PrivateKey,
-    types::{CurrentNetwork, ComputeKey, FieldNative, Field, FromBits, Literal, Network, Scalar, SizeInDataBits, ToFields, Value}
+    native::{CurrentNetwork, ComputeKey, FieldNative, Field, FromBits, Literal, Network, Scalar, SizeInDataBits, ToFields, Value}
 };
 
 use anyhow::Error;
 use rand::{rngs::StdRng, SeedableRng};
+use snarkvm_console::program::Itertools;
 use wasm_bindgen::prelude::*;
 use std::collections::HashMap;
 use snarkvm_wasm::utilities::{Uniform, ToBits};
-use itertools::Itertools;
 
 
 #[wasm_bindgen]
