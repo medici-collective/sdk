@@ -163,19 +163,30 @@ pub use programs::*;
 pub mod record;
 pub use record::*;
 
-pub(crate) mod types;
+pub mod types;
+pub use types::Field;
 
 #[cfg(not(test))]
 mod thread_pool;
 
-use wasm_bindgen::prelude::*;
+#[cfg(test)]
+mod thread_pool {
+    use std::future::Future;
 
-#[cfg(not(test))]
-use thread_pool::ThreadPool;
+    pub fn spawn<A, F>(f: F) -> impl Future<Output = A>
+    where
+        A: Send + 'static,
+        F: FnOnce() -> A + Send + 'static,
+    {
+        async move { f() }
+    }
+}
+
+use wasm_bindgen::prelude::*;
 
 use std::str::FromStr;
 
-use crate::types::RecordPlaintextNative;
+use types::native::RecordPlaintextNative;
 
 #[wasm_bindgen]
 pub fn init_panic_hook() {
@@ -204,10 +215,12 @@ pub trait Credits {
 impl Credits for RecordPlaintextNative {
     fn microcredits(&self) -> Result<u64, String> {
         match self
-            .find(&[types::IdentifierNative::from_str("microcredits").map_err(|e| e.to_string())?])
+            .find(&[native::IdentifierNative::from_str("microcredits").map_err(|e| e.to_string())?])
             .map_err(|e| e.to_string())?
         {
-            types::Entry::Private(types::PlaintextNative::Literal(types::LiteralNative::U64(amount), _)) => Ok(*amount),
+            native::Entry::Private(native::PlaintextNative::Literal(native::LiteralNative::U64(amount), _)) => {
+                Ok(*amount)
+            }
             _ => Err("The record provided does not contain a microcredits field".to_string()),
         }
     }
@@ -216,13 +229,14 @@ impl Credits for RecordPlaintextNative {
 #[cfg(not(test))]
 #[doc(hidden)]
 pub use thread_pool::run_rayon_thread;
+use types::native;
 
 #[cfg(not(test))]
 #[wasm_bindgen(js_name = "initThreadPool")]
 pub async fn init_thread_pool(url: web_sys::Url, num_threads: usize) -> Result<(), JsValue> {
     console_error_panic_hook::set_once();
 
-    ThreadPool::builder().url(url).num_threads(num_threads).build_global().await?;
+    thread_pool::ThreadPool::builder().url(url).num_threads(num_threads).build_global().await?;
 
     Ok(())
 }

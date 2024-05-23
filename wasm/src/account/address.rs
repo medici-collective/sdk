@@ -14,11 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
-use crate::{
-    account::{PrivateKey, Signature, ViewKey},
-    types::AddressNative,
-};
+use crate::account::{PrivateKey, Signature, ViewKey};
 
+use crate::types::native::AddressNative;
 use core::{convert::TryFrom, fmt, ops::Deref, str::FromStr};
 use wasm_bindgen::prelude::*;
 
@@ -76,6 +74,12 @@ impl FromStr for Address {
 
     fn from_str(address: &str) -> Result<Self, Self::Err> {
         Ok(Self(AddressNative::from_str(address)?))
+    }
+}
+
+impl From<AddressNative> for Address {
+    fn from(value: AddressNative) -> Self {
+        Self(value)
     }
 }
 

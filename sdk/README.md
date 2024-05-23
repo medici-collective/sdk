@@ -6,7 +6,7 @@
 <p align="center">
     <a href="https://developer.aleo.org"> <img alt="Website" src="https://img.shields.io/badge/Developer_Docs-online-blue"></a>
     <a href="https://circleci.com/gh/AleoHQ/aleo"><img src="https://circleci.com/gh/AleoHQ/sdk.svg?style=svg"></a>
-    <a href="https://discord.gg/5v2ynrw2ds"><img src="https://img.shields.io/discord/700454073459015690?logo=discord"/></a>
+    <a href="https://discord.com/invite/aleo"><img src="https://img.shields.io/discord/700454073459015690?logo=discord"/></a>
     <a href="https://github.com/AleoHQ/sdk#%EF%B8%8F-contributors"><img src="https://img.shields.io/badge/contributors-23-ee8449"/></a>
 </p>
 
@@ -252,23 +252,31 @@ any resulting state changes in private or public data.
 
 A simple example of running the hello world program on the Aleo network is shown below:
 ```typescript
-import { Account, AleoNetworkClient, NetworkRecordProvider, ProgramManager, KeySearchParams} from '@aleohq/sdk';
+import { Account, AleoNetworkClient, NetworkRecordProvider, ProgramManager, KeySearchParams } from '@aleohq/sdk';
 
 // Create a key provider that will be used to find public proving & verifying keys for Aleo programs
 const keyProvider = new AleoKeyProvider();
 keyProvider.useCache = true;
 
 // Create a record provider that will be used to find records and transaction data for Aleo programs
-const networkClient = new AleoNetworkClient("https://vm.aleo.org/api");
+const networkClient = new AleoNetworkClient("https://api.explorer.aleo.org/v1");
 const recordProvider = new NetworkRecordProvider(account, networkClient);
 
 // Initialize a program manager to talk to the Aleo network with the configured key and record providers
-const programName = "hello_hello.aleo";
-const programManager = new ProgramManager("https://vm.aleo.org/api", keyProvider, recordProvider);
+const programManager = new ProgramManager("https://api.explorer.aleo.org/v1", keyProvider, recordProvider);
 
 // Provide a key search parameter to find the correct key for the program if they are stored in a memory cache
 const keySearchParams = { "cacheKey": "hello_hello:hello" };
-const tx_id = await programManager.execute(programName, "hello_hello", 0.020, ["5u32", "5u32"], undefined, undefined, undefined, keySearchParams);
+
+// Execute the program using the options provided inline
+const tx_id = await programManager.execute({
+    programName: "hello_hello.aleo",
+    functionName: "hello_hello",
+    fee: 0.020,
+    privateFee: false, // Assuming a value for privateFee
+    inputs: ["5u32", "5u32"],
+    keySearchParams: keySearchParams
+});
 const transaction = await programManager.networkClient.getTransaction(tx_id);
 ```
 
@@ -325,7 +333,7 @@ const keyProvider = new AleoKeyProvider();
 keyProvider.useCache(true);
 
 // Create a record provider that will be used to find records and transaction data for Aleo programs
-const networkClient = new AleoNetworkClient("https://vm.aleo.org/api");
+const networkClient = new AleoNetworkClient("https://api.explorer.aleo.org/v1");
 
 // Use existing account with funds
 const account = new Account({
@@ -335,7 +343,7 @@ const account = new Account({
 const recordProvider = new NetworkRecordProvider(account, networkClient);
 
 // Initialize a program manager to talk to the Aleo network with the configured key and record providers
-const programManager = new ProgramManager("https://vm.aleo.org/api", keyProvider, recordProvider);
+const programManager = new ProgramManager("https://api.explorer.aleo.org/v1", keyProvider, recordProvider);
 programManager.setAccount(account)
 
 // Define an Aleo program to deploy
@@ -388,9 +396,9 @@ import * as aleo from "@aleohq/sdk";
 await aleo.initThreadPool();
 
 /// The program manager is initialized with a key provider and a record provider
-const defaultHost = "https://vm.aleo.org/api";
+const defaultHost = "https://api.explorer.aleo.org/v1";
 const keyProvider = new aleo.AleoKeyProvider();
-const recordProvider = new aleo.NetworkRecordProvider(new Account(), "https://vm.aleo.org/api");
+const recordProvider = new aleo.NetworkRecordProvider(new Account(), "https://api.explorer.aleo.org/v1");
 const programManager = new aleo.ProgramManager(
   defaultHost,
   keyProvider,
@@ -767,13 +775,13 @@ import { Account, ProgramManager, AleoKeyProvider, NetworkRecordProvider, AleoNe
 
 // Create a new NetworkClient, KeyProvider, and RecordProvider
 const account = Account.from_string({privateKey: "user1PrivateKey"});
-const networkClient = new AleoNetworkClient("https://vm.aleo.org/api");
+const networkClient = new AleoNetworkClient("https://api.explorer.aleo.org/v1");
 const keyProvider = new AleoKeyProvider();
 const recordProvider = new NetworkRecordProvider(account, networkClient);
 
 // Initialize a program manager with the key provider to automatically fetch keys for executions
 const USER_1_ADDRESS = "user1Address";
-const programManager = new ProgramManager("https://vm.aleo.org/api", keyProvider, recordProvider);
+const programManager = new ProgramManager("https://api.explorer.aleo.org/v1", keyProvider, recordProvider);
 programManager.setAccount(account);
 
 // Send a private transfer to yourself
@@ -808,7 +816,7 @@ assert(public_balance === 0);
 As shown above, a public balance of any address can be checked with `getMappingValue` function of the `NetworkClient`.
 
 ```typescript
-const networkClient = new AleoNetworkClient("https://vm.aleo.org/api");
+const networkClient = new AleoNetworkClient("https://api.explorer.aleo.org/v1");
 const USER_1_ADDRESS = "user1Address";
 const public_balance = networkClient.getMappingValue("credits.aleo", USER_1_ADDRESS);
 ```
@@ -897,13 +905,13 @@ import { Account, ProgramManager, AleoKeyProvider, NetworkRecordProvider, AleoNe
 
 // Create a new NetworkClient, KeyProvider, and RecordProvider
 const account = Account.from_string({privateKey: "user1PrivateKey"});
-const networkClient = new AleoNetworkClient("https://vm.aleo.org/api");
+const networkClient = new AleoNetworkClient("https://api.explorer.aleo.org/v1");
 const keyProvider = new AleoKeyProvider();
 const recordProvider = new NetworkRecordProvider(account, networkClient);
 
 // Initialize a program manager with the key provider to automatically fetch keys for executions
 const USER_2_ADDRESS = "user2Address";
-const programManager = new ProgramManager("https://vm.aleo.org/api", keyProvider, recordProvider);
+const programManager = new ProgramManager("https://api.explorer.aleo.org/v1", keyProvider, recordProvider);
 programManager.setAccount(account);
 
 /// Send private transfer to user 2
@@ -918,12 +926,12 @@ import { Account, ProgramManager, AleoKeyProvider, NetworkRecordProvider, AleoNe
 
 // Create a new NetworkClient, KeyProvider, and RecordProvider
 const account = Account.from_string({privateKey: "user2PrivateKey"});
-const networkClient = new AleoNetworkClient("https://vm.aleo.org/api");
+const networkClient = new AleoNetworkClient("https://api.explorer.aleo.org/v1");
 const keyProvider = new AleoKeyProvider();
 const recordProvider_User2 = new NetworkRecordProvider(account, networkClient);
 
 // Initialize a program manager with the key provider to automatically fetch keys for executions
-const programManager = new ProgramManager("https://vm.aleo.org/api", keyProvider, recordProvider);
+const programManager = new ProgramManager("https://api.explorer.aleo.org/v1", keyProvider, recordProvider);
 programManager.setAccount(account);
 
 // Fetch the transaction from the network that user 1 sent

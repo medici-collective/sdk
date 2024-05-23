@@ -21,10 +21,20 @@ use crate::{
     execute_program,
     log,
     process_inputs,
-    types::{CurrentAleo, IdentifierNative, ProcessNative, ProgramNative, RecordPlaintextNative, TransactionNative},
-    PrivateKey, RecordPlaintext, Transaction,
+    OfflineQuery,
+    PrivateKey,
+    RecordPlaintext,
+    Transaction,
 };
 
+use crate::types::native::{
+    CurrentAleo,
+    IdentifierNative,
+    ProcessNative,
+    ProgramNative,
+    RecordPlaintextNative,
+    TransactionNative,
+};
 use js_sys::Array;
 use rand::{rngs::StdRng, SeedableRng};
 use std::{ops::Add, str::FromStr};
@@ -56,11 +66,12 @@ impl ProgramManager {
         amount_record: Option<RecordPlaintext>,
         fee_credits: f64,
         fee_record: Option<RecordPlaintext>,
-        url: &str,
+        url: Option<String>,
         transfer_proving_key: Option<ProvingKey>,
         transfer_verifying_key: Option<VerifyingKey>,
         fee_proving_key: Option<ProvingKey>,
         fee_verifying_key: Option<VerifyingKey>,
+        offline_query: Option<OfflineQuery>,
     ) -> Result<Transaction, String> {
         log("Executing transfer program");
         let fee_microcredits = match &fee_record {
@@ -73,6 +84,7 @@ impl ProgramManager {
         };
 
         log("Setup the program and inputs");
+        let node_url = url.as_deref().unwrap_or(DEFAULT_URL);
         let program = ProgramNative::credits().unwrap().to_string();
         let rng = &mut StdRng::from_entropy();
 
@@ -147,8 +159,12 @@ impl ProgramManager {
         );
 
         log("Preparing the inclusion proof for the transfer execution");
-        let query = QueryNative::from(url);
-        trace.prepare_async(query).await.map_err(|err| err.to_string())?;
+        if let Some(offline_query) = offline_query.as_ref() {
+            trace.prepare_async(offline_query.clone()).await.map_err(|err| err.to_string())?;
+        } else {
+            let query = QueryNative::from(node_url);
+            trace.prepare_async(query).await.map_err(|err| err.to_string())?;
+        }
 
         log("Proving the transfer execution");
         let execution =
@@ -164,11 +180,12 @@ impl ProgramManager {
             private_key,
             fee_record,
             fee_microcredits,
-            url,
+            node_url,
             fee_proving_key,
             fee_verifying_key,
             execution_id,
-            rng
+            rng,
+            offline_query
         );
 
         log("Creating execution transaction for transfer");

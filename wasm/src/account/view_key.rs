@@ -15,15 +15,14 @@
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
 use super::{Address, PrivateKey};
-use crate::{record::RecordCiphertext, types::ViewKeyNative};
 use snarkvm_console::{
   account::ViewKey as RustViewKey,
-  network::{Testnet3, Network},
   types::{Group, U16, Field},
   program::{Ciphertext, Identifier}
 };
 use snarkvm_utilities::ToBits;
-
+use crate::record::RecordCiphertext;
+use crate::types::native::{ViewKeyNative, Network, TestnetV0};
 use core::{convert::TryFrom, fmt, ops::Deref, str::FromStr};
 use wasm_bindgen::prelude::*;
 

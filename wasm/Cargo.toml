@@ -1,6 +1,6 @@
 [package]
 name = "aleo-wasm"
-version = "0.6.2"
+version = "0.6.9"
 authors = [ "The Aleo Team <hello@aleo.org>" ]
 description = "WebAssembly based toolkit for developing zero knowledge applications with Aleo"
 homepage = "https://aleo.org"
@@ -21,57 +21,60 @@ edition = "2021"
 crate-type = [ "cdylib", "rlib" ]
 doctest = false
 
-[dependencies]
-itertools = "0.11.0"
-
 [dependencies.snarkvm-circuit-network]
-git = "https://github.com/AleoHQ/snarkVM.git"
-rev = "b7c5f49"
-# version = "=0.16.12"
+version = "0.16.19"
+git = "https://github.com/AleoNet/snarkVM.git"
+rev = "3ebe60c499285a140ec2171fe8dd06662c325531"
 
 [dependencies.snarkvm-console]
-git = "https://github.com/AleoHQ/snarkVM.git"
-rev = "b7c5f49"
-# version = "=0.16.12"
-features = [ "wasm" ]
-
-[dependencies.snarkvm-utilities]
-git = "https://github.com/AleoHQ/snarkVM.git"
-rev = "b7c5f49"
-# version = "=0.16.12"
+version = "0.16.19"
+git = "https://github.com/AleoNet/snarkVM.git"
+rev = "3ebe60c499285a140ec2171fe8dd06662c325531"
 features = [ "wasm" ]
 
 [dependencies.snarkvm-ledger-block]
-git = "https://github.com/AleoHQ/snarkVM.git"
-rev = "b7c5f49"
-# version = "=0.16.12"
+version = "0.16.19"
+git = "https://github.com/AleoNet/snarkVM.git"
+rev = "3ebe60c499285a140ec2171fe8dd06662c325531"
 features = [ "wasm" ]
 
 [dependencies.snarkvm-ledger-query]
-git = "https://github.com/AleoHQ/snarkVM.git"
-rev = "b7c5f49"
-# version = "=0.16.12"
+version = "0.16.19"
+git = "https://github.com/AleoNet/snarkVM.git"
+rev = "3ebe60c499285a140ec2171fe8dd06662c325531"
 features = [ "async", "wasm" ]
 
 [dependencies.snarkvm-ledger-store]
-git = "https://github.com/AleoHQ/snarkVM.git"
-rev = "b7c5f49"
-# version = "=0.16.12"
+version = "0.16.19"
+git = "https://github.com/AleoNet/snarkVM.git"
+rev = "3ebe60c499285a140ec2171fe8dd06662c325531"
+
+[dependencies.snarkvm-parameters]
+version = "0.16.19"
+git = "https://github.com/AleoNet/snarkVM.git"
+rev = "3ebe60c499285a140ec2171fe8dd06662c325531"
+features = [ "wasm" ]
 
 [dependencies.snarkvm-synthesizer]
-git = "https://github.com/AleoHQ/snarkVM.git"
-rev = "b7c5f49"
-# version = "=0.16.12"
+version = "0.16.19"
+git = "https://github.com/AleoNet/snarkVM.git"
+rev = "3ebe60c499285a140ec2171fe8dd06662c325531"
 features = [ "async", "wasm" ]
 
 [dependencies.snarkvm-wasm]
-git = "https://github.com/AleoHQ/snarkVM.git"
-rev = "b7c5f49"
-# version = "=0.16.12"
+version = "0.16.19"
+git = "https://github.com/AleoNet/snarkVM.git"
+rev = "3ebe60c499285a140ec2171fe8dd06662c325531"
 features = [ "console", "fields", "utilities" ]
 
 [dependencies.anyhow]
 version = "1.0"
+
+[dependencies.async-trait]
+version = "0.1.68"
+
+[dependencies.console_error_panic_hook]
+version = "0.1.7"
 
 [dependencies.getrandom]
 version = "0.2"
@@ -79,9 +82,6 @@ features = [ "js" ]
 
 [dependencies.indexmap]
 version = "2.0.0"
-
-[dependencies.lazy_static]
-version = "1.4.0"
 
 [dependencies.hex]
 version = "0.4.3"
@@ -101,8 +101,15 @@ version = "1.8"
 [dependencies.reqwest]
 version = "0.11.18"
 
+[dependencies.serde]
+version = "1.0.183"
+
 [dependencies.serde_json]
 version = "1.0"
+
+[dependencies.sha2]
+version = "0.10"
+default-features = false
 
 [build-dependencies.walkdir]
 version = "2"
@@ -113,16 +120,6 @@ features = [ "serde-serialize" ]
 
 [dependencies.wasm-bindgen-futures]
 version = "0.4.37"
-
-[dependencies.console_error_panic_hook]
-version = "0.1.7"
-
-[dependencies.serde]
-version = "1.0.183"
-
-[dev-dependencies.snarkvm-parameters]
-version = "0.15.4"
-features = [ "wasm" ]
 
 [dependencies.spmc]
 version = "0.3.0"
@@ -142,9 +139,9 @@ features = [
 version = "0.3.37"
 
 [features]
-default = ["serial", "browser"]
-serial = ["snarkvm-console/serial", "snarkvm-synthesizer/serial", "snarkvm-ledger-query/serial", "snarkvm-ledger-block/serial", "snarkvm-ledger-store/serial"]
-browser = []
+default = [ "serial", "browser" ]
+serial = [ "snarkvm-console/serial", "snarkvm-synthesizer/serial", "snarkvm-ledger-query/serial", "snarkvm-ledger-block/serial", "snarkvm-ledger-store/serial" ]
+browser = [ ]
 
 ## Profiles
 [profile.release]

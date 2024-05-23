@@ -1,10 +1,9 @@
 {
-  "name": "@puzzlehq/wasm",
-  "version": "0.6.2",
+  "name": "@aleohq/wasm",
+  "version": "0.6.9",
   "description": "Wasm build for the SDK",
   "collaborators": [
-    "The Aleo Team <hello@aleo.org>",
-    "The Puzzle Team <hello@puzzle.online>"
+    "The Aleo Team <hello@aleo.org>"
   ],
   "license": "GPL-3.0",
   "type": "module",
@@ -18,17 +17,11 @@
   "files": [
     "dist",
     "LICENSE.md",
-    "README.md",
-    "snippets/",
-    "snippets/",
-    "snippets/",
-    "snippets/",
-    "snippets/",
-    "snippets/"
+    "README.md"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/puzzlehq/sdk.git"
+    "url": "git+https://github.com/AleoHQ/sdk.git"
   },
   "keywords": [
     "Aleo",
@@ -37,9 +30,9 @@
     "ZK"
   ],
   "bugs": {
-    "url": "https://github.com/puzzlehq/sdk/issues"
+    "url": "https://github.com/AleoHQ/sdk/issues"
   },
-  "homepage": "https://github.com/puzzlehq/sdk#readme",
+  "homepage": "https://github.com/AleoHQ/sdk#readme",
   "scripts": {
     "build": "rimraf dist && rollup -c rollup.config.js && cpr js/types dist && rimraf dist/wasm*",
     "prepublish": "yarn build",
