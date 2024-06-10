@@ -1,6 +1,6 @@
 [package]
 name = "aleo-wasm"
-version = "0.6.8"
+version = "0.6.9"
 authors = [ "The Aleo Team <hello@aleo.org>" ]
 description = "WebAssembly based toolkit for developing zero knowledge applications with Aleo"
 homepage = "https://aleo.org"
@@ -25,10 +25,14 @@ doctest = false
 itertools = "0.11.0"
 
 [dependencies.snarkvm-circuit-network]
-version = "0.16.10"
+version = "0.16.19"
+git = "https://github.com/AleoNet/snarkVM.git"
+rev = "3ebe60c499285a140ec2171fe8dd06662c325531"
 
 [dependencies.snarkvm-console]
-version = "0.16.10"
+version = "0.16.19"
+git = "https://github.com/AleoNet/snarkVM.git"
+rev = "3ebe60c499285a140ec2171fe8dd06662c325531"
 features = [ "wasm" ]
 
 [dependencies.snarkvm-utilities]
@@ -36,26 +40,38 @@ version = "0.15.4"
 features = [ "wasm" ]
 
 [dependencies.snarkvm-ledger-block]
-version = "0.16.10"
+version = "0.16.19"
+git = "https://github.com/AleoNet/snarkVM.git"
+rev = "3ebe60c499285a140ec2171fe8dd06662c325531"
 features = [ "wasm" ]
 
 [dependencies.snarkvm-ledger-query]
-version = "0.16.10"
+version = "0.16.19"
+git = "https://github.com/AleoNet/snarkVM.git"
+rev = "3ebe60c499285a140ec2171fe8dd06662c325531"
 features = [ "async", "wasm" ]
 
 [dependencies.snarkvm-ledger-store]
-version = "0.16.10"
+version = "0.16.19"
+git = "https://github.com/AleoNet/snarkVM.git"
+rev = "3ebe60c499285a140ec2171fe8dd06662c325531"
 
 [dependencies.snarkvm-parameters]
-version = "0.16.10"
+version = "0.16.19"
+git = "https://github.com/AleoNet/snarkVM.git"
+rev = "3ebe60c499285a140ec2171fe8dd06662c325531"
 features = [ "wasm" ]
 
 [dependencies.snarkvm-synthesizer]
-version = "0.16.10"
+version = "0.16.19"
+git = "https://github.com/AleoNet/snarkVM.git"
+rev = "3ebe60c499285a140ec2171fe8dd06662c325531"
 features = [ "async", "wasm" ]
 
 [dependencies.snarkvm-wasm]
-version = "0.16.10"
+version = "0.16.19"
+git = "https://github.com/AleoNet/snarkVM.git"
+rev = "3ebe60c499285a140ec2171fe8dd06662c325531"
 features = [ "console", "fields", "utilities" ]
 
 [dependencies.anyhow]

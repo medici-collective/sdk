@@ -15,7 +15,6 @@
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
 mod credits;
-pub use credits::*;
 
 use crate::types::native::{FromBytes, ToBytes, VerifyingKeyNative};
 
@@ -125,62 +124,62 @@ mod tests {
     #[test]
     fn verifying_key_strings() {
         let bond_public_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet3::BondPublicVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::BondPublicVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         let claim_unbond_public_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet3::ClaimUnbondPublicVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::ClaimUnbondPublicVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         let fee_private_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet3::FeePrivateVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::FeePrivateVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         let fee_public_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet3::FeePublicVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::FeePublicVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         let inclusion_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet3::InclusionVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::InclusionVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         let join_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet3::JoinVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::JoinVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         let set_validator_state_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet3::SetValidatorStateVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::SetValidatorStateVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         let split_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet3::SplitVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::SplitVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         let transfer_private_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet3::TransferPrivateVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::TransferPrivateVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         let transfer_private_to_public_verifier_string = VerifyingKey::from_bytes(
-            &snarkvm_parameters::testnet3::TransferPrivateToPublicVerifier::load_bytes().unwrap(),
+            &snarkvm_parameters::testnet::TransferPrivateToPublicVerifier::load_bytes().unwrap(),
         )
         .unwrap()
         .to_string();
         let transfer_public_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet3::TransferPublicVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::TransferPublicVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         let transfer_public_to_private_verifier_string = VerifyingKey::from_bytes(
-            &snarkvm_parameters::testnet3::TransferPublicToPrivateVerifier::load_bytes().unwrap(),
+            &snarkvm_parameters::testnet::TransferPublicToPrivateVerifier::load_bytes().unwrap(),
         )
         .unwrap()
         .to_string();
         let unbond_delegator_as_validator_verifier_string = VerifyingKey::from_bytes(
-            &snarkvm_parameters::testnet3::UnbondDelegatorAsValidatorVerifier::load_bytes().unwrap(),
+            &snarkvm_parameters::testnet::UnbondDelegatorAsValidatorVerifier::load_bytes().unwrap(),
         )
         .unwrap()
         .to_string();
         let unbond_public_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet3::UnbondPublicVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::UnbondPublicVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         println!("bond_public_verifier:\nverifying_key: \"{}\"", bond_public_verifier_string);
@@ -209,9 +208,67 @@ mod tests {
     }
 
     #[wasm_bindgen_test]
+    async fn test_verifying_key_parsing() {
+        use std::sync::Arc;
+        use snarkvm_console::prelude::IoResult;
+        use std::io::Read;
+
+        fn read_le<R: Read>(mut reader: R) -> IoResult<bool> {
+            let version = u8::read_le(&mut reader)?;
+            let verifying_key = Arc::new(FromBytes::read_le(&mut reader)?);
+
+            let verifying_key = VerifyingKeyNative::new(verifying_key, 0);
+
+            Ok(reader.bytes().into_iter().collect::<Vec<_>>().len() > 0)
+        }
+
+        fn parse<F>(name: &'static str, f: F) -> Option<&'static str> where F: FnOnce() -> Vec<u8> {
+            if read_le(f().as_slice()).unwrap() {
+                None
+
+            } else {
+                Some(name)
+            }
+        }
+
+        let results = vec! [
+            parse("TransferPublicVerifier", || snarkvm_parameters::testnet::TransferPublicVerifier::load_bytes().unwrap()),
+            parse("BondPublicVerifier", || snarkvm_parameters::testnet::BondPublicVerifier::load_bytes().unwrap()),
+            parse("ClaimUnbondPublicVerifier", || snarkvm_parameters::testnet::ClaimUnbondPublicVerifier::load_bytes().unwrap()),
+            parse("FeePrivateVerifier", || snarkvm_parameters::testnet::FeePrivateVerifier::load_bytes().unwrap()),
+            parse("FeePublicVerifier", || snarkvm_parameters::testnet::FeePublicVerifier::load_bytes().unwrap()),
+            parse("InclusionVerifier", || snarkvm_parameters::testnet::InclusionVerifier::load_bytes().unwrap()),
+            parse("JoinVerifier", || snarkvm_parameters::testnet::JoinVerifier::load_bytes().unwrap()),
+            parse("SetValidatorStateVerifier", || snarkvm_parameters::testnet::SetValidatorStateVerifier::load_bytes().unwrap()),
+            parse("SplitVerifier", || snarkvm_parameters::testnet::SplitVerifier::load_bytes().unwrap()),
+            parse("TransferPrivateVerifier", || snarkvm_parameters::testnet::TransferPrivateVerifier::load_bytes().unwrap()),
+            parse("TransferPrivateToPublicVerifier", || snarkvm_parameters::testnet::TransferPrivateToPublicVerifier::load_bytes().unwrap()),
+            parse("TransferPublicToPrivateVerifier", || snarkvm_parameters::testnet::TransferPublicToPrivateVerifier::load_bytes().unwrap()),
+            parse("UnbondDelegatorAsValidatorVerifier", || snarkvm_parameters::testnet::UnbondDelegatorAsValidatorVerifier::load_bytes().unwrap()),
+            parse("UnbondPublicVerifier", || snarkvm_parameters::testnet::UnbondPublicVerifier::load_bytes().unwrap()),
+        ];
+
+        assert_eq!(results, vec![
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+        ]);
+    }
+
+    #[wasm_bindgen_test]
     async fn test_verifying_key_roundtrip() {
-        let transfer_public_verifier_bytes =
-            snarkvm_parameters::testnet3::TransferPublicVerifier::load_bytes().unwrap();
+        let transfer_public_verifier_bytes = snarkvm_parameters::testnet::TransferPublicVerifier::load_bytes().unwrap();
         let transfer_public_verifier = VerifyingKey::from_bytes(&transfer_public_verifier_bytes).unwrap();
         let transfer_public_verifying_key_string = transfer_public_verifier.to_string();
         assert_eq!(transfer_public_verifying_key_string, TRANSFER_PUBLIC_VERIFYING_KEY);
@@ -219,8 +276,7 @@ mod tests {
 
     #[wasm_bindgen_test]
     async fn test_verifier_checksum() {
-        let transfer_public_verifier_bytes =
-            snarkvm_parameters::testnet3::TransferPublicVerifier::load_bytes().unwrap();
+        let transfer_public_verifier_bytes = snarkvm_parameters::testnet::TransferPublicVerifier::load_bytes().unwrap();
         let transfer_public_verifier = VerifyingKey::from_bytes(&transfer_public_verifier_bytes).unwrap();
         let transfer_public_verifying_key_checksum = transfer_public_verifier.checksum();
         assert_eq!(

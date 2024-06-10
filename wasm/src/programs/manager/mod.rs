@@ -15,19 +15,10 @@
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
 pub mod deploy;
-pub use deploy::*;
-
 pub mod execute;
-pub use execute::*;
-
 pub mod join;
-pub use join::*;
-
 pub mod split;
-pub use split::*;
-
 pub mod transfer;
-pub use transfer::*;
 
 use crate::{
     // types::{
