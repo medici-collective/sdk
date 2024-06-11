@@ -39,7 +39,28 @@ use crate::types::native::{
 };
 use js_sys::{Array, Object};
 use rand::{rngs::StdRng, SeedableRng};
+use serde::Serialize;
 use std::str::FromStr;
+
+#[wasm_bindgen]
+#[derive(Serialize)]
+pub struct AuthorizationResponse {
+    authorization: String,
+    fee_authorization: String
+}
+
+#[wasm_bindgen]
+impl AuthorizationResponse {
+    #[wasm_bindgen(getter)]
+    pub fn authorization(&self) -> String {
+        self.authorization.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn fee_authorization(&self) -> String {
+        self.fee_authorization.clone()
+    }
+}
 
 #[wasm_bindgen]
 impl ProgramManager {
@@ -50,7 +71,9 @@ impl ProgramManager {
         inputs_str: Array,
         private_key: &str,
         imports: Option<Object>,
-      ) -> Result<String, String> {
+        fee_microcredits: u64,
+        fee_record: Option<String>
+    ) -> Result<AuthorizationResponse, String> {
         // parse inputs 
         let program = ProgramNative::from_str(&program).map_err(|e| e.to_string())?;
         let function_name = IdentifierNative::from_str(&function_id)
@@ -103,9 +126,31 @@ impl ProgramManager {
           .map_err(|e| {
             log(&format!("error creating authorization {}", e));
             e.to_string()
-      })?;
+          })?;
 
-        Ok(authorization.to_string())
+        let execution_id = authorization.to_execution_id().map_err(|e| e.to_string())?;
+
+        let fee_authorization = match fee_record {
+          Some(fee_record) => {
+              let fee_record = RecordPlaintextNative::from_str(&fee_record).map_err(|e| e.to_string())?;
+              process.authorize_fee_private::<CurrentAleo, _>(
+                  &private_key,
+                  fee_record,
+                  fee_microcredits,
+                  0u64,
+                  execution_id,
+                  rng
+              ).map_err(|e| e.to_string())?
+          }
+          None => {
+              process.authorize_fee_public::<CurrentAleo, _>(&private_key, fee_microcredits, 0u64, execution_id, &mut StdRng::from_entropy()).map_err(|e| e.to_string())?
+          }
+        };
+
+        Ok(AuthorizationResponse {
+            authorization: authorization.to_string(), 
+            fee_authorization: fee_authorization.to_string()
+        })
     }
 
     /// Execute an arbitrary function locally
