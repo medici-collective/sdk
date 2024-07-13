@@ -49,15 +49,6 @@ describe('KeyProvider', () => {
             expect(redownloadedVerifyingKey).toBeInstanceOf(VerifyingKey);
         }, 200000);
 
-        it('Should fetch verifying keys stored as text', async () => {
-            const provider = new AleoKeyProvider();
-            provider.useCache(true);
-            const [provingKey, verifyingKey] = <FunctionKeyPair> await provider.fetchKeys("https://pub-65a47b199b944d48a057ca6603a415a2.r2.dev/tree_mnist_2.prover.30e265c",
-                "https://pub-65a47b199b944d48a057ca6603a415a2.r2.dev/tree_mnist_2.verifier.17db860", "tree_mnist_2/main");
-            expect(provingKey).toBeInstanceOf(ProvingKey);
-            expect(verifyingKey).toBeInstanceOf(VerifyingKey);
-        }, 120000);
-
         it.skip("Should not fetch offline keys that haven't already been stored", async () => {
             // Download the credits.aleo function keys
             const [bondPublicProver, bondPublicVerifier] = <FunctionKeyPair>await keyProvider.fetchKeys(CREDITS_PROGRAM_KEYS.bond_public.prover, CREDITS_PROGRAM_KEYS.bond_public.verifier, CREDITS_PROGRAM_KEYS.bond_public.locator);
@@ -71,7 +62,6 @@ describe('KeyProvider', () => {
             const [transferPrivateToPublicProver, transferPrivateToPublicVerifier] = <FunctionKeyPair>await keyProvider.fetchKeys(CREDITS_PROGRAM_KEYS.transfer_private_to_public.prover, CREDITS_PROGRAM_KEYS.transfer_private_to_public.verifier, CREDITS_PROGRAM_KEYS.transfer_private_to_public.locator);
             const [transferPublicProver, transferPublicVerifier] = <FunctionKeyPair>await keyProvider.fetchKeys(CREDITS_PROGRAM_KEYS.transfer_public.prover, CREDITS_PROGRAM_KEYS.transfer_public.verifier, CREDITS_PROGRAM_KEYS.transfer_public.locator);
             const [transferPublicToPrivateProver, transferPublicToPrivateVerifier] = <FunctionKeyPair>await keyProvider.fetchKeys(CREDITS_PROGRAM_KEYS.transfer_public_to_private.prover, CREDITS_PROGRAM_KEYS.transfer_public_to_private.verifier, CREDITS_PROGRAM_KEYS.transfer_public_to_private.locator);
-            const [unbondDelegatorAsValidatorProver, unbondDelegatorAsValidatorVerifier] = <FunctionKeyPair>await keyProvider.fetchKeys(CREDITS_PROGRAM_KEYS.unbond_delegator_as_validator.prover, CREDITS_PROGRAM_KEYS.unbond_delegator_as_validator.verifier, CREDITS_PROGRAM_KEYS.unbond_delegator_as_validator.locator);
             const [unbondPublicProver, unbondPublicVerifier] = <FunctionKeyPair>await keyProvider.fetchKeys(CREDITS_PROGRAM_KEYS.unbond_public.prover, CREDITS_PROGRAM_KEYS.unbond_public.verifier, CREDITS_PROGRAM_KEYS.unbond_public.locator);
 
             // Ensure the insertion methods work as expected without throwing an exception
@@ -86,7 +76,6 @@ describe('KeyProvider', () => {
             offlineKeyProvider.insertTransferPrivateToPublicKeys(transferPrivateToPublicProver);
             offlineKeyProvider.insertTransferPublicKeys(transferPublicProver);
             offlineKeyProvider.insertTransferPublicToPrivateKeys(transferPublicToPrivateProver);
-            offlineKeyProvider.insertUnbondDelegatorAsValidatorKeys(unbondDelegatorAsValidatorProver);
             offlineKeyProvider.insertUnbondPublicKeys(unbondPublicProver);
 
             // Ensure the offline key provider methods for credits.aleo return the correct keys

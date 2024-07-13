@@ -1,6 +1,6 @@
 {
   "name": "@puzzlehq/aleo-wasm-web",
-  "version": "0.6.10",
+  "version": "0.6.11",
   "description": "Wasm build for the SDK",
   "collaborators": [
     "The Aleo Team <hello@aleo.org>"
@@ -21,18 +21,18 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AleoHQ/sdk.git"
+    "url": "git+https://github.com/ProvableHQ/sdk.git"
   },
   "keywords": [
     "Aleo",
     "Blockchain",
-    "Zero Knowledge",
+    "Zero-Knowledge",
     "ZK"
   ],
   "bugs": {
-    "url": "https://github.com/AleoHQ/sdk/issues"
+    "url": "https://github.com/ProvableHQ/sdk/issues"
   },
-  "homepage": "https://github.com/AleoHQ/sdk#readme",
+  "homepage": "https://github.com/ProvableHQ/sdk#readme",
   "scripts": {
     "build": "rimraf dist && rollup -c rollup.config.js && cpr js/types dist && rimraf dist/wasm*",
     "prepublish": "yarn build",

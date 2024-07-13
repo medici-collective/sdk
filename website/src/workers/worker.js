@@ -1,4 +1,4 @@
-import * as aleo from "@aleohq/sdk";
+import * as aleo from "@provablehq/sdk";
 
 await aleo.initThreadPool();
 
@@ -264,6 +264,7 @@ self.addEventListener("message", (ev) => {
                     transfer_type,
                     fee,
                     privateFee,
+                    Address.from_private_key(PrivateKey.from_string(privateKey)).to_string(),
                     undefined,
                     amountRecord,
                     feeRecord,

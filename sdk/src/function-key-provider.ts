@@ -1,4 +1,14 @@
-import { ProvingKey, VerifyingKey, CREDITS_PROGRAM_KEYS, KEY_STORE, PRIVATE_TRANSFER, PRIVATE_TO_PUBLIC_TRANSFER, PUBLIC_TRANSFER, PUBLIC_TO_PRIVATE_TRANSFER} from "./index";
+import {
+    ProvingKey,
+    VerifyingKey,
+    CREDITS_PROGRAM_KEYS,
+    KEY_STORE,
+    PRIVATE_TRANSFER,
+    PRIVATE_TO_PUBLIC_TRANSFER,
+    PUBLIC_TRANSFER,
+    PUBLIC_TO_PRIVATE_TRANSFER,
+    PUBLIC_TRANSFER_AS_SIGNER
+} from "./index";
 import { get } from "./utils";
 
 type FunctionKeyPair = [ProvingKey, VerifyingKey];
@@ -52,6 +62,12 @@ interface FunctionKeyProvider {
      */
     bondPublicKeys(): Promise<FunctionKeyPair | Error>;
 
+    /**
+     * Get bond_validator function keys from the credits.aleo program
+     *
+     * @returns {Promise<FunctionKeyPair | Error>} Proving and verifying keys for the bond_validator function
+     */
+    bondValidatorKeys(): Promise<FunctionKeyPair | Error>;
 
     /**
      * Cache a set of keys. This will overwrite any existing keys with the same keyId. The user can check if a keyId
@@ -209,9 +225,9 @@ class AleoKeyProvider implements FunctionKeyProvider {
         url = "/",
     ): Promise<Uint8Array> {
         try {
-            const response = await get(url);
-            const data = await response.arrayBuffer();
-            return new Uint8Array(data);
+        const response = await get(url);
+        const data = await response.arrayBuffer();
+        return new Uint8Array(data);
         } catch (error) {
             throw new Error("Error fetching data." + error);
         }
@@ -298,7 +314,6 @@ class AleoKeyProvider implements FunctionKeyProvider {
      * const networkClient = new AleoNetworkClient("https://api.explorer.aleo.org/v1");
      * const keyProvider = new AleoKeyProvider();
      * const recordProvider = new NetworkRecordProvider(account, networkClient);
-     * const AleoProviderParams = new AleoProviderParams("https://testnet3.parameters.aleo.org/transfer_private.");
      *
      * // Initialize a program manager with the key provider to automatically fetch keys for value transfers
      * const programManager = new ProgramManager("https://api.explorer.aleo.org/v1", keyProvider, recordProvider);
@@ -352,11 +367,14 @@ class AleoKeyProvider implements FunctionKeyProvider {
      * const recordProvider = new NetworkRecordProvider(account, networkClient);
      *
      * // Initialize a program manager with the key provider to automatically fetch keys for value transfers
-     * const programManager = new ProgramManager("https://vm.aleo.org/api", keyProvider, recordProvider);
+     * const programManager = new ProgramManager("https://api.explorer.aleo.org/v1", keyProvider, recordProvider);
      * programManager.transfer(1, "aleo166q6ww6688cug7qxwe7nhctjpymydwzy2h7rscfmatqmfwnjvggqcad0at", "public", 0.5);
      *
      * // Keys can also be fetched manually
-     * const [transferPrivateProvingKey, transferPrivateVerifyingKey] = await keyProvider.fetchKeys("https://testnet3.parameters.aleo.org/transfer_private.prover.2a9a6f2", "https://testnet3.parameters.aleo.org/transfer_private.verifier.3a59762");
+     * const [transferPrivateProvingKey, transferPrivateVerifyingKey] = await keyProvider.fetchKeys(
+     *     CREDITS_PROGRAM_KEYS.transfer_private.prover,
+     *     CREDITS_PROGRAM_KEYS.transfer_private.verifier,
+     * );
      */
     async fetchKeys(proverUrl: string, verifierUrl: string, cacheKey?: string): Promise<FunctionKeyPair | Error> {
         try {
@@ -392,6 +410,10 @@ class AleoKeyProvider implements FunctionKeyProvider {
         return this.fetchKeys(CREDITS_PROGRAM_KEYS.bond_public.prover, CREDITS_PROGRAM_KEYS.bond_public.verifier, CREDITS_PROGRAM_KEYS.bond_public.locator)
     }
 
+    bondValidatorKeys(): Promise<FunctionKeyPair | Error> {
+        return this.fetchKeys(CREDITS_PROGRAM_KEYS.bond_validator.prover, CREDITS_PROGRAM_KEYS.bond_validator.verifier, CREDITS_PROGRAM_KEYS.bond_validator.locator)
+    }
+
     claimUnbondPublicKeys(): Promise<FunctionKeyPair | Error> {
         return this.fetchKeys(CREDITS_PROGRAM_KEYS.claim_unbond_public.prover, CREDITS_PROGRAM_KEYS.claim_unbond_public.verifier, CREDITS_PROGRAM_KEYS.claim_unbond_public.locator)
     }
@@ -403,12 +425,12 @@ class AleoKeyProvider implements FunctionKeyProvider {
      *
      * @example
      * // Create a new AleoKeyProvider
-     * const networkClient = new AleoNetworkClient("https://vm.aleo.org/api");
+     * const networkClient = new AleoNetworkClient("https://api.explorer.aleo.org/v1");
      * const keyProvider = new AleoKeyProvider();
      * const recordProvider = new NetworkRecordProvider(account, networkClient);
      *
      * // Initialize a program manager with the key provider to automatically fetch keys for value transfers
-     * const programManager = new ProgramManager("https://vm.aleo.org/api", keyProvider, recordProvider);
+     * const programManager = new ProgramManager("https://api.explorer.aleo.org/v1", keyProvider, recordProvider);
      * programManager.transfer(1, "aleo166q6ww6688cug7qxwe7nhctjpymydwzy2h7rscfmatqmfwnjvggqcad0at", "public", 0.5);
      *
      * // Keys can also be fetched manually
@@ -421,6 +443,8 @@ class AleoKeyProvider implements FunctionKeyProvider {
             return await this.fetchKeys(CREDITS_PROGRAM_KEYS.transfer_private_to_public.prover, CREDITS_PROGRAM_KEYS.transfer_private_to_public.verifier, CREDITS_PROGRAM_KEYS.transfer_private_to_public.locator);
         } else if (PUBLIC_TRANSFER.has(visibility)) {
             return await this.fetchKeys(CREDITS_PROGRAM_KEYS.transfer_public.prover, CREDITS_PROGRAM_KEYS.transfer_public.verifier, CREDITS_PROGRAM_KEYS.transfer_public.locator);
+        } else if (PUBLIC_TRANSFER_AS_SIGNER.has(visibility)) {
+            return await this.fetchKeys(CREDITS_PROGRAM_KEYS.transfer_public_as_signer.prover, CREDITS_PROGRAM_KEYS.transfer_public_as_signer.verifier, CREDITS_PROGRAM_KEYS.transfer_public_as_signer.locator);
         } else if (PUBLIC_TO_PRIVATE_TRANSFER.has(visibility)) {
             return await this.fetchKeys(CREDITS_PROGRAM_KEYS.transfer_public_to_private.prover, CREDITS_PROGRAM_KEYS.transfer_public_to_private.verifier, CREDITS_PROGRAM_KEYS.transfer_public_to_private.locator);
         } else {
@@ -474,6 +498,8 @@ class AleoKeyProvider implements FunctionKeyProvider {
         switch (verifierUri) {
             case CREDITS_PROGRAM_KEYS.bond_public.verifier:
                 return CREDITS_PROGRAM_KEYS.bond_public.verifyingKey();
+            case CREDITS_PROGRAM_KEYS.bond_validator.verifier:
+                return CREDITS_PROGRAM_KEYS.bond_validator.verifyingKey();
             case CREDITS_PROGRAM_KEYS.claim_unbond_public.verifier:
                 return CREDITS_PROGRAM_KEYS.claim_unbond_public.verifyingKey();
             case CREDITS_PROGRAM_KEYS.fee_private.verifier:
@@ -494,10 +520,10 @@ class AleoKeyProvider implements FunctionKeyProvider {
                 return CREDITS_PROGRAM_KEYS.transfer_private_to_public.verifyingKey();
             case CREDITS_PROGRAM_KEYS.transfer_public.verifier:
                 return CREDITS_PROGRAM_KEYS.transfer_public.verifyingKey();
+            case CREDITS_PROGRAM_KEYS.transfer_public_as_signer.verifier:
+                return CREDITS_PROGRAM_KEYS.transfer_public_as_signer.verifyingKey();
             case CREDITS_PROGRAM_KEYS.transfer_public_to_private.verifier:
                 return CREDITS_PROGRAM_KEYS.transfer_public_to_private.verifyingKey();
-            case CREDITS_PROGRAM_KEYS.unbond_delegator_as_validator.verifier:
-                return CREDITS_PROGRAM_KEYS.unbond_delegator_as_validator.verifyingKey();
             case CREDITS_PROGRAM_KEYS.unbond_public.verifier:
                 return CREDITS_PROGRAM_KEYS.unbond_public.verifyingKey();
             default:
@@ -509,7 +535,7 @@ class AleoKeyProvider implements FunctionKeyProvider {
                 } catch (e) {
                     /// If that fails, try to fetch the verifying key from the network as bytes
                     try {
-                        return <VerifyingKey>VerifyingKey.fromBytes(await this.fetchBytes(verifierUri));
+                    return <VerifyingKey>VerifyingKey.fromBytes(await this.fetchBytes(verifierUri));
                     } catch (inner) {
                         return new Error("Invalid verifying key. Error: " + inner);
                     }
