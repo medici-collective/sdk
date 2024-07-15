@@ -22,49 +22,49 @@ crate-type = [ "cdylib", "rlib" ]
 doctest = false
 
 [dependencies.snarkvm-circuit-network]
-version = "0.16.19"
-git = "https://github.com/AleoNet/snarkVM.git"
-rev = "d170a9f7c5ef980f9392301dc899dee355599ca6"
+# version = "=0.16.19"
+git = "https://github.com/puzzlehq/snarkVM.git"
+branch = "authorization-deserialization-fix"
 
 [dependencies.snarkvm-console]
-version = "0.16.19"
-git = "https://github.com/AleoNet/snarkVM.git"
-rev = "d170a9f7c5ef980f9392301dc899dee355599ca6"
+# version = "=0.16.19"
+git = "https://github.com/puzzlehq/snarkVM.git"
+branch = "authorization-deserialization-fix"
 features = [ "wasm" ]
 
 [dependencies.snarkvm-ledger-block]
-version = "0.16.19"
-git = "https://github.com/AleoNet/snarkVM.git"
-rev = "d170a9f7c5ef980f9392301dc899dee355599ca6"
+# version = "=0.16.19"
+git = "https://github.com/puzzlehq/snarkVM.git"
+branch = "authorization-deserialization-fix"
 features = [ "wasm" ]
 
 [dependencies.snarkvm-ledger-query]
-version = "0.16.19"
-git = "https://github.com/AleoNet/snarkVM.git"
-rev = "d170a9f7c5ef980f9392301dc899dee355599ca6"
+# version = "=0.16.19"
+git = "https://github.com/puzzlehq/snarkVM.git"
+branch = "authorization-deserialization-fix"
 features = [ "async", "wasm" ]
 
 [dependencies.snarkvm-ledger-store]
-version = "0.16.19"
-git = "https://github.com/AleoNet/snarkVM.git"
-rev = "d170a9f7c5ef980f9392301dc899dee355599ca6"
+# version = "=0.16.19"
+git = "https://github.com/puzzlehq/snarkVM.git"
+branch = "authorization-deserialization-fix"
 
 [dependencies.snarkvm-parameters]
-version = "0.16.19"
-git = "https://github.com/AleoNet/snarkVM.git"
-rev = "d170a9f7c5ef980f9392301dc899dee355599ca6"
+# version = "=0.16.19"
+git = "https://github.com/puzzlehq/snarkVM.git"
+branch = "authorization-deserialization-fix"
 features = [ "wasm" ]
 
 [dependencies.snarkvm-synthesizer]
-version = "0.16.19"
-git = "https://github.com/AleoNet/snarkVM.git"
-rev = "d170a9f7c5ef980f9392301dc899dee355599ca6"
+# version = "=0.16.19"
+git = "https://github.com/puzzlehq/snarkVM.git"
+branch = "authorization-deserialization-fix"
 features = [ "async", "wasm" ]
 
 [dependencies.snarkvm-wasm]
-version = "0.16.19"
-git = "https://github.com/AleoNet/snarkVM.git"
-rev = "d170a9f7c5ef980f9392301dc899dee355599ca6"
+# version = "=0.16.19"
+git = "https://github.com/puzzlehq/snarkVM.git"
+branch = "authorization-deserialization-fix"
 features = [ "console", "fields", "utilities" ]
 
 [dependencies.anyhow]
