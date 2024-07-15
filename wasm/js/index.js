@@ -2,10 +2,13 @@ import wasm from "../dist/wasm.js";
 
 const {
     initThreadPool: wasmInitThreadPool,
+    init_panic_hook,
     Address,
     Execution,
     ExecutionResponse,
     Field,
+    default: _wbg_init,
+    JsField,
     Metadata,
     OfflineQuery,
     Private,
@@ -39,10 +42,13 @@ async function initThreadPool(threads) {
 
 export {
     initThreadPool,
+    init_panic_hook,
     Address,
     Execution,
     ExecutionResponse,
     Field,
+    _wbg_init,
+    JsField,
     Metadata,
     OfflineQuery,
     PrivateKey,

@@ -6,10 +6,13 @@
 export function initThreadPool(threads?: number): Promise<void>;
 
 export {
+    init_panic_hook,
+    _wbg_init,
     Address,
     Execution,
     ExecutionResponse,
     Field,
+    JsField,
     Metadata,
     OfflineQuery,
     PrivateKey,
