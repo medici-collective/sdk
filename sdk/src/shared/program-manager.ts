@@ -21,7 +21,7 @@ import {
     logAndThrow,
     ProgramManagerBase as WasmProgramManager, verifyFunctionExecution, AleoKeyProviderParams, CREDITS_PROGRAM_KEYS,
 } from "./index";
-import {Execution} from "@provablehq/wasm/dist/crates/aleo_wasm";
+import {Execution} from "@provablehq/wasm/testnet.js";
 
 /**
  * Represents the options for executing a transaction in the Aleo network.
@@ -78,7 +78,7 @@ class ProgramManager {
     constructor(host?: string | undefined, keyProvider?: FunctionKeyProvider | undefined, recordProvider?: RecordProvider | undefined) {
         this.host = host ? host : 'https://api.explorer.aleo.org/v1';
         this.networkClient = new AleoNetworkClient(this.host);
-        
+
         this.keyProvider = keyProvider ? keyProvider : new AleoKeyProvider();
         this.recordProvider = recordProvider;
     }
