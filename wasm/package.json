@@ -1,9 +1,9 @@
 {
   "name": "@puzzlehq/aleo-wasm-web",
-  "version": "0.6.15",
+  "version": "0.6.16",
   "description": "Wasm build for the SDK",
   "collaborators": [
-    "The Aleo Team <hello@aleo.org>"
+    "The Provable Team"
   ],
   "license": "GPL-3.0",
   "type": "module",
