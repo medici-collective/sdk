@@ -15,6 +15,18 @@
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
 #[macro_export]
+macro_rules! network_string_id {
+  ($network_id:expr) => {
+      match $network_id {
+        2u16 => Ok("CanaryV0"),
+        1u16 => Ok("TestnetV0"),
+        0u16 => Ok("MainnetV0"),
+        _ => Err(format!("Unsupported network: {:?}", $network_id)),
+      }
+  };
+}
+
+#[macro_export]
 macro_rules! process_inputs {
     ($inputs:expr) => {{
         let mut inputs_native = Vec::<String>::new();

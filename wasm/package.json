@@ -1,5 +1,5 @@
 {
-  "name": "@puzzlehq/aleo-wasm-web",
+  "name": "@puzzlehq/aleo-wasm-web-web-web",
   "version": "0.6.16",
   "description": "Wasm build for the SDK",
   "collaborators": [
@@ -18,6 +18,8 @@
     "dist",
     "LICENSE.md",
     "README.md",
+    "snippets/",
+    "snippets/",
     "snippets/"
   ],
   "repository": {

@@ -15,6 +15,7 @@ export {
     JsField,
     Metadata,
     OfflineQuery,
+    Plaintext,
     PrivateKey,
     PrivateKeyCiphertext,
     Program,
