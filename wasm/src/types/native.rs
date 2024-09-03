@@ -17,7 +17,7 @@
 pub use super::networks::*;
 
 pub use snarkvm_console::{
-    account::{Address, PrivateKey, Signature, ViewKey},
+    account::{Address, ComputeKey, PrivateKey, Signature, ViewKey},
     network::Network,
     program::{
         Ciphertext,

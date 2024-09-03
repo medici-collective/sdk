@@ -17,6 +17,6 @@
 pub mod field;
 pub use field::*;
 
-mod networks;
+pub mod networks;
 
 pub(crate) mod native;
