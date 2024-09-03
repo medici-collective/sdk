@@ -19,11 +19,7 @@ pub mod execute;
 pub mod join;
 pub mod split;
 pub mod transfer;
-
 const DEFAULT_URL: &str = "https://api.explorer.aleo.org/v1";
-
-use crate::{KeyPair, PrivateKey, ProvingKey, RecordPlaintext, VerifyingKey};
-
 use crate::types::native::{
     cost_in_microcredits,
     deployment_cost,

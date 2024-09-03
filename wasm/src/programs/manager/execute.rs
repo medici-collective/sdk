@@ -16,7 +16,6 @@
 
 use super::*;
 use core::ops::Add;
-
 use crate::{
     execute_fee,
     execute_program,
@@ -28,7 +27,6 @@ use crate::{
     RecordPlaintext,
     Transaction,
 };
-
 use crate::types::native::{
     CurrentAleo,
     IdentifierNative,

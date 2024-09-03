@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
-use aleo_wasm::{PrivateKey, Program, ProgramManager, RecordPlaintext};
+use aleo_wasm::{PrivateKey, Program, ProgramManager, ProvingKey, RecordPlaintext, VerifyingKey};
 use js_sys::{Array, Object, Reflect};
 use wasm_bindgen::JsValue;
 use wasm_bindgen_test::*;
