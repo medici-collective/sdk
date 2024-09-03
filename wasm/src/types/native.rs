@@ -23,6 +23,9 @@ pub use snarkvm_console::{
         Ciphertext,
         Entry,
         EntryType,
+        FromBits,
+        FromBytes,
+        Group,
         Identifier,
         Literal,
         Plaintext,
@@ -31,7 +34,12 @@ pub use snarkvm_console::{
         ProgramOwner,
         Record,
         Response,
+        Scalar,
+        SizeInDataBits,
+        ToFields,
+        Value,
         ValueType,
+        U8,
     },
     types::Field,
 };
@@ -44,10 +52,11 @@ pub use snarkvm_synthesizer::{
     Process,
     Program,
 };
+
 pub use snarkvm_wasm::{
-    console::network::Environment,
+    console::network::{Environment, ToField},
     fields::PrimeField,
-    utilities::{FromBytes, ToBytes, Uniform},
+    utilities::{ToBits, ToBytes, Uniform},
 };
 
 // Account types

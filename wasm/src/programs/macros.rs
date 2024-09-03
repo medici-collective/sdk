@@ -166,3 +166,16 @@ macro_rules! execute_fee {
         fee
     }};
 }
+
+#[macro_export]
+macro_rules! get_process {
+    ($self:expr, $cache:expr, $new_process:expr) => {
+        if $cache {
+            &mut $self.process
+        } else {
+            let new_process = ProcessNative::load_web().map_err(|err| err.to_string())?;
+            $new_process = Some(new_process);
+            $new_process.as_mut().unwrap()
+        }
+    };
+}

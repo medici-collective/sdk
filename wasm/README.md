@@ -1,7 +1,9 @@
-[![Crates.io](https://img.shields.io/crates/v/aleo-wasm.svg?color=neon)](https://crates.io/crates/aleo-wasm)
-[![Authors](https://img.shields.io/badge/authors-Aleo-orange.svg)](https://aleo.org)
-[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](./LICENSE.md)
+To build and publish WASM pacakges for nodejs and web: 
 
+- Update the package version in `Cargo.toml` to one patch version above the current one
+- Run `./build-puzzle.sh`
+- Push your changes so the package number stays up to date
+  
 [![github]](https://github.com/ProvableHQ/sdk)&ensp;[![crates-io]](https://crates.io/crates/aleo-wasm)&ensp;[![docs-rs]](https://docs.rs/aleo-wasm/latest/aleo-wasm/)
 
 [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&labelColor=555555&logo=github
