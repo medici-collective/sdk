@@ -165,6 +165,7 @@ pub use record::*;
 
 pub mod types;
 pub use types::Field;
+pub use types::Plaintext;
 
 #[cfg(not(test))]
 mod thread_pool;
