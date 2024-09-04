@@ -1,6 +1,6 @@
 {
   "name": "@puzzlehq/aleo-wasm-web",
-  "version": "0.6.14-staging",
+  "version": "0.6.16-staging",
   "description": "Wasm build for the SDK",
   "collaborators": [
     "The Provable Team"
@@ -21,7 +21,10 @@
   "files": [
     "dist",
     "LICENSE.md",
-    "README.md"
+    "README.md",
+    "snippets/",
+    "snippets/",
+    "snippets/"
   ],
   "repository": {
     "type": "git",

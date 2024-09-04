@@ -94,7 +94,7 @@ checksum = "7e4f181fc1a372e8ceff89612e5c9b13f72bff5b066da9f8d6827ae65af492c4"
 
 [[package]]
 name = "aleo-wasm"
-version = "0.6.13"
+version = "0.6.16"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1562,7 +1562,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-algorithms"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "aleo-std",
  "anyhow",
@@ -1593,7 +1593,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-circuit"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-circuit-account",
  "snarkvm-circuit-algorithms",
@@ -1607,7 +1607,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-circuit-account"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-circuit-algorithms",
  "snarkvm-circuit-network",
@@ -1618,7 +1618,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-circuit-algorithms"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-circuit-types",
  "snarkvm-console-algorithms",
@@ -1628,7 +1628,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-circuit-collections"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-circuit-algorithms",
  "snarkvm-circuit-types",
@@ -1638,7 +1638,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-circuit-environment"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "indexmap",
  "itertools",
@@ -1656,12 +1656,12 @@ dependencies = [
 [[package]]
 name = "snarkvm-circuit-environment-witness"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 
 [[package]]
 name = "snarkvm-circuit-network"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-circuit-algorithms",
  "snarkvm-circuit-collections",
@@ -1672,7 +1672,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-circuit-program"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "paste",
  "snarkvm-circuit-account",
@@ -1687,7 +1687,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-circuit-types"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-circuit-environment",
  "snarkvm-circuit-types-address",
@@ -1702,7 +1702,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-circuit-types-address"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-circuit-environment",
  "snarkvm-circuit-types-boolean",
@@ -1715,7 +1715,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-circuit-types-boolean"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-circuit-environment",
  "snarkvm-console-types-boolean",
@@ -1724,7 +1724,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-circuit-types-field"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-circuit-environment",
  "snarkvm-circuit-types-boolean",
@@ -1734,7 +1734,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-circuit-types-group"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-circuit-environment",
  "snarkvm-circuit-types-boolean",
@@ -1746,7 +1746,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-circuit-types-integers"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-circuit-environment",
  "snarkvm-circuit-types-boolean",
@@ -1758,7 +1758,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-circuit-types-scalar"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-circuit-environment",
  "snarkvm-circuit-types-boolean",
@@ -1769,7 +1769,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-circuit-types-string"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-circuit-environment",
  "snarkvm-circuit-types-boolean",
@@ -1781,7 +1781,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-console"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-console-account",
  "snarkvm-console-algorithms",
@@ -1794,7 +1794,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-console-account"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "bs58",
  "snarkvm-console-network",
@@ -1805,7 +1805,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-console-algorithms"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "blake2s_simd",
  "smallvec",
@@ -1818,7 +1818,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-console-collections"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "aleo-std",
  "rayon",
@@ -1829,7 +1829,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-console-network"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "anyhow",
  "indexmap",
@@ -1852,7 +1852,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-console-network-environment"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "anyhow",
  "bech32",
@@ -1870,7 +1870,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-console-program"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "enum-iterator",
  "enum_index",
@@ -1892,7 +1892,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-console-types"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-console-network-environment",
  "snarkvm-console-types-address",
@@ -1907,7 +1907,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-console-types-address"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-console-network-environment",
  "snarkvm-console-types-boolean",
@@ -1918,7 +1918,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-console-types-boolean"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-console-network-environment",
 ]
@@ -1926,7 +1926,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-console-types-field"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-console-network-environment",
  "snarkvm-console-types-boolean",
@@ -1936,7 +1936,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-console-types-group"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-console-network-environment",
  "snarkvm-console-types-boolean",
@@ -1947,7 +1947,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-console-types-integers"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-console-network-environment",
  "snarkvm-console-types-boolean",
@@ -1958,7 +1958,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-console-types-scalar"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-console-network-environment",
  "snarkvm-console-types-boolean",
@@ -1969,7 +1969,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-console-types-string"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-console-network-environment",
  "snarkvm-console-types-boolean",
@@ -1980,7 +1980,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-curves"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "rand",
  "rayon",
@@ -1994,7 +1994,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-fields"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "aleo-std",
  "anyhow",
@@ -2011,7 +2011,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-ledger-authority"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "anyhow",
  "rand",
@@ -2023,7 +2023,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-ledger-block"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "indexmap",
  "rayon",
@@ -2032,7 +2032,6 @@ dependencies = [
  "snarkvm-ledger-authority",
  "snarkvm-ledger-committee",
  "snarkvm-ledger-narwhal-batch-header",
- "snarkvm-ledger-narwhal-data",
  "snarkvm-ledger-narwhal-subdag",
  "snarkvm-ledger-narwhal-transmission-id",
  "snarkvm-ledger-puzzle",
@@ -2043,7 +2042,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-ledger-committee"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "indexmap",
  "rayon",
@@ -2055,7 +2054,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-ledger-narwhal-batch-certificate"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "indexmap",
  "rayon",
@@ -2068,7 +2067,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-ledger-narwhal-batch-header"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "indexmap",
  "rayon",
@@ -2078,19 +2077,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "snarkvm-ledger-narwhal-data"
-version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
-dependencies = [
- "bytes",
- "serde_json",
- "snarkvm-console",
-]
-
-[[package]]
 name = "snarkvm-ledger-narwhal-subdag"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "indexmap",
  "rayon",
@@ -2105,7 +2094,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-ledger-narwhal-transmission-id"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "snarkvm-console",
  "snarkvm-ledger-puzzle",
@@ -2114,7 +2103,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-ledger-puzzle"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "aleo-std",
  "anyhow",
@@ -2134,7 +2123,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-ledger-puzzle-epoch"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "aleo-std",
  "anyhow",
@@ -2155,7 +2144,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-ledger-query"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "async-trait",
  "reqwest",
@@ -2168,7 +2157,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-ledger-store"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "aleo-std-storage",
  "anyhow",
@@ -2191,7 +2180,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-parameters"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "aleo-std",
  "anyhow",
@@ -2219,7 +2208,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-synthesizer"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "aleo-std",
  "anyhow",
@@ -2235,7 +2224,6 @@ dependencies = [
  "snarkvm-console",
  "snarkvm-ledger-block",
  "snarkvm-ledger-committee",
- "snarkvm-ledger-narwhal-data",
  "snarkvm-ledger-puzzle",
  "snarkvm-ledger-puzzle-epoch",
  "snarkvm-ledger-query",
@@ -2250,7 +2238,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-synthesizer-process"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "aleo-std",
  "colored",
@@ -2273,7 +2261,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-synthesizer-program"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "indexmap",
  "paste",
@@ -2287,7 +2275,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-synthesizer-snark"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "bincode",
  "once_cell",
@@ -2300,7 +2288,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-utilities"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "aleo-std",
  "anyhow",
@@ -2321,7 +2309,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-utilities-derives"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "proc-macro2",
  "quote 1.0.37",
@@ -2331,7 +2319,7 @@ dependencies = [
 [[package]]
 name = "snarkvm-wasm"
 version = "0.16.19"
-source = "git+https://github.com/AleoNet/snarkVM.git?rev=be171ce0720544c2bc51e27e1674a62fff585adc#be171ce0720544c2bc51e27e1674a62fff585adc"
+source = "git+https://github.com/puzzlehq/snarkVM.git?branch=authorization-deserialization-fix#e2a3764bb3ce88bb0564e7f3f6b0ef7d5a56197e"
 dependencies = [
  "getrandom",
  "snarkvm-circuit-network",
