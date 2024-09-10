@@ -35,14 +35,6 @@ impl Signature {
         Self(SignatureNative::sign_bytes(private_key, message, &mut StdRng::from_entropy()).unwrap())
     }
 
-    /// Turn a message into bits
-    ///
-    /// @param {Uint8Array} message Byte representation of the message to sign
-    /// @returns {Vec<bool>} Vec of bool of the message
-    // pub fn gen_bits_message(message: &[u8]) -> Vec<bool> {
-    //     (message.to_bits_le()).to_string()
-    // }
-
     /// Verify a signature of a message with an address
     ///
     /// @param {Address} address The address to verify the signature with
