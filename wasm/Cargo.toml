@@ -1,10 +1,10 @@
 [package]
 name = "aleo-wasm"
-authors = [ "The Provable Team" ]
-version = "0.6.16"
+authors = [ "The Provable Team", "The Puzzle Team" ]
+version = "0.6.17"
 description = "WebAssembly based toolkit for developing zero-knowledge applications with Aleo"
 homepage = "https://aleo.org"
-repository = "https://github.com/ProvableHQ/sdk"
+repository = "https://github.com/puzzlehq/sdk"
 keywords = [
   "aleo",
   "cryptography",
