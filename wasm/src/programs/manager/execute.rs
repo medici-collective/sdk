@@ -16,15 +16,17 @@
 
 use super::*;
 use core::ops::Add;
-
 use crate::{
     execute_fee,
     execute_program,
     log,
     process_inputs,
-    ExecutionResponse, OfflineQuery, PrivateKey, RecordPlaintext, Transaction,
+    ExecutionResponse,
+    OfflineQuery,
+    PrivateKey,
+    RecordPlaintext,
+    Transaction,
 };
-
 use crate::types::native::{
     CurrentAleo,
     IdentifierNative,
@@ -35,10 +37,120 @@ use crate::types::native::{
 };
 use js_sys::{Array, Object};
 use rand::{rngs::StdRng, SeedableRng};
+use serde::Serialize;
 use std::str::FromStr;
 
 #[wasm_bindgen]
+#[derive(Serialize)]
+pub struct AuthorizationResponse {
+    authorization: String,
+    fee_authorization: String
+}
+
+#[wasm_bindgen]
+impl AuthorizationResponse {
+    #[wasm_bindgen(getter)]
+    pub fn authorization(&self) -> String {
+        self.authorization.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn fee_authorization(&self) -> String {
+        self.fee_authorization.clone()
+    }
+}
+
+#[wasm_bindgen]
 impl ProgramManager {
+    #[wasm_bindgen(js_name = authExecute)]
+    pub async fn authorize(
+        program: &str,
+        function_id: &str,
+        inputs_str: Array,
+        private_key: &str,
+        imports: Option<Object>,
+        fee_microcredits: u64,
+        fee_record: Option<String>
+    ) -> Result<AuthorizationResponse, String> {
+        // parse inputs 
+        let program = ProgramNative::from_str(&program).map_err(|e| e.to_string())?;
+        let function_name = IdentifierNative::from_str(&function_id)
+            .map_err(|e| e.to_string())?;
+
+        // create process and load program and its imports into the process
+        log("adding program inputs to the process...");
+        let mut process_native = ProcessNative::load().expect("😵 could not load process");
+        let process = &mut process_native;
+        // resolve the program imports if they exist
+        ProgramManager::resolve_imports(process, &program, imports).map_err(|e| e.to_string())?;
+        let program_id = program.id().to_string();
+        if program_id != "credits.aleo" {
+          if let Ok(stored_program) = process.get_program(program.id()) {
+            log("adding *stored* program to the process");
+            if stored_program != &program {
+                return Err("😵 the program provided does not match the program stored in the cache, please clear the cache before proceeding".to_string());
+            }
+          } else {
+            log(&format!("adding program {} to the process", program.id().to_string()));
+            process.add_program(&program).map_err(|e| e.to_string())?;
+          }
+        }
+
+        let private_key = PrivateKey::from_str(private_key).map_err(|e| e.to_string())?;
+
+
+        // create the process authorization
+        let inputs_vec = inputs_str.to_vec();
+        let mut inputs = Vec::<String>::new();
+        for input in inputs_vec.to_vec().iter() {
+            if let Some(input) = input.as_string() {
+                inputs.push(input);
+            } else {
+                // TODO -- Handle the case where input is None
+                // For now -- just continue to the next iteration of the loop
+                continue;
+            }
+        }
+        let rng = &mut StdRng::from_entropy();
+        log("creating authorization...");
+        let authorization = process
+          .authorize::<CurrentAleo, _>(
+            &private_key,
+            program.id(),
+            function_name,
+            inputs.iter(),
+            rng,
+          )
+          .map_err(|e| {
+            log(&format!("error creating authorization {}", e));
+            e.to_string()
+          })?;
+
+        let execution_id = authorization.to_execution_id().map_err(|e| e.to_string())?;
+
+        let fee_authorization = match fee_record {
+          Some(fee_record) => {
+              let fee_record = RecordPlaintextNative::from_str(&fee_record).map_err(|e| e.to_string())?;
+              process.authorize_fee_private::<CurrentAleo, _>(
+                  &private_key,
+                  fee_record,
+                  fee_microcredits,
+                  0u64,
+                  execution_id,
+                  rng
+              ).map_err(|e| e.to_string())?
+          }
+          None => {
+              process.authorize_fee_public::<CurrentAleo, _>(&private_key, fee_microcredits, 0u64, execution_id, &mut StdRng::from_entropy()).map_err(|e| e.to_string())?
+          }
+        };
+
+        Ok(AuthorizationResponse {
+            authorization: authorization.to_string(), 
+            fee_authorization: fee_authorization.to_string()
+        })
+    }
+
     /// Execute an arbitrary function locally
     ///
     /// @param {PrivateKey} private_key The private key of the sender
@@ -302,7 +414,7 @@ impl ProgramManager {
             let stack = process.get_stack(program_id).map_err(|e| e.to_string())?;
 
             // Calculate the finalize cost for the function identified in the transition
-            let cost = cost_in_microcredits(&stack, function_name).map_err(|e| e.to_string())?;
+            let cost = cost_in_microcredits(stack, function_name).map_err(|e| e.to_string())?;
 
             // Accumulate the finalize cost.
             finalize_cost = finalize_cost

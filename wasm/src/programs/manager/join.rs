@@ -15,10 +15,15 @@
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
 use super::*;
-
 use crate::{
-    execute_fee, execute_program, log, process_inputs,
-    OfflineQuery, PrivateKey, RecordPlaintext, Transaction,
+    execute_fee,
+    execute_program,
+    log,
+    process_inputs,
+    OfflineQuery,
+    PrivateKey,
+    RecordPlaintext,
+    Transaction,
 };
 
 use crate::types::native::{

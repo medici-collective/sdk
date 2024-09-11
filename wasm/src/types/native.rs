@@ -14,22 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
-pub use snarkvm_circuit_network::AleoTestnetV0;
+pub use super::networks::*;
+
 pub use snarkvm_console::{
-<<<<<<< HEAD
-    account::{Address, ComputeKey, PrivateKey, Signature, ViewKey},
-    network::{Network, Testnet3},
-=======
     account::{Address, PrivateKey, Signature, ViewKey},
-    network::{Network, TestnetV0},
->>>>>>> 640a96dec9b96846c99cda085d86e47cb3eb93b7
+    network::Network,
     program::{
         Ciphertext,
         Entry,
         EntryType,
-        FromBits,
         FromBytes,
-        Group,
         Identifier,
         Literal,
         Plaintext,
@@ -38,12 +32,7 @@ pub use snarkvm_console::{
         ProgramOwner,
         Record,
         Response,
-        Scalar,
-        SizeInDataBits,
-        ToFields,
-        Value,
         ValueType,
-        U8,
     },
     types::Field,
 };
@@ -58,9 +47,9 @@ pub use snarkvm_synthesizer::{
 };
 
 pub use snarkvm_wasm::{
-    console::network::{Environment, ToField},
+    console::network::Environment,
     fields::PrimeField,
-    utilities::{ToBits, ToBytes, Uniform},
+    utilities::{ToBytes, Uniform},
 };
 
 // Account types
@@ -71,10 +60,6 @@ pub type ViewKeyNative = ViewKey<CurrentNetwork>;
 
 // Algebraic types
 pub type FieldNative = Field<CurrentNetwork>;
-
-// Network types
-pub type CurrentNetwork = TestnetV0;
-pub type CurrentAleo = AleoTestnetV0;
 
 // Record types
 pub type CiphertextNative = Ciphertext<CurrentNetwork>;

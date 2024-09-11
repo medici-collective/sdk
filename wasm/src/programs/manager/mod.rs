@@ -19,19 +19,8 @@ pub mod execute;
 pub mod join;
 pub mod split;
 pub mod transfer;
-
-use crate::{
-    // types::{
-    //     cost_in_microcredits, deployment_cost, CurrentAleo, IdentifierNative, ProcessNative, ProgramIDNative,
-    //     ProgramNative, ProvingKeyNative, QueryNative, VerifyingKeyNative,
-    // },
-    KeyPair, PrivateKey, ProvingKey, RecordPlaintext, VerifyingKey,
-};
-
 const DEFAULT_URL: &str = "https://api.explorer.aleo.org/v1";
-
-// use crate::{KeyPair, PrivateKey, ProvingKey, RecordPlaintext, VerifyingKey};
-
+use crate::{KeyPair, PrivateKey, ProvingKey, RecordPlaintext, VerifyingKey};
 use crate::types::native::{
     cost_in_microcredits,
     deployment_cost,

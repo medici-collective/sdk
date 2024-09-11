@@ -1,11 +1,10 @@
-import * as aleo from "@aleohq/sdk";
+import * as aleo from "@provablehq/sdk";
 
 await aleo.initThreadPool();
 
 const defaultHost = "https://api.explorer.aleo.org/v1";
 const keyProvider = new aleo.AleoKeyProvider();
 const programManager = new aleo.ProgramManager(defaultHost, keyProvider, undefined);
-
 keyProvider.useCache(true);
 
 self.postMessage({

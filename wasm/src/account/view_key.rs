@@ -15,18 +15,12 @@
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
 use super::{Address, PrivateKey};
-use crate::record::RecordCiphertext;
-use snarkvm_console::{
-  account::ViewKey as RustViewKey,
-  network::{Testnet3, Network},
-  types::{Group, U16, Field},
-  program::{Ciphertext, Identifier}
-};
-use snarkvm_utilities::ToBits;
-
-use crate::types::native::ViewKeyNative;
-use core::{convert::TryFrom, fmt, ops::Deref, str::FromStr};
+use snarkvm_console::types::{Field, Group, U16};
+use crate::{record::RecordCiphertext, types::native::{CiphertextNative, IdentifierNative}};
+use crate::types::native::{CurrentNetwork, ViewKeyNative};
+use core::{fmt, ops::Deref, str::FromStr};
 use wasm_bindgen::prelude::*;
+use snarkvm_console::prelude::{Network, ToBits};
 
 #[wasm_bindgen]
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -77,34 +71,34 @@ impl ViewKey {
         }
     }
 
-    // // Decrypt ciphertext (non-record), usually program inputs and outputs, ex: "cipher1as1l2jj32392390fh2eif02h02f20f0h"
-    // pub fn decrypt_ciphertext(
-    //   &self,
-    //   ciphertext: &str,
-    //   tpk: &str,
-    //   program_name: &str,
-    //   function_name: &str,
-    //   index: u16,
-    // ) -> Result<String, String> {
-    //     let vk: RustViewKey<Testnet3> =
-    //         RustViewKey::<Testnet3>::from_str(&self.to_string()).map_err(|error| error.to_string())?;
-    //     let tpk = Group::<Testnet3>::from_str(tpk).unwrap();
-    //     let tvk = (tpk * *vk).to_x_coordinate();
-    //     let bits = &(
-    //         U16::<Testnet3>::new(3).to_bits_le(),
-    //         &Identifier::<Testnet3>::from_str(program_name).unwrap().to_bits_le(),
-    //         &Identifier::<Testnet3>::from_str("aleo").unwrap().to_bits_le(),
-    //         &Identifier::<Testnet3>::from_str(function_name).unwrap().to_bits_le(),
-    //     ).collect();
+    // Decrypt ciphertext (non-record), usually program inputs and outputs, ex: "cipher1as1l2jj32392390fh2eif02h02f20f0h"
+    pub fn decrypt_ciphertext(
+      &self,
+      ciphertext: &str,
+      tpk: &str,
+      program_name: &str,
+      function_name: &str,
+      index: u16,
+  ) -> Result<String, String> {
+      let vk: ViewKeyNative = ViewKeyNative::from_str(&self.to_string()).map_err(|error| error.to_string())?;
+      let tpk = Group::<CurrentNetwork>::from_str(tpk).unwrap();
+      let tvk = (tpk * *vk).to_x_coordinate();
+      let bits = &(
+          U16::<CurrentNetwork>::new(3),
+          &IdentifierNative::from_str(program_name).unwrap(),
+          &IdentifierNative::from_str("aleo").unwrap(),
+          &IdentifierNative::from_str(function_name).unwrap(),
+      )
+          .to_bits_le();
 
-    //     let function_id = <Testnet3 as Network>::hash_bhp1024(bits).unwrap();
-    //     let ivk = <Testnet3 as Network>::hash_psd4(&[function_id, tvk, Field::from_u16(index)]).unwrap();
-    //     let ciphertext = Ciphertext::<Testnet3>::from_str(ciphertext).unwrap();
-    //     match ciphertext.decrypt_symmetric(ivk) {
-    //         Ok(plaintext) => Ok(plaintext.to_string()),
-    //         Err(error) => Err(error.to_string()),
-    //     }
-    // }
+      let function_id = <CurrentNetwork>::hash_bhp1024(bits).unwrap();
+      let ivk = <CurrentNetwork>::hash_psd4(&[function_id, tvk, Field::from_u16(index)]).unwrap();
+      let ciphertext = CiphertextNative::from_str(ciphertext).unwrap();
+      match ciphertext.decrypt_symmetric(ivk) {
+          Ok(plaintext) => Ok(plaintext.to_string()),
+          Err(error) => Err(error.to_string()),
+      }
+  }
 }
 
 impl FromStr for ViewKey {

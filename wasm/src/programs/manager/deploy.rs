@@ -15,7 +15,6 @@
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
 use super::*;
-
 use crate::{execute_fee, log, OfflineQuery, PrivateKey, RecordPlaintext, Transaction};
 use crate::types::native::{
     CurrentAleo,

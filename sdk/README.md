@@ -5,35 +5,35 @@
 
 <p align="center">
     <a href="https://developer.aleo.org"> <img alt="Website" src="https://img.shields.io/badge/Developer_Docs-online-blue"></a>
-    <a href="https://circleci.com/gh/AleoHQ/aleo"><img src="https://circleci.com/gh/AleoHQ/sdk.svg?style=svg"></a>
+    <a href="https://circleci.com/gh/ProvableHQ/sdk"><img src="https://circleci.com/gh/ProvableHQ/sdk.svg?style=svg"></a>
     <a href="https://discord.com/invite/aleo"><img src="https://img.shields.io/discord/700454073459015690?logo=discord"/></a>
-    <a href="https://github.com/AleoHQ/sdk#%EF%B8%8F-contributors"><img src="https://img.shields.io/badge/contributors-23-ee8449"/></a>
+    <a href="https://github.com/ProvableHQ/sdk#%EF%B8%8F-contributors"><img src="https://img.shields.io/badge/contributors-23-ee8449"/></a>
 </p>
 
-## Tools for Building Zero Knowledge Web Apps
+## Tools for Building Zero-Knowledge Web Apps
 
-The Aleo SDK is a collection of JavaScript libraries for building zero knowledge web applications in both the browser
-and node.js.
+The Aleo SDK is a collection of JavaScript libraries for building zero-knowledge web applications in both the browser
+and Node.js.
 
 ## Overview
 
-Aleo provides the ability to run programs in zero knowledge. The Aleo SDK provides the tools to use these programs
-within the browser and all other levels of the web stack to build privacy preserving applications.
+Aleo provides the ability to run programs with the power of zero-knowledge. The Aleo SDK provides the tools to use these programs
+within the browser and all other levels of the web stack to build privacy-preserving applications.
 
 The Aleo SDK provides the following functionality (Click to see examples):
-1. [Aleo account  management](https://aleo.tools/account)
-2. [Web-based program execution and deployment](https://aleo.tools/develop)
-3. [Aleo credit transfers](https://aleo.tools/transfer)
-4. [Management of program state and data](https://aleo.tools/record)
-5. [Communication with the Aleo network](https://aleo.tools/rest)
+1. [Aleo account management](https://provable.tools/account)
+2. [Web-based program execution and deployment](https://provable.tools/develop)
+3. [Aleo credit transfers](https://provable.tools/transfer)
+4. [Management of program state and data](https://provable.tools/record)
+5. [Communication with the Aleo network](https://provable.tools/rest)
 
 ## Table of Contents
 
 * [Installation](#Installation)
 * [Usage](#Usage)
-  * [Zero Knowledge Web App Examples](#Zero-Knowledge-Web-App-Examples)
-    * [Create Aleo App](#create-aleo-app)
-    * [Aleo.tools](#aleotools)
+  * [Zero-Knowledge Web App Examples](#Zero-Knowledge-Web-App-Examples)
+    * [Create Leo App](#create-leo-app)
+    * [Provable.tools](#provabletools)
   * [Create An Aleo Account](#1-create-an-aleo-account)
   * [Execute Aleo Programs](#2-execute-aleo-programs)
     * [Aleo Programs](#21-aleo-programs)
@@ -58,59 +58,75 @@ The Aleo SDK provides the following functionality (Click to see examples):
 * [Further Documentation](#further-documentation)
 ## Installation
 
+### Clone the repository
+
+To clone the repository, run:
+
+`git clone git@github.com:ProvableHQ/sdk.git`
+
 ### NPM
 
 To install the Aleo SDK from NPM run:
 
-`npm install @aleohq/sdk` or `yarn add @aleohq/sdk`.
+`npm install @provablehq/sdk` in your own project's root, or from within this repo run `cd sdk && yarn add @provablehq/sdk`.
 
 ### Build from source
 
-To build the project from source, go to this project's root and execute:
+To build the project from source, go to the project's root and execute:
 
-`npm install && npm run build`
+`yarn build:all`
 
-## Getting Started: Zero Knowledge Web App Examples
+### Ensure compatibility with ES modules
 
-### Create Aleo App
-A set of fully functional examples of zero knowledge web apps can be found in
-[create-aleo-app](https://github.com/AleoHQ/sdk/tree/testnet3/create-aleo-app). Create-aleo-app provides several web-app
-templates in common web frameworks such as React that can be used as a starting point for building zero knowledge web apps.
+In your project's `package.json`, ensure that the following line is added above `scripts`:
 
-Developers can get started immediately with create-react-app by running:
-`npm create aleo-app@latest`
+```json
+{
+  "type": "module",
+}
+```
 
-### Aleo.tools
+## Getting Started: Zero-Knowledge Web App Examples
 
-Additionally, the SDK powers [aleo.tools](https://aleo.tools) - a React app that provides a graphical interface for most
-of the functionality provided by the SDK and can be used as a reference for usage of the SDK. Source code for aleo.tools
-can be found [in the SDK repo here](https://github.com/AleoHQ/sdk/tree/testnet3/website)
+### Create Leo App
+A set of fully functional examples of zero-knowledge web apps can be found in
+[create-leo-app](https://github.com/ProvableHQ/sdk/tree/testnet3/create-leo-app). Create Leo App provides several web app
+templates in common web frameworks such as React that can be used as a starting point for building zero-knowledge web apps.
+
+Developers can get started immediately with create-leo-app by running:
+`npm create leo-app@latest`
+
+### provable.tools
+
+Additionally, the SDK powers [provable.tools](https://provable.tools) - a React app that provides a graphical interface for most
+of the functionality provided by the SDK and can be used as a reference for usage of the SDK. Source code for provable.tools
+can be found [in the SDK repo here](https://github.com/ProvableHQ/sdk/tree/testnet3/website).
 
 ## Usage
 
 ## 1. Create an Aleo Account
 
-The first step in operating a zero knowledge web application is creating a private key which serves as a cryptographic
+The first step in operating a zero-knowledge web application is creating a private key which serves as a cryptographic
 identity for a user. After a private key is generated, several keys that enable specialized methods of interacting with
 Aleo programs can be derived.
 
 These keys include:
 #### Private Key
-The `Private Key` can be treated as the identity of a user. It is used for critical functions like authorizing zero knowledge
-program execution, decrypting private data, and proving ownership of data.
-ownership over user data
+The `Private Key` can be treated as the identity of a user. It is used for critical functions like authorizing zero-knowledge
+program execution, decrypting private data, and proving ownership of user data.
+
 #### View Key
 The `View Key` is derived from the private key and can be used to both decrypt encrypted data owned by a user and prove
 ownership of that data.
 #### Compute Key
 The `Compute Key` can be used to trustlessly run applications and generate transactions on a user's behalf.
 #### Address
-The `Address` is a user's unique public identifier. It serves as an address for a user to receive both official Aleo
+The `Address` is a user's unique public identifier. It serves as an address for a user to receive both Aleo
 credits and data from other zero-knowledge Aleo programs.
 
 All of these keys can be created using the account object:
 ```typescript
-import { Account } from '@aleohq/sdk';
+import { Account } from '@provablehq/sdk';
 
 const account = new Account();
 
@@ -129,16 +145,16 @@ Please note that all keys are considered sensitive information and should be sto
 Aleo programs provide the ability for users to make any input or output of a program private and prove that the program
 was run correctly. Keeping program inputs and outputs private allows developers to build privacy into their applications.
 
-Zero-Knowledge programs are written in one of two languages:
-1. [Leo](https://developer.aleo.org/leo/language): A high level, developer friendly language for developing
-zero knowledge programs.
-2. [Aleo Instructions](https://developer.aleo.org/aleo/instructions): A low level language that provides developers fine
-grained control over the execution flow of zero knowledge programs. Leo programs are compiled into Aleo Instructions
+Zero-knowledge programs are written in one of two languages:
+1. [Leo](https://docs.leo-lang.org/leo/language): A high-level, developer-friendly language for developing
+zero-knowledge programs.
+
+2. [Aleo Instructions](https://docs.leo-lang.org/aleo/language): A low-level language that provides developers with fine-grained control over the execution flow of zero-knowledge programs. Leo code is compiled into Aleo Instructions
 under the hood.
 
-Documentation for both languages can be found at [developer.aleo.org](https://developer.aleo.org).
+Documentation for both languages can be found at [docs.leo-lang.org](https://docs.leo-lang.org/).
 
-#### Hello world in the Leo Language
+#### "Hello World" in Leo
 ```
 // A simple program adding two numbers together
 program helloworld.aleo {
@@ -149,11 +165,11 @@ program helloworld.aleo {
 }
 ```
 
-#### Hello world in Aleo instructions
+#### "Hello World" in Aleo Instructions
 ```
 program helloworld.aleo;
 
-// The leo code above compiles to the following Aleo instructions
+// The Leo code above compiles to the following Aleo Instructions:
 function hello:
     input r0 as u32.public;
     input r1 as u32.private;
@@ -163,23 +179,23 @@ function hello:
 
 ### 2.2 Program Execution Model
 
-The SDK provides the ability execute `Aleo Instructions` programs %100 client-side within the browser.
+The SDK provides the ability to execute Aleo programs 100% client-side within the browser.
 
-The `ProgramManager` object encapsulates the functionality for executing programs and making zero knowledge proofs about
+The `ProgramManager` object encapsulates the functionality for executing programs and making zero-knowledge proofs about
 them. Under the hood it uses cryptographic code compiled from [SnarkVM](https://developer.aleo.org/aleo) into WebAssembly
-with JavaScript bindings that allow execution of Aleo programs fully within the browser. Users interested in lower level
-details how this is achieved can visit the [aleo-wasm](https://github.com/AleoHQ/sdk/tree/testnet3/wasm) crate.
+with JavaScript bindings that allow for the execution of Aleo programs fully within the browser. Users interested in lower-level
+details on how this is achieved can visit the [aleo-wasm](https://www.npmjs.com/package/@provablehq/wasm) crate.
 
 The basic execution flow of a program is as follows:
-1. A web app is loaded with an instance of the `ProgramManager` object
-2. The SDK wasm modules are loaded into the browser's WebAssembly runtime
-2. An Aleo program in `Aleo Instructions` format is loaded into the `ProgramManager` as a wasm object
-3. The web app provides a user input form for the program
-4. The user submits the inputs and the zero knowledge execution is performed entirely within the browser via WebAssembly
-5. The result is returned to the user
-6. (Optional) A fully encrypted zero knowledge transcript of the execution is optionally sent to the Aleo network
+1. A web app is loaded with an instance of the `ProgramManager` object.
+2. The SDK wasm modules are loaded into the browser's WebAssembly runtime.
+2. An Aleo program in `Aleo Instructions` format is loaded into the `ProgramManager` as a wasm object.
+3. The web app provides a user input form for the program.
+4. The user submits the inputs and the zero-knowledge execution is performed entirely within the browser via WebAssembly.
+5. The result is returned to the user.
+6. A fully encrypted zero-knowledge transcript of the execution is optionally sent to the Aleo network.
 
-A diagramatic representation of the program execution flow is shown below.
+A diagramatic representation of the program execution flow is shown below:
 ```mermaid
 graph LR
     p1[Leo Program]
@@ -198,14 +214,14 @@ graph LR
     in-memory-program-."ZK result (Optional)".->Aleo-Network
 ```
 
-### 2.3 Multi-threading
+### 2.3 Multithreading
 
-You can enable multi-threading by calling the `initThreadPool` function. This will run the SDK on multiple Workers, which significantly speeds up performance:
+You can enable multithreading by calling the `initThreadPool` function. This will run the SDK on multiple workers, which significantly speeds up performance:
 
 ```typescript
-import { Account, initThreadPool } from '@aleohq/sdk';
+import { Account, initThreadPool } from '@provablehq/sdk';
 
-// Enables multi-threading
+// Enables multithreading
 await initThreadPool();
 
 // Create a new Aleo account
@@ -214,10 +230,11 @@ const account = new Account();
 // Perform further program logic...
 ````
 
-### 2.4 Local Program Execution
-A simple example of running the hello world program within the web browser and capturing its outputs is shown below:
+### 2.4 Local program execution
+
+A simple example of running the "hello world" program locally using Node.js and capturing its outputs is shown below:
 ```typescript
-import { Account, Program } from '@aleohq/sdk';
+import { Account, ProgramManager } from '@provablehq/sdk';
 
 /// Create the source for the "hello world" program
 const program = "program helloworld.aleo;\n\nfunction hello:\n    input r0 as u32.public;\n    input r1 as u32.private;\n    add r0 r1 into r2;\n    output r2 as u32.private;\n";
@@ -228,86 +245,103 @@ const account = new Account();
 programManager.setAccount(account);
 
 /// Get the response and ensure that the program executed correctly
-const executionResponse = await programManager.executeOffline(program, "hello", ["5u32", "5u32"]);
+const executionResponse = await programManager.run(program, "hello", ["5u32", "5u32"]);
 const result = executionResponse.getOutputs();
-assert(result === ["10u32"]);
+assert.deepStrictEqual(result, ['10u32']);
 ```
 
-### 2.5 Program execution on the Aleo Network
+### 2.5 Program execution on the Aleo network
 The SDK provides the ability to execute programs and store an encrypted transcript of the execution on the Aleo
 network that anyone can trustlessly verify.
 
-This process can be thought of being executed in the following steps:
-1. A program is run locally
-2. A proof that the program was executed correctly and that the outputs follow from the inputs is generated
+This process can be thought of as being executed in the following steps:
+1. A program is run locally.
+2. A proof that the program was executed correctly and that the outputs follow from the inputs is generated.
 3. A transcript of the proof is generated client-side containing encrypted proof data (see [Section 2.6](#4-managing-records-and-private-state))
-and any public outputs or state the user of the program wishes to reveal
-4. The proof transcript is posted to the Aleo network and verified by the Aleo validator nodes in a trustless manner
+and any public outputs or state the user of the program wishes to reveal.
+4. The proof transcript is posted to the Aleo network and verified by the Aleo validator nodes in a trustless manner.
 5. If the proof is valid, it is stored and anyone can later verify the proof and read the outputs the author of the
 program has chosen to make public. Private inputs will remain encrypted, but the author of the proof can also choose to
 retrieve this encrypted state at any point and decrypt it locally for their own use.
 
-Posting an execution to the Aleo Network serves as a globally trustless and verifiable record of a program execution and
+Posting an execution to the Aleo network serves as a globally trustless and verifiable record of a program execution as well as
 any resulting state changes in private or public data.
 
-A simple example of running the hello world program on the Aleo network is shown below:
+A simple example of running the "hello world" program on the Aleo network is shown below:
 ```typescript
-import { Account, AleoNetworkClient, NetworkRecordProvider, ProgramManager, KeySearchParams } from '@aleohq/sdk';
+import { Account, AleoNetworkClient, NetworkRecordProvider, ProgramManager, AleoKeyProvider } from '@provablehq/sdk';
+
+// Create an account
+const account = new Account();
+
+// Create a network client to connect to the Aleo network
+const networkClient = new AleoNetworkClient("https://api.explorer.aleo.org/v1");
 
 // Create a key provider that will be used to find public proving & verifying keys for Aleo programs
 const keyProvider = new AleoKeyProvider();
 keyProvider.useCache = true;
 
 // Create a record provider that will be used to find records and transaction data for Aleo programs
-const networkClient = new AleoNetworkClient("https://api.explorer.aleo.org/v1");
 const recordProvider = new NetworkRecordProvider(account, networkClient);
 
 // Initialize a program manager to talk to the Aleo network with the configured key and record providers
 const programManager = new ProgramManager("https://api.explorer.aleo.org/v1", keyProvider, recordProvider);
 
-// Provide a key search parameter to find the correct key for the program if they are stored in a memory cache
-const keySearchParams = { "cacheKey": "hello_hello:hello" };
+// Set the account for the program manager
+programManager.setAccount(account);
 
-// Execute the program using the options provided inline
-const tx_id = await programManager.execute({
-    programName: "hello_hello.aleo",
-    functionName: "hello_hello",
-    fee: 0.020,
-    privateFee: false, // Assuming a value for privateFee
-    inputs: ["5u32", "5u32"],
-    keySearchParams: keySearchParams
-});
-const transaction = await programManager.networkClient.getTransaction(tx_id);
+(async () => {
+    try {
+        // Provide a key search parameter to find the correct key for the program if they are stored in a memory cache
+        const keySearchParams = { cacheKey: "helloworld.aleo:main" };
+        console.log("Key search parameters set: ", keySearchParams);
+
+        // Execute the program using the options provided inline
+        const tx_id = await programManager.execute({
+            programName: "helloworld.aleo",
+            functionName: "main",
+            fee: 0.020,
+            privateFee: false, // Assuming a value for privateFee
+            inputs: ["5u32", "5u32"], // Example inputs matching the function definition
+            keySearchParams: keySearchParams,
+            privateKey: account.privateKey() // Set the private key
+        });
+        const transaction = await programManager.networkClient.getTransaction(tx_id);
+        console.log("Transaction details: ", transaction);
+    } catch (error) {
+        console.error("Error executing program:", error);
+    }
+})();
 ```
 
 A reader of the above example may notice the `RecordProvider` and `KeyProvider` classes that were not present in the local
 execution example. The `KeyProvider` class helps users of the SDK find `Proving Keys` for programs. `Proving Keys`
-allow zero knowledge proofs that the programs were executed correctly to be created. The `RecordProvider` class helps
+allow zero-knowledge proofs that the programs were executed correctly to be created. The `RecordProvider` class helps
 find `Records` which are private data associated with programs that can be changed and updated throughout time.
 These two concepts are explained in more detail below.
 
-### 2.6 Program Proving Keys & Program Records
+### 2.6 Program proving keys & program records
 
-Executing Aleo programs in zero knowledge requires two additional pieces of information.
+Executing Aleo programs using zero-knowledge requires two additional pieces of information:
 
-1. **Function Proving & Verifying Keys:** Proving and Verifying keys are cryptographic keys that are generated when a
-   program function is executed. These keys are public and unique for each function in a program. The proving key allows any party to
+1. **Function Proving & Verifying Keys:** Proving and verifying keys are cryptographic keys that are generated when a
+   program function is executed. These keys are public and unique for each function in a program. The proving keys allows any party to
    execute the program and generate a proof that the program was executed correctly. The verifying keys allow any party
    to verify that the proof was generated correctly and the execution is correct. These keys are required to create the
-   zero knowledge property of program execution.
+   zero-knowledge property of program execution.
 2. **Program Records:** Records are private state generated by a program belonging to a unique private keyholder. Records
-   are generated by a program's functions and can be changed and updated by when a user runs various functions of the
+   are generated by a program's functions and can be changed and updated when a user runs various functions of the
    program. These records are private by default and are used to manage updatable private state. One of the most clear
-   usages of records is to the `credits` record in the `credits.aleo`. Credits records are one of two official ways of
-   representing Aleo credits on the Aleo Network and are used to pay all transaction fees on the network. More information
-   on Records can be found in the [Records](#41-private-state-data--records) section below.
+   usages of records is to the `credits` record in the `credits.aleo` program. Credits records are one of two official ways of
+   representing Aleo credits on the Aleo network and are used to pay all transaction fees on the network. More information
+   on records can be found in the [Records](#41-private-state-data--records) section below.
 
 For this reason, all programs will need proving and verifying keys to operate and many functions in Aleo programs will
 require records as inputs. To simplify the process of managing keys and records, the Aleo SDK provides two abstractions
 for managing these concepts:
 
-1. **KeyProvider:** When program functions execute, by default, they will synthesize the proving and verifying keys needed to
-make a zero knowledge proof of the execution. However, these keys are large and expensive to generate. For this reason, applications may
+1. **KeyProvider:** When program functions execute, they will by default synthesize the proving and verifying keys needed to
+make a zero-knowledge proof of the execution. However, these keys are large and expensive to generate. For this reason, applications may
 want to store these keys and re-use them in future executions. The `KeyProvider` interface provides the ability for
 users of the SDK to provide their own key storage and retrieval mechanism. The SDK provides a default implementation
 of the `KeyProvider` interface via the `AleoKeyProvider` class.
@@ -319,14 +353,14 @@ searches the Aleo network for records uniquely belonging to a user.
 The `ProgramManager` class is capable of taking a `KeyProvider` and `RecordProvider` as arguments and will use them to
 find the correct keys and records for a program execution.
 
-### 2.7 Deploy a new Program to the Aleo Network
+### 2.7 Deploy a new program to the Aleo Network
 
-The Aleo Network contains a public registry of programs that can be executed by anyone. Any user can add an Aleo program
-to the network (as long as it doesn't already currently exist) by paying a deployment fee in Aleo credits. The SDK
+The Aleo network contains a public registry of programs that can be executed by anyone. Any user can add an Aleo program
+to the network (as long as it doesn't already exist) by paying a deployment fee in Aleo credits. The SDK
 provides a simple interface for deploying programs to the Aleo network using the program manager.
 
 ```typescript
-import { Account, AleoNetworkClient, NetworkRecordProvider, ProgramManager, KeySearchParams} from '@aleohq/sdk';
+import { Account, AleoNetworkClient, NetworkRecordProvider, ProgramManager, AleoKeyProvider} from '@provablehq/sdk';
 
 // Create a key provider that will be used to find public proving & verifying keys for Aleo programs
 const keyProvider = new AleoKeyProvider();
@@ -350,7 +384,7 @@ programManager.setAccount(account)
 const program = "program hello_hello.aleo;\n\nfunction hello:\n    input r0 as u32.public;\n    input r1 as u32.private;\n    add r0 r1 into r2;\n    output r2 as u32.private;\n";
 
 // Define a fee to pay to deploy the program
-const fee = 1.8; // 1.8 Aleo credits
+const fee = 3.8; // 3.8 Aleo credits
 
 // Deploy the program to the Aleo network
 const tx_id = await programManager.deploy(program, fee);
@@ -359,7 +393,7 @@ const tx_id = await programManager.deploy(program, fee);
 const transaction = await programManager.networkClient.getTransaction(tx_id);
 ```
 
-The NetworkRecordProvider will attempt to scan the network for a fee record for the account provided. Doing a recent
+The `NetworkRecordProvider` will attempt to scan the network for a fee record for the account provided. Doing a recent
 public transfer to the deploying account will ensure a record is found quickly, or you can provide a fee record manually
 by [scanning](https://developer.aleo.org/testnet/getting_started/deploy_execute/#scan) for a record and passing it as a
 string.
@@ -372,302 +406,35 @@ const feeRecord = "{  owner: aleo1xxx...xxx.private,  microcredits: 2000000u64.p
 const tx_id = await programManager.deploy(program, fee, undefined, feeRecord);
 ```
 
-### 2.8 React Example
+### 2.8 React example
 
-The above concepts can be tied together in a concrete example of a React web app. This example can be installed in one
+The above concepts can be tied together in a concrete example of a single-page web app. This example can be installed in one
 step by running:
 
-`npm create aleo-app@latest`
+`npm create leo-app@latest`
 
-#### Program Execution
+You will then be prompted to select either Vanilla, React, or Node.js as the template for the project. For this example, select Vanilla.
 
-Program execution is a computationally expensive process. For this reason, it is recommended to execute programs in
-webworkers.
+#### Program execution
 
-<details>
-<summary>Example Web Worker Usage</summary>
-
-A worker file that performs the execution can be created as follows:
-`worker.js`
-```jsx
-import * as aleo from "@aleohq/sdk";
-
-// Threads are then initialized to execute the program in parallel using multithreading
-await aleo.initThreadPool();
-
-/// The program manager is initialized with a key provider and a record provider
-const defaultHost = "https://api.explorer.aleo.org/v1";
-const keyProvider = new aleo.AleoKeyProvider();
-const recordProvider = new aleo.NetworkRecordProvider(new Account(), "https://api.explorer.aleo.org/v1");
-const programManager = new aleo.ProgramManager(
-  defaultHost,
-  keyProvider,
-  recordProvider,
-);
-
-// The key provider is set to use an in-memory cache to store keys
-keyProvider.useCache(true);
-
-self.postMessage({
-  type: "ALEO_WORKER_READY",
-});
-
-// The program is executed when specific events are dispatched and then communicates the result to the main thread
-// when execution has finished
-let lastLocalProgram = null;
-self.addEventListener("message", (ev) => {
-  if (ev.data.type === "ALEO_EXECUTE_PROGRAM_LOCAL") {
-     const {localProgram, aleoFunction, inputs, privateKey} = ev.data;
-
-     console.log("Web worker: Executing function locally...");
-     let startTime = performance.now();
-
-     (async function () {
-        try {
-           // Ensure the program is valid and that it contains the function specified
-           const program = programManager.createProgramFromSource(localProgram);
-           const program_id = program.id();
-           if (!program.hasFunction(aleoFunction)) {
-              throw `Program ${program_id} does not contain function ${aleoFunction}`;
-           }
-           const cacheKey = `${program_id}:${aleoFunction}`;
-
-           // Get the program imports
-           const imports =
-                   programManager.networkClient.getProgramImports(localProgram);
-
-           // Get the proving and verifying keys for the function
-           if (lastLocalProgram !== localProgram) {
-              const keys = programManager.executionEngine.synthesizeKeypair(
-                      localProgram,
-                      aleoFunction,
-              );
-              programManager.keyProvider.cacheKeys(cacheKey, [
-                 keys.provingKey(),
-                 keys.verifyingKey(),
-              ]);
-              lastLocalProgram = localProgram;
-           }
-
-           // Pass the cache key to the execute function
-           const keyParams = new aleo.AleoKeyProviderParams({
-              cacheKey: cacheKey,
-           });
-
-           // Execute the function locally
-           let response = await programManager.executeOffline(
-                   localProgram,
-                   aleoFunction,
-                   inputs,
-                   imports,
-                   keyParams,
-                   undefined,
-                   undefined,
-                   aleo.PrivateKey.from_string(privateKey),
-           );
-
-           // Return the outputs to the main thread
-           self.postMessage({
-              type: "OFFLINE_EXECUTION_COMPLETED",
-              outputs,
-           });
-        } catch (error) {
-           console.error(error);
-           self.postMessage({
-              type: "ERROR",
-              errorMessage: error.toString(),
-           });
-        }
-     })();
-  }
-});
-```
-
-The WebWorker can then be initialized in worker provider component which uses React effects
-
-```jsx
-import { useEffect, useState } from "react";
-import WorkerContext from "./WorkerContext";
-
-const WorkerProvider = ({ children }) => {
-    const [worker, setWorker] = useState(null);
-    const [workerReady, setWorkerReady] = useState(false);
-
-    useEffect(() => {
-        let worker = new Worker(new URL("./worker.js", import.meta.url), {
-            type: "module",
-        });
-        setWorker(worker);
-
-        worker.onmessage = (event) => {
-            if (event.data.type === "ALEO_WORKER_READY") {
-                setWorkerReady(true);
-            }
-        };
-
-        return () => {
-            worker.terminate();
-        };
-    }, []);
-
-    if (!workerReady) {
-        return (
-            <>
-                <div className="spinner">
-                    <div className="dot1"></div>
-                </div>
-            </>
-        );
-    }
-
-    return (
-        <WorkerContext.Provider value={worker}>
-            {children}
-        </WorkerContext.Provider>
-    );
-};
-
-export default WorkerProvider;
-```
-
-</details>
-
-Using both webworkers and a wasm initialization in a React hook, a single page app can be created that executes
-Aleo zero knowledge programs.
-
-<details>
-<summary>Example App.jsx Implementing Zero Knowledge Program Execution</summary>
-
-```jsx
-import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import aleoLogo from "./assets/aleo.png";
-import "./App.css";
-import { useAleoWASM } from "./aleo-wasm-hook";
-
-function App() {
-  const [count, setCount] = useState(0);
-  const aleo = useAleoWASM();
-  const [account, setAccount] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  const generateAccount = () => {
-    setAccount(new aleo.PrivateKey());
-  };
-
-  const [worker, setWorker] = useState(null);
-
-  useEffect(() => {
-    if (worker === null) {
-      const spawnedWorker = spawnWorker();
-      setWorker(spawnedWorker);
-      return () => {
-        spawnedWorker.terminate();
-      };
-    }
-  }, []);
-
-  function spawnWorker() {
-    return new Worker(new URL("workers/worker.js", import.meta.url), {
-      type: "module",
-    });
-  }
-
-  function postMessagePromise(worker, message) {
-    return new Promise((resolve, reject) => {
-      worker.onmessage = (event) => {
-        resolve(event.data);
-      };
-      worker.onerror = (error) => {
-        reject(error);
-      };
-      worker.postMessage(message);
-    });
-  }
-
-  async function execute() {
-    const hello_hello_program =
-      "program hello_hello.aleo;\n" +
-      "\n" +
-      "function hello:\n" +
-      "    input r0 as u32.public;\n" +
-      "    input r1 as u32.private;\n" +
-      "    add r0 r1 into r2;\n" +
-      "    output r2 as u32.private;\n";
-
-    setLoading(true);
-    const result = await postMessagePromise(worker, {
-      type: "ALEO_EXECUTE_PROGRAM_LOCAL",
-      localProgram: hello_hello_program,
-      aleoFunction: "hello",
-      inputs: ["5u32", "5u32"],
-      privateKey: account.to_string(),
-    });
-    setLoading(false);
-
-    alert(JSON.stringify(result));
-  }
-
-  return (
-    <>
-      <div>
-        <a href="https://aleo.org" target="_blank">
-          <img src={aleoLogo} className="logo" alt="Aleo logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Aleo + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          <button onClick={generateAccount}>
-            {account
-              ? `Account is ${JSON.stringify(account.to_string())}`
-              : `Click to generate account`}
-          </button>
-        </p>
-        <p>
-          <button disabled={!account || loading} onClick={execute}>
-            {loading
-              ? `Executing...check console for details...`
-              : `Execute hello_hello.aleo`}
-          </button>
-        </p>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Aleo and React logos to learn more
-      </p>
-    </>
-  );
-}
-
-export default App;
-```
-</details>
+Program execution is a computationally-expensive process. For this reason, it is recommended to execute programs in
+web workers. Create-Leo-App will automatically create a web worker for you that performs the execution called `worker.js`.
 
 
-A full example of this implementation can be found [here](https://github.com/AleoHQ/sdk/blob/testnet3/create-aleo-app/template-react/src/App.jsx)
+A full example of this implementation can be found [here](https://github.com/ProvableHQ/sdk/tree/testnet3/create-leo-app/template-vanilla)
 
 ## 3. Aleo Credit Transfers
 
-### 3.1 Aleo Credits
+### 3.1 Aleo credits
 
-The official token of operation of the Aleo Network are Aleo credits. Aleo credits are used to pay all fees for program
-execution on the Aleo network.
+Aleo Credits are used to access blockspace and computational resources on the network, with users paying Credits to submit transactions and have them processed.
 
-Aleo credits are defined in the [credits.aleo](https://www.aleo.network/programs/credits.aleo) program. This program is
-deployed to the Aleo Network and defines data structures representing Aleo credits and the functions used to manage them.
+Aleo credits are defined in the [credits.aleo](https://explorer.aleo.org/program/credits.aleo) program. This program is
+deployed to the Aleo network and defines data structures representing Aleo credits and the functions used to manage them.
 
-There are two ways to hold Aleo credits.
+There are two ways to hold Aleo credits:
 
-#### 1 - Private balances via credits.aleo records
+#### 1 - Private balances via  `credits.aleo` records
 The first method is owning a `credits` record which enables a participant in the Aleo
 network to hold a private balance of Aleo credits.
 ```
@@ -676,11 +443,11 @@ record credits:
     microcredits as u64.private;
 ```
 
-A user's total private credits balance will consist of all unspent `credits` records owned by the user with a nonzero
+A user's total private credits balance will consist of all unspent `credits` records owned by the user with a non-zero
 `microcredits` value.
 
-#### 2 - Public balances via credits.aleo account mapping
-The second is by holding a `balance` in the `account` mapping in the `credits.aleo` program on the Aleo Network.
+#### 2 - Public balances via `credits.aleo` account mappings
+The second method is by holding a `balance` in the `account` mapping in the `credits.aleo` program on the Aleo network.
 
 ```
 mapping account:
@@ -688,21 +455,21 @@ mapping account:
     value microcredits as u64.public;
 ```
 
-The total public credits balance of a user is the value of account mapping at the user's address. Users can hold both private and public balances simultaneously.
+The total public credits balance of a user is the value of the account mapping at the user's address. Users can hold both private and public balances simultaneously.
 
-More information about `records` and `mappings` and how they related to private and public balances are explained in the
+More information about `records` and `mappings` and how they are related to private and public balances are explained in the
 [Managing Program Data and Private State](#4-managing-program-data-and-private-state) section.
 
-### 3.2 Transfer Aleo Credits
-The `ProgramManager` allows transfers of aleo credits via the `transfer` method. This function executes the credits.aleo
+### 3.2 Transferring Aleo credits
+The `ProgramManager` allows transfers of Aleo credits via the `transfer` method. This function executes the `credits.aleo`
 program under the hood.
 
 There are four transfer functions available.
 
-#### 1. transfer_private
+#### 1. `transfer_private`
 
-Takes a `credits` record of owned by the sender, subtracts an amount from it, and adds that amount
-to a new record owned by the receiver. This function is %100 private and does not affect the `account` mapping.
+Takes a `credits` record owned by the sender, subtracts an amount from it, and adds that amount
+to a new record owned by the receiver. This function is 100% private and does not affect the `account` mapping.
 
 ```mermaid
 graph LR
@@ -713,9 +480,10 @@ graph LR
 
 ```
 
-#### 2. transfer_private_to_public
-Takes a `credits` record of owned by the sender, subtracts an amount from it, and adds
-that amount to the `account` mapping of the receiver. This function is %50 private and %50 public. It consumes a record
+#### 2. `transfer_private_to_public`
+
+Takes a `credits` record owned by the sender, subtracts an amount from it, and adds
+that amount to the `account` mapping of the receiver. This function is 50% private and 50% public. It consumes a record
 as a private input and generates a public balance in the `account` mapping entry belonging to the receiver.
 
 ```mermaid
@@ -728,9 +496,9 @@ graph LR
     t1--amount 3000u64-->m1
 ```
 
-#### 3. transfer_public
+#### 3. `transfer_public`
 
-Subtracts an amount of `credits` stored in the `account` mapping of the `credits.aleo program`, and
+Subtracts an amount of `credits` stored in the `account` mapping of the `credits.aleo` program, and
 adds that amount to the `account` mapping of the receiver. This function is 100% public and does not consume or generate
 any records.
 
@@ -747,9 +515,10 @@ graph LR
     end
 ```
 
-#### 4. transfer_public_to_private
+#### 4. `transfer_public_to_private`
+
 Subtracts an amount `credits` stored in the `account` mapping of the `credits.aleo program`
-and adds that amount to a new private record owned by the receiver. This function is %50 private and %50 public.
+and adds that amount to a new private record owned by the receiver. This function is 50% private and 50% public.
 It publicly consumes a balance in the `account` mapping entry belonging to the sender and generates a private record
 as a private output.
 
@@ -771,7 +540,7 @@ All four of these functions can be used to transfer credits between users via th
 `ProgramManager` by specifying the transfer type as the third argument.
 
 ```typescript
-import { Account, ProgramManager, AleoKeyProvider, NetworkRecordProvider, AleoNetworkClient } from '@aleo/sdk';
+import { Account, ProgramManager, AleoKeyProvider, NetworkRecordProvider, AleoNetworkClient } from '@provablehq/sdk';
 
 // Create a new NetworkClient, KeyProvider, and RecordProvider
 const account = Account.from_string({privateKey: "user1PrivateKey"});
@@ -812,7 +581,7 @@ public_balance = programManager.networkClient.getMappingValue("credits.aleo", US
 assert(public_balance === 0);
 ```
 
-### 3.2 Checking Public Balances
+### 3.2 Checking public balances
 As shown above, a public balance of any address can be checked with `getMappingValue` function of the `NetworkClient`.
 
 ```typescript
@@ -823,19 +592,19 @@ const public_balance = networkClient.getMappingValue("credits.aleo", USER_1_ADDR
 
 ## 4. Managing Program Data and Private State
 
-### 4.1 Private State Data: Records
-Records in are analogous to concept of [UTXOs](https://en.wikipedia.org/wiki/Unspent_transaction_output). When a record is
+### 4.1 Private state data: records
+Records are analogous to the concept of [UTXOs](https://en.wikipedia.org/wiki/Unspent_transaction_output). When a record is
 created by a program, it can then be consumed later by the same program as an input to a function. Once a record is used
-as input, it is considered consumed and cannot be used again. In many cases a new record will be created from the output
+as an input, it is considered consumed and cannot be used again. In many cases a new record will be created from the output
 of the function. Records are private by default and are associated with a single Aleo program and a single private key
 representing a user.
 
-### 4.2 Record Usage Example: Private Value Transfers
+### 4.2 Record usage example: private value transfers
 
 A straightforward example of a usage of records in a program can be demonstrated by explaining the process of private
-value transfers of official Aleo credits on the Aleo network.
+value transfers of Aleo credits on the Aleo network.
 
-Aleo credits are the official token in which all on-chain execution and deployment fees are paid. Credits can be public
+Aleo credits are used for all on-chain execution and deployment fees. Credits can be public
 or private. Private credits are represented by the `credits` record in the [credits.aleo](https://www.aleo.network/programs/credits.aleo)
 program.
 
@@ -865,10 +634,10 @@ function transfer_private:
     output r5 as credits.record;
 ```
 
-The `transfer_private` function can be graphically represented by the graph below. In the graph the first record "Record 1"
-is consconsumed and can never be used again. From the data in Record 1, two more records are created. One containing
+The `transfer_private` function can be graphically represented by the graph below. In the graph the first record, Record 1,
+is consumed and can never be used again. From the data in Record 1, two more records are created. One containing
 the intended amount for the recipient which is now owned by the recipient and another containing the remaining credits
-which is sent back to the sender.
+which are sent back to the sender.
 
 ```mermaid
 graph LR
@@ -880,8 +649,8 @@ graph LR
     p1--Credits Record 3-->R1[Recipient Address]
 ```
 
-This chain of ownership is tracked by the Aleo Blockchain when users choose to submit their transactions to the Aleo
-Network. This is allows other users who receive records to receive the updated data and verify that this data was
+This chain of ownership is tracked by the Aleo blockchain when users choose to submit their transactions to the Aleo
+network. This allows other users who receive records to receive the updated data and verify that this data was
 provably generated by the intended program.
 
 What this process allows is a private chain of state to be created between multiple users. In the context of value
@@ -901,7 +670,7 @@ The above state chain would be executed in the following way using the SDK:
 #### Step 1 - User 1 sends a private value transfer to User 2
 ```typescript
 // USER 1
-import { Account, ProgramManager, AleoKeyProvider, NetworkRecordProvider, AleoNetworkClient } from '@aleo/sdk';
+import { Account, ProgramManager, AleoKeyProvider, NetworkRecordProvider, AleoNetworkClient } from '@provablehq/sdk';
 
 // Create a new NetworkClient, KeyProvider, and RecordProvider
 const account = Account.from_string({privateKey: "user1PrivateKey"});
@@ -914,15 +683,15 @@ const USER_2_ADDRESS = "user2Address";
 const programManager = new ProgramManager("https://api.explorer.aleo.org/v1", keyProvider, recordProvider);
 programManager.setAccount(account);
 
-/// Send private transfer to user 2
+/// Send private transfer to User 2
 const tx_id = await programManager.transfer(1, USER_2_ADDRESS, "transfer_private", 0.2);
 ```
 
-#### Step 2 - User 2 receives the transaction ID and fetches the credits record they received from user 1 from the network. They then send it to user 3
+#### Step 2 - User 2 receives the transaction ID and fetches the credits record they received from User 1 from the network. They then send it to User 3
 
 ```typescript
 // USER 2
-import { Account, ProgramManager, AleoKeyProvider, NetworkRecordProvider, AleoNetworkClient } from '@aleo/sdk';
+import { Account, ProgramManager, AleoKeyProvider, NetworkRecordProvider, AleoNetworkClient } from '@provablehq/sdk';
 
 // Create a new NetworkClient, KeyProvider, and RecordProvider
 const account = Account.from_string({privateKey: "user2PrivateKey"});
@@ -947,19 +716,18 @@ const USER_3_ADDRESS = "user3Address";
 const tx_id = await programManager.transfer(1, USER_3_ADDRESS, "transfer_private", 0.2, undefined, recordPlaintext);
 ```
 
-When an execution such as `transfer_private` consumes or generates a record is posted on the network and encrypted transcript
-of the execution is posted, containing an encrypted version of the record output and a transaction ID.
+When an execution such as `transfer_private` consumes or generates a record, an encrypted transcript of the execution containing an encrypted version of the record output and a transaction ID is posted on the network.
 
 Because the records are encrypted when they're posted on the network, they do not reveal any information about the party
 who executed the program, nor the contents of the record. The only information that is revealed is the program ID,
 function name, encrypted function inputs, and the transaction ID of the program execution. No user except for the recipient
 of the record can see the contents of the record.
 
-Below you can see what the exact data which is posted to the Aleo Network when `transfer_private` is run. Note that the
-record, the amount transferred, and both the sender & recipient addresses are all encrypted.
+Below, you can see the exact data which is posted to the Aleo network when `transfer_private` is run. Note that the
+record, the amount transferred, and both the sender and recipient addresses are all encrypted.
 
 <details>
-<summary>transfer_private Execution Transcript</summary>
+<summary>`transfer_private` Execution Transcript</summary>
 
 ```json
   "transactions": [
@@ -1024,7 +792,7 @@ that are not owned by the user will fail.
 Record decryption and ownership verification can be done in the SDK using the following code:
 
 ```typescript
-import { Account, RecordCiphertext, RecordPlaintext } from '@aleo/sdk';
+import { Account, RecordCiphertext, RecordPlaintext } from '@provablehq/sdk';
 
 // Create an account from an existing private key
 const account = Account.from_string({privateKey: "existingPrivateKey"});
@@ -1048,15 +816,15 @@ if (RecordCiphertext.is_owner(account.viewKey())) {
 Mappings are simple key value stores defined in a program. They are represented by a key and a value each of a specified
 type. They are stored directly within the Aleo blockchain and can be publicly read by any participant in the Aleo network.
 
-An example of a mapping usage is `account` mapping in the `credits.aleo` program.
+An example of a mapping usage is the `account` mapping in the `credits.aleo` program.
 ```
 mapping account:
     key owner as address.public;
     value microcredits as u64.public;
 ```
 
-The `account` mapping is used to store public credits balances on the Aleo network. It takes a public address as a key
-and a public u64 value representing the number of microcredits owned by the address.
+The `account` mapping is used to store public credit balances on the Aleo network. It takes a public address as a key
+and a public `u64` value representing the number of microcredits owned by the address.
 
 Mappings within programs are identified by the `mapping` identifier. Any program where this keyword appears contains an
 on-chain mapping. An example of a program that uses a mapping is shown below:
@@ -1085,17 +853,17 @@ finalize update_score:
 
 Note that the above function has a `finalize` identifier. This identifier is used to identify a portion of a function's
 code that should be executed by nodes on the Aleo network. Program mappings are updated exclusively by code run by nodes
-on the Aleo Network written in `finalize` blocks.
+on the Aleo network written in `finalize` blocks.
 
-### 4.4 Reading Mappings
+### 4.4 Reading mappings
 Any state within a program mapping is public and can be read by any participant in the Aleo network. The `NetworkClient`
 class provides the `getMapping` method to read the public mappings within an program and the `getMappingValue` method to
 read the value of a specific key within a mapping.
 
 ```typescript
-import {  AleoNetworkClient } from '@aleo/sdk';
+import { AleoNetworkClient } from '@provablehq/sdk';
 
-const networkClient = new AleoNetworkClient("https://vm.aleo.org/api");
+const networkClient = new AleoNetworkClient("https://api.explorer.aleo.org/v1");
 const creditsMappings = networkClient.getMappings("credits.aleo");
 assert(creditsMappings === ["account"]);
 
@@ -1103,9 +871,9 @@ const publicCredits = networkClient.getMapping("credits.aleo", "[a valid aleo ac
 assert(publicCredits === "0u64");
 ```
 
-### 4.5 Initializing & Updating Mappings
+### 4.5 Initializing & updating mappings
 Updating mappings is done by executing a program function on the Aleo network which has a finalize block that updates the
-program's mapping. For instance the `transfer_public` function in the `credits.aleo` program updates the `account`
+program's mapping. For instance, the `transfer_public` function in the `credits.aleo` program updates the `account`
 mapping (and thus a user's balance) when called.
 
 ```
@@ -1130,25 +898,25 @@ finalize transfer_public:
 
 From the perspective of the caller of the API, this is as simple as executing a normal Aleo function. Given the inputs
 to a function with a finalize scope that updates a mapping are valid, the mapping will either be intialized or updated
-by the Aleo network. All the user of the SDK must do is ensure that the inputs to the function are valid.
+by the Aleo network. All that the user of the SDK must do is ensure that the inputs to the function are valid.
 
-If function inputs are Invalid, the Network will return an error, but the fee paid for the transaction will still be
-consumed. So it is important to ensure that the inputs to a function are valid before executing it.
+If function inputs are invalid, the network will return an error, but the fee paid for the transaction will still be
+consumed. Therefore, it is important to ensure that the inputs to a function are valid before executing it.
 
-A simple example of a mapping update can be shown by simply executing the 'transfer_public` as shown below.
+A simple example of a mapping update can be shown by simply executing 'transfer_public` as shown below.
 
 ```typescript
-import { Account, ProgramManager, AleoKeyProvider, NetworkRecordProvider, AleoNetworkClient } from '@aleo/sdk';
+import { Account, ProgramManager, AleoKeyProvider, NetworkRecordProvider, AleoNetworkClient } from '@provablehq/sdk';
 
 // Create a new NetworkClient, KeyProvider, and RecordProvider
 const account = Account.from_string({privateKey: "user1PrivateKey"});
-const networkClient = new AleoNetworkClient("https://vm.aleo.org/api");
+const networkClient = new AleoNetworkClient("https://api.explorer.aleo.org/v1");
 const keyProvider = new AleoKeyProvider();
 const recordProvider = new NetworkRecordProvider(account, networkClient);
 
 // Initialize a program manager with the key provider to automatically fetch keys for executions
 const RECIPIENT_ADDRESS = "user1Address";
-const programManager = new ProgramManager("https://vm.aleo.org/api", keyProvider, recordProvider);
+const programManager = new ProgramManager("https://api.explorer.aleo.org/v1", keyProvider, recordProvider);
 programManager.setAccount(account);
 
 // Update or initialize a public balance
@@ -1156,7 +924,7 @@ const tx_id = await programManager.transfer(1, RECIPIENT_ADDRESS, "transfer_priv
 ```
 
 
-## 5. Communicating with the Aleo Network
+## 5. Communicating with the Aleo network
 
 Communication with the Aleo network is done through the `AleoNetworkClient` class. This class provides methods to query
 data from Aleo network nodes and submit transactions to the Aleo network.
@@ -1166,7 +934,7 @@ A full list of methods provided by the `AleoNetworkClient` class and usage examp
 
 ## Further Documentation
 
-API documentation for this package, the Leo Language, and Aleo instructions can be found on the [Aleo Developer Hub](https://developer.aleo.org/sdk/typescript/overview).
+API documentation for this package, the Leo Language, and Aleo instructions can be found in the [Leo Developer Docs](https://docs.leo-lang.org/getting_started).
 
 To view the API documentation for this package locally, open `docs/index.html`.
 To regenerate the documentation, run `npx jsdoc --configure jsdoc.json --verbose`

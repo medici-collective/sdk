@@ -18,7 +18,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly-2024-05-14
+          toolchain: nightly-2024-07-21
           override: true
           components: rustfmt, rust-src
 
@@ -44,7 +44,7 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: staging.aleo.tools
+          branch: staging.provable.tools
           folder: website/dist
           clean-exclude: '["dev"]'
 

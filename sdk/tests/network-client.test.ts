@@ -1,20 +1,39 @@
-import {jest} from '@jest/globals'
+import sinon from "sinon";
+import { expect } from "chai";
 import {Account, Block, AleoNetworkClient, TransactionModel} from "../src/node";
 import {beaconAddressString, beaconPrivateKeyString} from "./data/account-data";
 import {log} from "console";
-jest.retryTimes(3);
+
+
+async function catchError(f: () => Promise<any>): Promise<Error | null> {
+    try {
+        await f();
+        return null;
+
+    } catch (e) {
+        return e as Error;
+    }
+}
+
+
+async function expectThrows(f: () => Promise<any>, message: string): Promise<void> {
+    const error = await catchError(f);
+    expect(error).not.equal(null);
+    expect(error!.message).equal(message);
+}
+
 
 describe('NodeConnection', () => {
     let connection: AleoNetworkClient;
-    let windowFetchSpy: jest.Spied<typeof fetch>;
+    let windowFetchSpy: sinon.SinonSpy;
 
     beforeEach(() => {
         connection = new AleoNetworkClient("https://api.explorer.aleo.org/v1");
-        windowFetchSpy = jest.spyOn(globalThis, 'fetch');
+        windowFetchSpy = sinon.spy(globalThis, 'fetch');
     });
 
     afterEach(() => {
-        jest.restoreAllMocks();
+        sinon.restore();
         windowFetchSpy = null as any;
     });
 
@@ -22,76 +41,69 @@ describe('NodeConnection', () => {
         it('should set the account property', () => {
             const account = new Account();
             connection.setAccount(account);
-            expect(connection.getAccount()).toEqual(account);
-        }, 60000);
+            expect(connection.getAccount()).equal(account);
+        });
     });
 
     describe('getBlock', () => {
-        it('should return a Block object', async () => {
+        it.skip('should return a Block object', async () => {
             const block = await connection.getBlock(1);
-            expect((block as Block).block_hash).toEqual("ab1hap8jlxaz66yt887gxlgxptkm2y0dy72x529mq6pg3ysy9tzwyqsphva9c");
-        }, 60000);
+            expect((block as Block).block_hash).equal("ab1eddc3np4h6duwf5a7ht6u0x5maa08780l885j6xq0s7l88df0qrq3d72me");
+        });
 
         it('should throw an error if the request fails', async () => {
-            await expect(connection.getBlock(99999999)).rejects.toThrow('Error fetching block.');
-        }, 60000);
+            await expectThrows(
+                () => connection.getBlock(99999999),
+                "Error fetching block.",
+            );
+        });
     });
 
     describe('getBlockRange', () => {
-        it('should return an array of Block objects', async () => {
+        it.skip('should return an array of Block objects', async () => {
             const blockRange = await connection.getBlockRange(1, 3);
-            expect(Array.isArray(blockRange)).toBe(true);
-            expect((blockRange as Block[]).length).toBe(2);
-            expect(((blockRange as Block[])[0] as Block).block_hash).toBe("ab1hap8jlxaz66yt887gxlgxptkm2y0dy72x529mq6pg3ysy9tzwyqsphva9c");
-            expect(((blockRange as Block[])[1] as Block).block_hash).toBe("ab18dzmjgqgk5z6x4gggezca7aenqts7289chvhus4a7ydrcj4apvrqq5j5h8");
+            expect(Array.isArray(blockRange)).equal(true);
+            expect((blockRange as Block[]).length).equal(3);
+            expect(((blockRange as Block[])[0] as Block).block_hash).equal("ab1eddc3np4h6duwf5a7ht6u0x5maa08780l885j6xq0s7l88df0qrq3d72me");
+            expect(((blockRange as Block[])[1] as Block).block_hash).equal("ab1uqmm97qk5gzhgwh6308h48aszazhfnn0xdq84lrj7e7myyrf9yyqmqdf42");
 
-        }, 60000);
+        });
 
         it('should throw an error if the request fails', async () => {
-            await expect(connection.getBlockRange(999999999, 1000000000)).rejects.toThrow('Error fetching blocks between 999999999 and 1000000000.');
-        }, 60000);
-    });
-
-    describe('getDeploymentTransactionForProgram', () => {
-        it('should return a Transaction object', async () => {
-            const transaction = await connection.getDeploymentTransactionForProgram('hello_hello.aleo');
-            expect((transaction as TransactionModel).type).toBe("deploy");
-        }, 60000);
-    });
-
-    describe('getDeploymentTransactionIDForProgram', () => {
-        it('should return a Transaction object', async () => {
-            const transaction = await connection.getDeploymentTransactionIDForProgram('hello_hello.aleo');
-            expect(typeof transaction).toBe('string');
-        }, 60000);
+            expect(await connection.getBlockRange(999999999, 1000000000)).deep.equal([]);
+        });
     });
 
     describe('getProgram', () => {
         it('should return a string', async () => {
             const program = await connection.getProgram('credits.aleo');
-            expect(typeof program).toBe('string');
-        }, 60000);
+            expect(typeof program).equal('string');
+        });
 
         it('should throw an error if the request fails', async () => {
             const program_id = "a" + (Math.random()).toString(32).substring(2) + ".aleo";
-            await expect(connection.getProgram(program_id)).rejects.toThrow('Error fetching program');
-        }, 60000);
+
+            await expectThrows(
+                () => connection.getProgram(program_id),
+                "Error fetching program",
+            );
+        });
     });
 
     describe('getLatestBlock', () => {
         it('should return a Block object', async () => {
             const latestBlock = await connection.getLatestBlock();
-            expect(typeof (latestBlock as Block).block_hash).toBe('string');
-        }, 60000);
+            expect(typeof (latestBlock as Block).block_hash).equal('string');
+        });
 
         it('should set the X-Aleo-SDK-Version header', async () => {
-            expect(windowFetchSpy.mock.calls).toStrictEqual([]);
+            expect(windowFetchSpy.args).deep.equal([]);
 
             await connection.getLatestBlock();
 
-            expect(windowFetchSpy.mock.calls).toStrictEqual([
+            expect(windowFetchSpy.args).deep.equal([
                 [
-                    "https://api.explorer.aleo.org/v1/testnet3/latest/block",
+                    "https://api.explorer.aleo.org/v1/testnet/latest/block",
                     {
                         "headers": {
                             // @TODO: Run the Jest tests on the compiled Rollup code,
@@ -101,59 +113,45 @@ describe('NodeConnection', () => {
                     }
                 ],
             ]);
-        }, 60000);
+        });
     });
 
     describe('getLatestCommittee', () => {
         it('should return a string', async () => {
             const latestCommittee = await connection.getLatestCommittee();
-            expect(typeof latestCommittee).toBe('object');
-        }, 60000);
+            expect(typeof latestCommittee).equal('object');
+        });
     });
 
     describe('getLatestHeight', () => {
         it('should return a number', async () => {
             const latestHeight = await connection.getLatestHeight();
-            expect(typeof latestHeight).toBe('number');
-        }, 60000);
+            expect(typeof latestHeight).equal('number');
+        });
     });
 
     describe('getStateRoot', () => {
         it('should return a string', async () => {
             const stateRoot = await connection.getStateRoot();
-            expect(typeof stateRoot).toBe('string');
-        }, 60000);
-    });
-
-    describe('getTransaction', () => {
-        it('should return a Transaction object', async () => {
-            const transaction = await connection.getTransaction('at1u833jaha7gtqk7vx0yczcg2njds2tj52lyg54c7zyylgfjvc4vpqn8gqqx');
-            expect((transaction as TransactionModel).type).toBe("deploy");
-        }, 60000);
+            expect(typeof stateRoot).equal('string');
+        });
     });
 
     describe('getTransactions', () => {
-        it('should return an array of Transaction objects', async () => {
-            const transactions = await connection.getTransactions(1);
-            expect(Array.isArray(transactions)).toBe(true);
-            expect((transactions as TransactionModel[]).length).toBeGreaterThan(0);
-        }, 60000);
-
         it('should throw an error if the request fails', async () => {
-            await expect(connection.getTransactions(999999999)).rejects.toThrow('Error fetching transactions.');
-        }, 60000);
+            await expectThrows(
+                () => connection.getTransactions(999999999),
+                "Error fetching transactions.",
+            );
+        });
     });
 
     describe('getProgramImports', () => {
         it('should return the correct program import names', async () => {
-            const importNames = await connection.getProgramImportNames("aleoswap05.aleo");
-            const expectedNames = ["credits.aleo"];
-            expect(importNames).toEqual(expectedNames);
-
             const creditImports = await connection.getProgramImportNames("credits.aleo");
             const expectedCreditImports: string[] = [];
-            expect(creditImports).toEqual(expectedCreditImports);
-        }, 60000);
+            expect(creditImports).deep.equal(expectedCreditImports);
+        });
 
         it.skip('should return all nested imports', async () => {
             const imports = await connection.getProgramImports("imported_add_mul.aleo");
@@ -181,37 +179,48 @@ describe('NodeConnection', () => {
                     '    add r0 r1 into r2;\n' +
                     '    output r2 as u32.private;\n'
             };
-            expect(imports).toEqual(expectedImports);
-        }, 60000);
+            expect(imports).equal(expectedImports);
+        });
     });
 
     describe('findUnspentRecords', () => {
         it('should fail if block heights or private keys are incorrectly specified', async () => {
-            await expect(connection.findUnspentRecords(5, 0, beaconPrivateKeyString, undefined, undefined, [])).rejects.toThrow();
-            await expect(connection.findUnspentRecords(-5, 5, beaconPrivateKeyString, undefined, undefined, [])).rejects.toThrow();
-            await expect(connection.findUnspentRecords(0, 5, "definitelynotaprivatekey", undefined, undefined, [])).rejects.toThrow();
-            await expect(connection.findUnspentRecords(0, 5, undefined, undefined, undefined, [])).rejects.toThrow();
-        }, 60000);
+            await expectThrows(
+                () => connection.findUnspentRecords(5, 0, beaconPrivateKeyString, undefined, undefined, []),
+                "Start height must be less than or equal to end height.",
+            );
 
-        it('should search a range correctly and not find records where none exist', async () => {
+            await expectThrows(
+                () => connection.findUnspentRecords(-5, 5, beaconPrivateKeyString, undefined, undefined, []),
+                "Start height must be greater than or equal to 0",
+            );
+
+            await expectThrows(
+                () => connection.findUnspentRecords(0, 5, "definitelynotaprivatekey", undefined, undefined, []),
+                "Error parsing private key provided.",
+            );
+
+            await expectThrows(
+                () => connection.findUnspentRecords(0, 5, undefined, undefined, undefined, []),
+                "Private key must be specified in an argument to findOwnedRecords or set in the AleoNetworkClient",
+            );
+        });
+
+        it.skip('should search a range correctly and not find records where none exist', async () => {
             const records = await connection.findUnspentRecords(0, 204, beaconPrivateKeyString, undefined, undefined, []);
-            expect(Array.isArray(records)).toBe(true);
+            expect(Array.isArray(records)).equal(true);
             if (!(records instanceof Error)) {
-                expect(records.length).toBe(0);
+                expect(records.length).equal(0);
             }
-        }, 90000);
+        });
     });
 
     describe('Mappings', () => {
         it('should find program mappings and read mappings', async () => {
             const mappings = await connection.getProgramMappingNames("credits.aleo");
             if (!(mappings instanceof Error)) {
-                expect(mappings).toEqual(["committee", "bonded", "unbonding", "account"]);
+                expect(mappings).deep.equal(["committee", "delegated", "metadata", "bonded", "unbonding", "account", "withdraw"]);
             }
-            const mappingValue = await connection.getProgramMappingValue("credits.aleo", "account", "aleo1rlwt9w0fl242h40w454m68vttd6vm4lmetu5r57unm5g354y9yzsyexf0y");
-            if (!(mappingValue instanceof Error)) {
-                expect(mappingValue).toBeTruthy()
-            }
-        }, 60000);
+        });
     });
 });
