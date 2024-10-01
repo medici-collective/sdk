@@ -28,7 +28,7 @@ describe('NodeConnection', () => {
     let windowFetchSpy: sinon.SinonSpy;
 
     beforeEach(() => {
-        connection = new AleoNetworkClient("https://api.explorer.aleo.org/v1");
+        connection = new AleoNetworkClient("https://api.explorer.provable.com/v1");
         windowFetchSpy = sinon.spy(globalThis, 'fetch');
     });
 
@@ -66,11 +66,13 @@ describe('NodeConnection', () => {
             expect((blockRange as Block[]).length).equal(3);
             expect(((blockRange as Block[])[0] as Block).block_hash).equal("ab1eddc3np4h6duwf5a7ht6u0x5maa08780l885j6xq0s7l88df0qrq3d72me");
             expect(((blockRange as Block[])[1] as Block).block_hash).equal("ab1uqmm97qk5gzhgwh6308h48aszazhfnn0xdq84lrj7e7myyrf9yyqmqdf42");
-
         });
 
         it('should throw an error if the request fails', async () => {
-            expect(await connection.getBlockRange(999999999, 1000000000)).deep.equal([]);
+            await expectThrows(
+                () => connection.getBlockRange(999999999, 1000000000),
+                "Error fetching blocks between 999999999 and 1000000000.",
+            );
         });
     });
 
@@ -103,7 +105,7 @@ describe('NodeConnection', () => {
 
             expect(windowFetchSpy.args).deep.equal([
                 [
-                    "https://api.explorer.aleo.org/v1/testnet/latest/block",
+                    "https://api.explorer.provable.com/v1/%%NETWORK%%/latest/block",
                     {
                         "headers": {
                             // @TODO: Run the Jest tests on the compiled Rollup code,

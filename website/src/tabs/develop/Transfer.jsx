@@ -6,7 +6,7 @@ import axios from "axios";
 export const Transfer = () => {
     const [transferFeeRecord, setTransferFeeRecord] = useState(null);
     const [amountRecord, setAmountRecord] = useState(null);
-    const [transferUrl, setTransferUrl] = useState("https://api.explorer.aleo.org/v1");
+    const [transferUrl, setTransferUrl] = useState("https://api.explorer.provable.com/v1");
     const [transferAmount, setTransferAmount] = useState("1.0");
     const [transferFee, setTransferFee] = useState("1.0");
     const [privateFee, setPrivateFee] = useState(true);
@@ -200,7 +200,7 @@ export const Transfer = () => {
         },
     ];
 
-    const layout = { labelCol: { span: 3 }, wrapperCol: { span: 21 } };
+    const layout = { labelCol: { span: 5}, wrapperCol: { span: 21 } };
     const feeString = () => (transferFee !== null ? transferFee : "");
     const amountString = () => (transferAmount !== null ? transferAmount : "");
     const recipientString = () => (recipient !== null ? recipient : "");
@@ -334,7 +334,7 @@ export const Transfer = () => {
                     <Col justify="center">
                         <Button
                             type="primary"
-                            
+
                             size="middle"
                             onClick={transfer}
                         >

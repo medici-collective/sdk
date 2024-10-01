@@ -1,6 +1,6 @@
 import typescript from "rollup-plugin-typescript2";
 import replace from "@rollup/plugin-replace";
-import $package from "./package.json" assert { type: "json" };
+import $package from "./package.json" with { type: "json" };
 
 const networks = [
     "testnet",
@@ -32,6 +32,7 @@ export default networks.map((network) => {
             // Used by the SDK
             "comlink",
             `@provablehq/wasm/${network}.js`,
+            "core-js/proposals/json-parse-with-source.js",
         ],
         plugins: [
             replace({

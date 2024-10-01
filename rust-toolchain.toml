@@ -1,4 +1,8 @@
 [toolchain]
+<<<<<<< HEAD
 channel = "nightly-2024-07-21"
+=======
+channel = "nightly-2024-08-12"
+>>>>>>> testnet3
 components = [ "rust-std", "rust-src" ]
 targets = [ "wasm32-unknown-unknown" ]
