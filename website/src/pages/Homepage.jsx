@@ -18,7 +18,7 @@ const Homepage = () => {
                     The tooling for building zero-knowledge applications at your
                     fingertips
                 </p>{" "}
-                <div className="buttonRow"> 
+                <div className="buttonRow">
                 <Link
                     target="_blank"
                     rel="noopener noreferrer"
@@ -39,7 +39,7 @@ const Homepage = () => {
                         See Docs <span className="arrow">&rarr;</span>{" "}
                     </button>
                 </Link>{" "}
-                </div> 
+                </div>
                 <ul className="actionRow">
                     <Link to="/account" className="actionItem">
                         {" "}
@@ -74,6 +74,7 @@ const Homepage = () => {
                             style={{ height: "24px", marginBottom: "1rem" }}
                         ></img>
                     </a>
+                    <Link to="https://sdk.betteruptime.com/" style={{color: "white"}}> <span>Status</span> </Link>
                     <Link to="/terms_of_use" style={{ color: "white", textDecoration: "none" }}>
                         {" "}
                         <span>Terms of Use</span>{" "}

@@ -3,8 +3,8 @@ name = "aleo-wasm"
 authors = [ "The Provable Team", "The Puzzle Team" ]
 version = "0.6.17"
 description = "WebAssembly based toolkit for developing zero-knowledge applications with Aleo"
-homepage = "https://aleo.org"
-repository = "https://github.com/puzzlehq/sdk"
+homepage = "https://provable.com"
+repository = "https://github.com/ProvableHQ/sdk"
 keywords = [
   "aleo",
   "cryptography",
