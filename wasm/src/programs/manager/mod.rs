@@ -28,7 +28,7 @@ use crate::{
     KeyPair, PrivateKey, ProvingKey, RecordPlaintext, VerifyingKey,
 };
 
-const DEFAULT_URL: &str = "https://api.explorer.aleo.org/v1";
+const DEFAULT_URL: &str = "https://api.explorer.provable.org/v1";
 
 // use crate::{KeyPair, PrivateKey, ProvingKey, RecordPlaintext, VerifyingKey};
 

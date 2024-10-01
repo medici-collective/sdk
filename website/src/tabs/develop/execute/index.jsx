@@ -17,8 +17,9 @@ import { LoadProgram } from "./LoadProgram.jsx";
 import { CodeEditor } from "./CodeEditor.jsx";
 import { useAleoWASM } from "../../../aleo-wasm-hook";
 import { useEffect, useState } from "react";
+import { NewAccount } from "../../account/NewAccount.jsx";
 
-const layout = { labelCol: { span: 4 }, wrapperCol: { span: 18 } };
+const layout = { labelCol: { span: 5 }, wrapperCol: { span: 18 } };
 
 export const Execute = () => {
     const [form] = Form.useForm();
@@ -237,6 +238,12 @@ export const Execute = () => {
     };
 
     return (
+        <>
+
+        <NewAccount />
+
+        <br/>
+
         <Card
             title="Execute Program"
             extra={
@@ -336,7 +343,7 @@ export const Execute = () => {
                                 <Form.Item
                                     label="Peer URL"
                                     name="peer_url"
-                                    initialValue="https://api.explorer.aleo.org/v1"
+                                    initialValue="https://api.explorer.provable.com/v1"
                                     hidden={!getFieldValue("execute_onchain")}
                                 >
                                     <Input />
@@ -473,6 +480,7 @@ export const Execute = () => {
                 )}
             </Form.Provider>
         </Card>
+        </>
     );
 };
 

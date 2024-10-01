@@ -15,13 +15,16 @@
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
 mod credits;
+mod metadata;
 
-use crate::types::native::{FromBytes, ToBytes, VerifyingKeyNative};
+use crate::types::native::{CurrentNetwork, FromBytes, Network, ToBytes, VerifyingKeyNative};
 
 use sha2::Digest;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use std::{ops::Deref, str::FromStr};
+
+pub use metadata::Metadata;
 
 /// Verifying key for a function within an Aleo program
 #[wasm_bindgen]
@@ -48,7 +51,7 @@ impl VerifyingKey {
     /// Construct a new verifying key from a byte array
     ///
     /// @param {Uint8Array} bytes Byte representation of a verifying key
-    /// @returns {VerifyingKey | Error}
+    /// @returns {VerifyingKey}
     #[wasm_bindgen(js_name = "fromBytes")]
     pub fn from_bytes(bytes: &[u8]) -> Result<VerifyingKey, String> {
         Ok(Self(VerifyingKeyNative::from_bytes_le(bytes).map_err(|e| e.to_string())?))
@@ -57,7 +60,7 @@ impl VerifyingKey {
     /// Create a verifying key from string
     ///
     /// @param {String} string String representation of a verifying key
-    /// @returns {VerifyingKey | Error}
+    /// @returns {VerifyingKey}
     #[wasm_bindgen(js_name = "fromString")]
     pub fn from_string(string: &str) -> Result<VerifyingKey, String> {
         Ok(Self(VerifyingKeyNative::from_str(string).map_err(|e| e.to_string())?))
@@ -65,7 +68,7 @@ impl VerifyingKey {
 
     /// Create a byte array from a verifying key
     ///
-    /// @returns {Uint8Array | Error} Byte representation of a verifying key
+    /// @returns {Uint8Array} Byte representation of a verifying key
     #[wasm_bindgen(js_name = "toBytes")]
     pub fn to_bytes(&self) -> Result<Vec<u8>, String> {
         self.0.to_bytes_le().map_err(|_| "Failed to serialize verifying key".to_string())
@@ -118,68 +121,69 @@ mod tests {
     use super::*;
     use wasm_bindgen_test::*;
 
-    const TRANSFER_PUBLIC_VERIFYING_KEY: &str = "verifier1qygqqqqqqqqqqqq79uqqqqqqqqqp2tcqqqqqqqqqwd4qqqqqqqqqp5ydqqqqqqqqqqvyqqqqqqqqqqqvqqqqqqqqqqqre7drur40rst43dq9at346py7hkmrhexarf59f2tjt4stlsdj5uwrgnrkjjej7jf3djk2w4njtxcq0mezac793craujm8mr7wutcqtu2aday5g03wl0cu2572fsrtpyjhdyqlh0447z7dshlkhksjsusgp4ezrvc0n64fwetfmml3kvfg7n03w2e602sl7et4cpw98hgpzxwzrmzu8r3x77v49njysy2lp55xsqh6t5qjvhyl5a7nzy3e73y7dzvvs9p450u0s8g84prqnrk6jeah89c6882uzqdvxgzcedfmsc43uq99n3ycrjh70ys8n02pyvdvzmu7z608desdd5yw9dc8v3ddrdddmrzz2pupe09yn9esy25cfzmd0wqcgjdxm4dvlt2t6k66lw8e9ccj49qj2ahpht62kh7p56xpvpekenq2arng2t55mwxe59mqpkp6a0yqlwt7tdf98rt3kqlr9tdtq6hua3wrka0mqzhva4nhucxn9u4w92mly69jy2c7cqm5ftnk3m0qxy9spaxwfz0xkqd947yvf2zh8h4y59fltxdpeu4utpv9zw0cr7ad9d462qxyc2f05lezw6dwhcmep942qqv38lp3x9efestt5pk8rplvmrk0zz9zel48l8h9ldfzyd8zyr7knze92cdyanez6k7q5fu6tnw9wqrywjnhevaujz20xn0h3n47g85zs6ejfh7z8jt9qjesqgmdymvcxlceudkdsl49t5r69c4mg7hfwyq88z7zn0efda8fdjmhz8aaq24q34g2ekdzr5w9em3cev2ktxtmupqwltu0nh3fjzm04cy3cgnqlnqq0chzq4rs2dmfjwryxrxxgjtdcsnn9fpwykkxwfuervtznu3lmvhhpdflgwgm0xklu6c0xsxt9dfcp29w2nz6zkjetz7cqremg68eqxq86rn082czp50ldw9qkq6w3p9xxg4hrg";
+    #[cfg(feature = "testnet")]
+    const TRANSFER_PUBLIC_VERIFYING_KEY: &str = "verifier1qygqqqqqqqqqqqp3xqqqqqqqqqqzvvqqqqqqqqqq23hqqqqqqqqqqau5qqqqqqqqqq5yzqqqqqqqqqqvqqqqqqqqqqqz2rh4q6m4u0ycv2z5qx95echpdcsktezkr2j9cvff0dngp45jfqggm8q3578nkhjudslm2rdpsgcpks4ulquyqrtd978zvj65pxmhkudyjtj005h66jcnwg3f6mdqqaqjed3avcz599kth8a3nak0tftsrk4hczcdvlmrdnzsa6rfppy72flsrhdhn6npxfxt2rrudk8jrk5fefkawhhrf0psccp6l9akckaps898v5mk7vprkx90gg798d6j5tvvtma0r9phq3jndan5rkwv8wmkngeha3pzrjzslkt8ct9umm4wfq8dhnpdv8m4plq70c3d6wxs4l3cv4gyqhgjtwfuydc5fflulwgjvdtaxxlmpf0l5n800jn2lwnt5kqqtdsx2lvzl3kw3ns5hnsu4jzg9ejptg7n7r7d9dvqsrvldw9paeq86hjxeaac6typemynwzt8w3vq3e27l4swd9aqxaas7zsy5mw7ftnjct9jq6t9rdq0kx8vjag77nt0z894xqkrfp27hehk83nfcg7cpjcc7f8mznga33xp36seafxpn26rq4w5l9uawtx02mzpq9kuyyx7nvhtad0mxk5su659xx5wv3yhqqy3577kwc40spvp9dst59ap2ll5uuq7qaauy9vy5yvrjd77c443evxrwfsee8jg5hvt6f9xaupjzq2cmuuwdvjs0qtxmnwjmdepu5979qy4nhqs63zljatt7kkggddxctt74crayt4djvnh3u6tjzm8wyqpc7nf0r0k9mp34x9musgdqegkmscey50ckyehm67c5tcdlawkh6my2v3xzwaug7c4y9xyw0dfkqup24jdckk5wxkyfd8rsp6h220dj786t54fyj59ehtq0gyut6lcattumgdss4kkchrdp7f5sjgcu7ycpzq0d47m6xe3yh2q5q76fa20lm46pe8fcd9yqcrxduhkdqfe4c9pw3pqqqqqqqqqq0qvtsl";
+
+    #[cfg(feature = "mainnet")]
+    const TRANSFER_PUBLIC_VERIFYING_KEY: &str = "verifier1qygqqqqqqqqqqqp3xqqqqqqqqqqzvvqqqqqqqqqq23hqqqqqqqqqqau5qqqqqqqqqq5yzqqqqqqqqqqvqqqqqqqqqqqz2rh4q6m4u0ycv2z5qx95echpdcsktezkr2j9cvff0dngp45jfqggm8q3578nkhjudslm2rdpsgcpks4ulquyqrtd978zvj65pxmhkudyjtj005h66jcnwg3f6mdqqaqjed3avcz599kth8a3nak0tftsrk4hczcdvlmrdnzsa6rfppy72flsrhdhn6npxfxt2rrudk8jrk5fefkawhhrf0psccp6l9akckaps898v5mk7vprkx90gg798d6j5tvvtma0r9phq3jndan5rkwv8wmkngeha3pzrjzslkt8ct9umm4wfq8dhnpdv8m4plq70c3d6wxs4l3cv4gyqhgjtwfuydc5fflulwgjvdtaxxlmpf0l5n800jn2lwnt5kqqtdsx2lvzl3kw3ns5hnsu4jzg9ejptg7n7r7d9dvqsrvldw9paeq86hjxeaac6typemynwzt8w3vq3e27l4swd9aqxaas7zsy5mw7ftnjct9jq6t9rdq0kx8vjag77nt0z894xqkrfp27hehk83nfcg7cpjcc7f8mznga33xp36seafxpn26rq4w5l9uawtx02mzpq9kuyyx7nvhtad0mxk5su659xx5wv3yhqqy3577kwc40spvp9dst59ap2ll5uuq7qaauy9vy5yvrjd77c443evxrwfsee8jg5hvt6f9xaupjzqdd2jexnaselrezp7eptfjtpgs6ga5p3nkycwf26k6nkrf8j302e3a62rq7x5xpz9r8q9ttf36y3vqq6kvvmnuuzv6zkv0p8ds0g6z7stfhtxvzl4vjgj9vf35tnkxxvhmk4xgqcycz6g5aaejlmskvr8uq24jdckk5wxkyfd8rsp6h220dj786t54fyj59ehtq0gyut6lcattumgdss4kkchrdp7f5sjgcu7ycppt59jx985rpqa04krg2sh5je7dt6rntnvf2xd76vrgh3ldnp33lw3pqqqqqqqqqqjgex6x";
 
     #[allow(dead_code)]
     #[test]
     fn verifying_key_strings() {
         let bond_public_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::BondPublicVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&crate::types::native::parameters::BondPublicVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
-        let claim_unbond_public_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::ClaimUnbondPublicVerifier::load_bytes().unwrap())
-                .unwrap()
-                .to_string();
+        let claim_unbond_public_verifier_string = VerifyingKey::from_bytes(
+            &crate::types::native::parameters::ClaimUnbondPublicVerifier::load_bytes().unwrap(),
+        )
+        .unwrap()
+        .to_string();
         let fee_private_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::FeePrivateVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&crate::types::native::parameters::FeePrivateVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         let fee_public_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::FeePublicVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&crate::types::native::parameters::FeePublicVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         let inclusion_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::InclusionVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&crate::types::native::parameters::InclusionVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         let join_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::JoinVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&crate::types::native::parameters::JoinVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
-        let set_validator_state_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::SetValidatorStateVerifier::load_bytes().unwrap())
-                .unwrap()
-                .to_string();
+        let set_validator_state_verifier_string = VerifyingKey::from_bytes(
+            &crate::types::native::parameters::SetValidatorStateVerifier::load_bytes().unwrap(),
+        )
+        .unwrap()
+        .to_string();
         let split_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::SplitVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&crate::types::native::parameters::SplitVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         let transfer_private_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::TransferPrivateVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&crate::types::native::parameters::TransferPrivateVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         let transfer_private_to_public_verifier_string = VerifyingKey::from_bytes(
-            &snarkvm_parameters::testnet::TransferPrivateToPublicVerifier::load_bytes().unwrap(),
+            &crate::types::native::parameters::TransferPrivateToPublicVerifier::load_bytes().unwrap(),
         )
         .unwrap()
         .to_string();
         let transfer_public_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::TransferPublicVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&crate::types::native::parameters::TransferPublicVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         let transfer_public_to_private_verifier_string = VerifyingKey::from_bytes(
-            &snarkvm_parameters::testnet::TransferPublicToPrivateVerifier::load_bytes().unwrap(),
-        )
-        .unwrap()
-        .to_string();
-        let unbond_delegator_as_validator_verifier_string = VerifyingKey::from_bytes(
-            &snarkvm_parameters::testnet::UnbondDelegatorAsValidatorVerifier::load_bytes().unwrap(),
+            &crate::types::native::parameters::TransferPublicToPrivateVerifier::load_bytes().unwrap(),
         )
         .unwrap()
         .to_string();
         let unbond_public_verifier_string =
-            VerifyingKey::from_bytes(&snarkvm_parameters::testnet::UnbondPublicVerifier::load_bytes().unwrap())
+            VerifyingKey::from_bytes(&crate::types::native::parameters::UnbondPublicVerifier::load_bytes().unwrap())
                 .unwrap()
                 .to_string();
         println!("bond_public_verifier:\nverifying_key: \"{}\"", bond_public_verifier_string);
@@ -200,75 +204,13 @@ mod tests {
             "transfer_public_to_private_verifier:\nverifying_key: \"{}\"",
             transfer_public_to_private_verifier_string
         );
-        println!(
-            "unbond_delegator_as_validator_verifier:\nverifying_key: \"{}\"",
-            unbond_delegator_as_validator_verifier_string
-        );
         println!("unbond_public_verifier:\nverifying_key: \"{}\"", unbond_public_verifier_string);
     }
 
     #[wasm_bindgen_test]
-    async fn test_verifying_key_parsing() {
-        use std::sync::Arc;
-        use snarkvm_console::prelude::IoResult;
-        use std::io::Read;
-
-        fn read_le<R: Read>(mut reader: R) -> IoResult<bool> {
-            let version = u8::read_le(&mut reader)?;
-            let verifying_key = Arc::new(FromBytes::read_le(&mut reader)?);
-
-            let verifying_key = VerifyingKeyNative::new(verifying_key, 0);
-
-            Ok(reader.bytes().into_iter().collect::<Vec<_>>().len() > 0)
-        }
-
-        fn parse<F>(name: &'static str, f: F) -> Option<&'static str> where F: FnOnce() -> Vec<u8> {
-            if read_le(f().as_slice()).unwrap() {
-                None
-
-            } else {
-                Some(name)
-            }
-        }
-
-        let results = vec! [
-            parse("TransferPublicVerifier", || snarkvm_parameters::testnet::TransferPublicVerifier::load_bytes().unwrap()),
-            parse("BondPublicVerifier", || snarkvm_parameters::testnet::BondPublicVerifier::load_bytes().unwrap()),
-            parse("ClaimUnbondPublicVerifier", || snarkvm_parameters::testnet::ClaimUnbondPublicVerifier::load_bytes().unwrap()),
-            parse("FeePrivateVerifier", || snarkvm_parameters::testnet::FeePrivateVerifier::load_bytes().unwrap()),
-            parse("FeePublicVerifier", || snarkvm_parameters::testnet::FeePublicVerifier::load_bytes().unwrap()),
-            parse("InclusionVerifier", || snarkvm_parameters::testnet::InclusionVerifier::load_bytes().unwrap()),
-            parse("JoinVerifier", || snarkvm_parameters::testnet::JoinVerifier::load_bytes().unwrap()),
-            parse("SetValidatorStateVerifier", || snarkvm_parameters::testnet::SetValidatorStateVerifier::load_bytes().unwrap()),
-            parse("SplitVerifier", || snarkvm_parameters::testnet::SplitVerifier::load_bytes().unwrap()),
-            parse("TransferPrivateVerifier", || snarkvm_parameters::testnet::TransferPrivateVerifier::load_bytes().unwrap()),
-            parse("TransferPrivateToPublicVerifier", || snarkvm_parameters::testnet::TransferPrivateToPublicVerifier::load_bytes().unwrap()),
-            parse("TransferPublicToPrivateVerifier", || snarkvm_parameters::testnet::TransferPublicToPrivateVerifier::load_bytes().unwrap()),
-            parse("UnbondDelegatorAsValidatorVerifier", || snarkvm_parameters::testnet::UnbondDelegatorAsValidatorVerifier::load_bytes().unwrap()),
-            parse("UnbondPublicVerifier", || snarkvm_parameters::testnet::UnbondPublicVerifier::load_bytes().unwrap()),
-        ];
-
-        assert_eq!(results, vec![
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-        ]);
-    }
-
-    #[wasm_bindgen_test]
     async fn test_verifying_key_roundtrip() {
-        let transfer_public_verifier_bytes = snarkvm_parameters::testnet::TransferPublicVerifier::load_bytes().unwrap();
+        let transfer_public_verifier_bytes =
+            crate::types::native::parameters::TransferPublicVerifier::load_bytes().unwrap();
         let transfer_public_verifier = VerifyingKey::from_bytes(&transfer_public_verifier_bytes).unwrap();
         let transfer_public_verifying_key_string = transfer_public_verifier.to_string();
         assert_eq!(transfer_public_verifying_key_string, TRANSFER_PUBLIC_VERIFYING_KEY);
@@ -276,12 +218,17 @@ mod tests {
 
     #[wasm_bindgen_test]
     async fn test_verifier_checksum() {
-        let transfer_public_verifier_bytes = snarkvm_parameters::testnet::TransferPublicVerifier::load_bytes().unwrap();
+        let transfer_public_verifier_bytes =
+            crate::types::native::parameters::TransferPublicVerifier::load_bytes().unwrap();
         let transfer_public_verifier = VerifyingKey::from_bytes(&transfer_public_verifier_bytes).unwrap();
         let transfer_public_verifying_key_checksum = transfer_public_verifier.checksum();
-        assert_eq!(
-            transfer_public_verifying_key_checksum,
-            "a4c2906a95b2f8bdcc6f192a0c71fb0a1c1aa3830feb54454627cf552674932a"
-        );
+
+        #[cfg(feature = "testnet")]
+        let checksum = "1b5109468e7992c39bbbc299dd1f94f18e49928e253e60ed68c7d9f02e73fe8d";
+
+        #[cfg(feature = "mainnet")]
+        let checksum = "ea77f42a35b3f891e7753c7333df365f356883550c4602df11f270237bef340d";
+
+        assert_eq!(transfer_public_verifying_key_checksum, checksum);
     }
 }

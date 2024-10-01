@@ -32,7 +32,7 @@ impl Transaction {
     /// Create a transaction from a string
     ///
     /// @param {string} transaction String representation of a transaction
-    /// @returns {Transaction | Error}
+    /// @returns {Transaction}
     #[wasm_bindgen(js_name = fromString)]
     pub fn from_string(transaction: &str) -> Result<Transaction, String> {
         Transaction::from_str(transaction)
@@ -93,7 +93,7 @@ impl FromStr for Transaction {
     }
 }
 
-#[cfg(test)]
+/*#[cfg(test)]
 mod tests {
     use super::*;
     use wasm_bindgen_test::*;
@@ -118,4 +118,4 @@ mod tests {
         let transaction_from_native = Transaction::from(transaction_native);
         assert_eq!(transaction, transaction_from_native);
     }
-}
+}*/

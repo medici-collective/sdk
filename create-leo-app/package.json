@@ -1,0 +1,33 @@
+{
+  "name": "create-leo-app",
+  "version": "0.0.13",
+  "type": "module",
+  "license": "GPL-3.0",
+  "collaborators": [
+    "The Provable Team"
+  ],
+  "bin": {
+    "create-leo-app": "index.js"
+  },
+  "files": [
+    "index.js",
+    "template-*",
+    "dist"
+  ],
+  "scripts": {
+    "dev": "unbuild --stub",
+    "build": "unbuild",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": "^14.18.0 || >=16.0.0"
+  },
+  "devDependencies": {
+    "@types/minimist": "^1.2.2",
+    "@types/prompts": "^2.4.4",
+    "kolorist": "^1.8.0",
+    "minimist": "^1.2.8",
+    "prompts": "^2.4.2",
+    "unbuild": "^1.2.1"
+  }
+}
