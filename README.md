@@ -5,12 +5,8 @@
     <a href="https://github.com/ProvableHQ/sdk#%EF%B8%8F-contributors"><img src="https://img.shields.io/badge/contributors-23-ee8449"/></a>
 </p>
 
-<<<<<<< HEAD
-# Zero Knowledge Web App SDK
-=======
 
 # Zero-Knowledge Web App SDK
->>>>>>> testnet3
 
 The [Aleo SDK](https://github.com/ProvableHQ/sdk) provides tools for building zero-knowledge applications. It consists of
 several TypeScript & JavaScript libraries which provide the following functionality:
